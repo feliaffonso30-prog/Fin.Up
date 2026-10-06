@@ -1,0 +1,10 @@
+node_modules
+.next
+.env*
+.worktrees
+*.log
+*.tsbuildinfo
+.claude/
+
+# variables de ejemplo: se versiona .env.example, nunca .env.local
+!.env.example
