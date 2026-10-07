@@ -23,6 +23,7 @@ Next.js 16 (App Router) · React 19 · Tailwind 4 + shadcn/ui · Supabase · Gem
 - `app/(plataforma)/` → `/onboarding` (sin shell) y `/dashboard`, `/aprender` (dentro de `(panel)` con barra lateral).
 - `components/plataforma/` → UI de la plataforma. `components/ui/` → shadcn. `components/finbot/` → chat de FinBot.
 - `lib/plataforma/` → **dominio, sin React ni red**: `perfil.ts` (puntaje + topes de seguridad), `cartera.ts` (distribución, explicaciones, avisos), `proyeccion.ts`, `plan.ts` (`generarPlan`), `store.ts` (persistencia local, temporal).
+- `proxy.ts` + `lib/supabase/` + `lib/auth/` → sesión y rutas protegidas. `/api/chat` queda fuera del proxy a propósito (valida su propio acceso, ver hoja de ruta 3).
 - `lib/finbot/` + `app/api/chat/route.ts` → FinBot (Gemini con herramientas: cotizaciones Yahoo, DolarAPI, ArgentinaDatos, glosario y catálogo propios). La plataforma lo conecta vía `aContextoEstrategia(plan)`.
 - `supabase/migrations/` → esquema SQL. Aplicar a mano en el SQL Editor.
 
@@ -36,8 +37,8 @@ Next.js 16 (App Router) · React 19 · Tailwind 4 + shadcn/ui · Supabase · Gem
 
 ## Hoja de ruta (en orden)
 
-1. **Login con Supabase Auth.** Next 16 deprecó `middleware`: usar `proxy.ts` y `@supabase/ssr`.
-2. **Guardar el plan en Supabase** (`planes_inversion`) en vez de `localStorage`; migrar `store.ts` detrás de la misma interfaz `usePlan()`.
+1. ✅ **Login con Supabase Auth** (email + contraseña, confirmación por email). Hecho: `proxy.ts` (refresca sesión y protege `/dashboard`, `/aprender`, `/onboarding`), `lib/supabase/*`, `lib/auth/rutas.ts` (reglas puras + tests), páginas `/login` y `/registro`, `/auth/callback` y `/auth/salir` (POST). **Sin las variables `NEXT_PUBLIC_SUPABASE_*` la app corre en "modo sin cuenta"** (no protege nada, plan en `localStorage`). Falta: probarlo contra un proyecto Supabase real.
+2. ✅ **Plan guardado en Supabase** (`planes_inversion`) cuando hay login: `usePlan()` (en `store.ts`) elige Supabase (`remoto.ts`) o `localStorage` según `AUTH_CONFIGURADA`. Rehacer el cuestionario archiva el plan anterior (historial). Un plan local previo se pasa a la cuenta la primera vez. Falta: probarlo contra el proyecto Supabase real.
 3. **Límites Free/Plus en `/api/chat`** con `uso_finbot` (escribe solo el servidor con service role) y reemplazar `rate-limit.ts` (en memoria, por IP).
 4. Pantalla de planes y cuenta.
 5. Mostrar montos en ARS con dólar MEP (DolarAPI) y comparar contra inflación.

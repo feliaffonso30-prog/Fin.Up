@@ -35,6 +35,8 @@ export function Onboarding() {
   const { plan: planGuardado, cargando, guardar } = usePlan();
 
   const [paso, setPaso] = useState(0);
+  const [guardando, setGuardando] = useState(false);
+  const [errorGuardado, setErrorGuardado] = useState(false);
   const [edad, setEdad] = useState("");
   const [capital, setCapital] = useState("");
   const [aporte, setAporte] = useState("");
@@ -83,9 +85,16 @@ export function Onboarding() {
     setPaso((p) => Math.max(0, p - 1));
   }
 
-  function verCartera() {
-    if (!plan) return;
-    guardar(plan);
+  async function verCartera() {
+    if (!plan || guardando) return;
+    setGuardando(true);
+    setErrorGuardado(false);
+    const ok = await guardar(plan);
+    if (!ok) {
+      setGuardando(false);
+      setErrorGuardado(true);
+      return;
+    }
     router.push("/dashboard");
   }
 
@@ -243,7 +252,7 @@ export function Onboarding() {
             </CardContent>
           </Card>
         ) : (
-          plan && <Resultado plan={plan} onVolver={volver} onContinuar={verCartera} />
+          plan && <Resultado plan={plan} onVolver={volver} onContinuar={verCartera} guardando={guardando} errorGuardado={errorGuardado} />
         )}
 
         <p className="mt-6 text-center text-[11px] leading-snug text-muted-foreground/70">
@@ -254,7 +263,19 @@ export function Onboarding() {
   );
 }
 
-function Resultado({ plan, onVolver, onContinuar }: { plan: Plan; onVolver: () => void; onContinuar: () => void }) {
+function Resultado({
+  plan,
+  onVolver,
+  onContinuar,
+  guardando,
+  errorGuardado,
+}: {
+  plan: Plan;
+  onVolver: () => void;
+  onContinuar: () => void;
+  guardando: boolean;
+  errorGuardado: boolean;
+}) {
   const { perfil } = plan;
   return (
     <Card className="animate-in fade-in border-border bg-card shadow-2xl shadow-black/40 duration-500">
@@ -296,12 +317,19 @@ function Resultado({ plan, onVolver, onContinuar }: { plan: Plan; onVolver: () =
           </div>
         )}
 
+        {errorGuardado && (
+          <p role="alert" className="flex items-start gap-2 rounded-md border border-red-500/40 bg-red-500/10 p-2.5 text-sm text-red-300">
+            <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+            No pudimos guardar tu cartera. Revisá tu conexión y probá de nuevo.
+          </p>
+        )}
+
         <div className="flex items-center justify-between gap-3 pt-2">
           <Button type="button" variant="ghost" onClick={onVolver} className="cursor-pointer text-muted-foreground">
             <ArrowLeft className="mr-1 h-4 w-4" /> Cambiar respuestas
           </Button>
-          <Button type="button" onClick={onContinuar} className="cursor-pointer bg-gradient-to-r from-blue-500 to-cyan-500 font-semibold text-white hover:opacity-95">
-            Ver mi cartera <ArrowRight className="ml-1 h-4 w-4" />
+          <Button type="button" onClick={onContinuar} disabled={guardando} className="cursor-pointer bg-gradient-to-r from-blue-500 to-cyan-500 font-semibold text-white hover:opacity-95">
+            {guardando ? "Guardando…" : "Ver mi cartera"} <ArrowRight className="ml-1 h-4 w-4" />
           </Button>
         </div>
       </CardContent>

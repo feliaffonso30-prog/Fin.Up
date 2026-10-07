@@ -14,7 +14,7 @@ import { usePlan } from "@/lib/plataforma/store";
 import type { Plan } from "@/lib/plataforma/tipos";
 
 export function Dashboard() {
-  const { plan, cargando } = usePlan();
+  const { plan, cargando, error, recargar } = usePlan();
 
   if (cargando) {
     return (
@@ -26,6 +26,18 @@ export function Dashboard() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="mx-auto flex min-h-[50vh] max-w-md flex-col items-center justify-center text-center">
+        <AlertTriangle className="mb-3 h-8 w-8 text-amber-400" aria-hidden />
+        <h1 className="text-xl font-bold">No pudimos cargar tu cartera</h1>
+        <p className="mt-2 text-sm text-muted-foreground">{error}</p>
+        <Button onClick={recargar} variant="outline" className="mt-5">
+          Reintentar
+        </Button>
+      </div>
+    );
+  }
   if (!plan) return <SinPlan />;
   return <Cartera plan={plan} />;
 }

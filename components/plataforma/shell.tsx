@@ -2,11 +2,27 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, LayoutDashboard, RefreshCw } from "lucide-react";
+import { BookOpen, LayoutDashboard, LogOut, RefreshCw } from "lucide-react";
 import { FinBotChat } from "@/components/finbot/finbot-chat";
 import { aContextoEstrategia } from "@/lib/plataforma/plan";
 import { usePlan } from "@/lib/plataforma/store";
+import { AUTH_CONFIGURADA } from "@/lib/supabase/config";
 import { cn } from "@/lib/utils";
+
+function BotonSalir() {
+  if (!AUTH_CONFIGURADA) return null;
+  return (
+    <form action="/auth/salir" method="post">
+      <button
+        type="submit"
+        className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary/60 hover:text-foreground"
+      >
+        <LogOut className="h-4 w-4 shrink-0" aria-hidden />
+        <span className="whitespace-nowrap">Cerrar sesión</span>
+      </button>
+    </form>
+  );
+}
 
 const NAV = [
   { href: "/dashboard", etiqueta: "Mi cartera", Icono: LayoutDashboard },
@@ -46,7 +62,10 @@ export function Shell({ children }: { children: React.ReactNode }) {
         <nav className="flex flex-col gap-1" aria-label="Principal">
           {enlaces}
         </nav>
-        <p className="mt-auto px-3 text-[11px] leading-snug text-muted-foreground/70">
+        <div className="mt-auto">
+          <BotonSalir />
+        </div>
+        <p className="mt-2 px-3 text-[11px] leading-snug text-muted-foreground/70">
           Versión beta. Contenido educativo, no es asesoramiento financiero.
         </p>
       </aside>
@@ -58,7 +77,10 @@ export function Shell({ children }: { children: React.ReactNode }) {
             <Link href="/dashboard">
               <img src="/finup.logo.1.png" alt="FinUp" className="h-10 w-auto" />
             </Link>
-            <span className="rounded-full border border-border px-2 py-0.5 text-[10px] font-medium text-blue-400">Beta</span>
+            <div className="flex items-center gap-2">
+              <span className="rounded-full border border-border px-2 py-0.5 text-[10px] font-medium text-blue-400">Beta</span>
+              <BotonSalir />
+            </div>
           </div>
           <nav className="flex gap-1 overflow-x-auto px-3 py-2" aria-label="Principal">
             {enlaces}
