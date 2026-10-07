@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { destinoSeguro, mensajeDeError, validarEmail, validarPassword } from "@/lib/auth/rutas";
 import { AUTH_CONFIGURADA } from "@/lib/supabase/config";
 import { crearClienteNavegador } from "@/lib/supabase/client";
+import { reiniciarPlanRemoto } from "@/lib/plataforma/store";
 
 type Props = { modo: "login" | "registro"; siguiente?: string; errorEnlace?: boolean };
 
@@ -79,6 +80,7 @@ export function FormAuth({ modo, siguiente, errorEnlace }: Props) {
         setEnviando(false);
         return;
       }
+      reiniciarPlanRemoto();
       router.replace(destinoSeguro(siguiente));
       router.refresh();
       return;
@@ -96,6 +98,7 @@ export function FormAuth({ modo, siguiente, errorEnlace }: Props) {
     }
     if (data.session) {
       // El proyecto no exige confirmar el email: ya hay sesión.
+      reiniciarPlanRemoto();
       router.replace("/onboarding");
       router.refresh();
       return;
