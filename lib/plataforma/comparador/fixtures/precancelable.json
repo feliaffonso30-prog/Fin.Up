@@ -1,0 +1,32 @@
+[
+  {
+    "id": "bna",
+    "entidad": "Banco de la Nación Argentina",
+    "enlace": "https://www.bna.com.ar/personas/plazofijoprecancelableuva",
+    "plazoMinDias": 180,
+    "plazoMaxDias": 370,
+    "plazoPrecancelacionDias": 30,
+    "avisoPrecancelacionDias": 5,
+    "montoMinimo": 1500,
+    "montoMaximo": 5000000,
+    "tna": 0.01,
+    "tea": 0.01,
+    "tnaPrecancelacion": 0.83,
+    "teaPrecancelacion": 1.232
+  },
+  {
+    "id": "banco-provincia",
+    "entidad": "Banco de la Provincia de Buenos Aires",
+    "enlace": "https://www.bancoprovincia.com.ar/mvc/productos/inversiones/Plazo_Fijo_uva_cancel_ant/Plazo_Fijo_uva_ca_info_gral",
+    "plazoMinDias": 90,
+    "plazoMaxDias": null,
+    "plazoPrecancelacionDias": 30,
+    "avisoPrecancelacionDias": null,
+    "montoMinimo": 1000,
+    "montoMaximo": null,
+    "tna": 0.01,
+    "tea": 0.01,
+    "tnaPrecancelacion": 0.1,
+    "teaPrecancelacion": null
+  }
+]

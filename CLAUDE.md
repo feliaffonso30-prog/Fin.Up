@@ -26,6 +26,11 @@ Next.js 16 (App Router) · React 19 · Tailwind 4 + shadcn/ui · Supabase · Gem
 - `proxy.ts` + `lib/supabase/` + `lib/auth/` → sesión y rutas protegidas. `/api/chat` queda fuera del proxy a propósito (valida su propio acceso, ver hoja de ruta 3).
 - `lib/finbot/` + `app/api/chat/route.ts` → FinBot (Gemini con herramientas: cotizaciones Yahoo, DolarAPI, ArgentinaDatos, glosario y catálogo propios). La plataforma lo conecta vía `aContextoEstrategia(plan)`.
 - `supabase/migrations/` → esquema SQL. Aplicar a mano en el SQL Editor.
+- **Comparador** (`/comparador`): plazo fijo, UVA, billeteras y FCI en pesos por entidad.
+  - `lib/plataforma/finanzas.ts` → cálculos puros (TNA/TEA/TEM, interés, tasa real).
+  - `lib/plataforma/comparador/` → dominio puro: normalizar (JSON de ArgentinaDatos → `Alternativa`), cotizar (ranking por monto/plazo/cliente), textos legales y educativos, `enlaces.ts` (mapa entidad → link, con `esReferido`).
+  - `lib/comparador/fuentes.ts` → descarga + `unstable_cache` + respaldo (`respaldo.ts`). Al cambiar la normalización, subir `VERSION_CACHE`. Los FCI (`/fci/fondos`, ~30 MB) no se esperan en la página: llegan por streaming.
+  - Desde la cartera, `liquidez` y `fija` llevan al comparador con `?usd=` (se pasa a ARS con el dólar MEP).
 
 ## Decisiones de producto que el código respeta
 
@@ -37,7 +42,7 @@ Next.js 16 (App Router) · React 19 · Tailwind 4 + shadcn/ui · Supabase · Gem
 
 ## Hoja de ruta (en orden)
 
-1. ✅ **Login con Supabase Auth** (email + contraseña, confirmación por email). Hecho: `proxy.ts` (refresca sesión y protege `/dashboard`, `/aprender`, `/onboarding`), `lib/supabase/*`, `lib/auth/rutas.ts` (reglas puras + tests), páginas `/login` y `/registro`, `/auth/callback` y `/auth/salir` (POST). **Sin las variables `NEXT_PUBLIC_SUPABASE_*` la app corre en "modo sin cuenta"** (no protege nada, plan en `localStorage`). Falta: probarlo contra un proyecto Supabase real.
+1. ✅ **Login con Supabase Auth** (email + contraseña, confirmación por email). Hecho: `proxy.ts` (refresca sesión y protege `/dashboard`, `/comparador`, `/aprender`, `/onboarding`), `lib/supabase/*`, `lib/auth/rutas.ts` (reglas puras + tests), páginas `/login` y `/registro`, `/auth/callback` y `/auth/salir` (POST). **Sin las variables `NEXT_PUBLIC_SUPABASE_*` la app corre en "modo sin cuenta"** (no protege nada, plan en `localStorage`). Falta: probarlo contra un proyecto Supabase real.
 2. ✅ **Plan guardado en Supabase** (`planes_inversion`) cuando hay login: `usePlan()` (en `store.ts`) elige Supabase (`remoto.ts`) o `localStorage` según `AUTH_CONFIGURADA`. Rehacer el cuestionario archiva el plan anterior (historial). Un plan local previo se pasa a la cuenta la primera vez. Falta: probarlo contra el proyecto Supabase real.
 3. **Límites Free/Plus en `/api/chat`** con `uso_finbot` (escribe solo el servidor con service role) y reemplazar `rate-limit.ts` (en memoria, por IP).
 4. Pantalla de planes y cuenta.
@@ -49,4 +54,5 @@ Next.js 16 (App Router) · React 19 · Tailwind 4 + shadcn/ui · Supabase · Gem
 - `app/api/chat/route.ts` crea `GoogleGenAI` al importar el módulo: sin `GEMINI_API_KEY` el build imprime "API key should be set". Pasarlo a inicialización perezosa.
 - Los mensajes de límite de FinBot dicen "de la demo" (texto heredado). Se reemplazan al implementar los límites por plan.
 - `npm run lint` apunta a `eslint .` pero eslint no está instalado como dependencia.
+- Comparador: completar `ENLACES` en `lib/plataforma/comparador/enlaces.ts` (hoy muchas entidades dicen "Sin link disponible").
 - Aún no hay revisión legal (términos, privacidad, límites de lo que puede decir FinBot); el entregable 2 la contempla.

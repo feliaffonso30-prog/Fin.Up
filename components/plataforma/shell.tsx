@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, LayoutDashboard, LogOut, RefreshCw } from "lucide-react";
+import { BookOpen, LayoutDashboard, LogOut, RefreshCw, Scale } from "lucide-react";
 import { FinBotChat } from "@/components/finbot/finbot-chat";
 import { aContextoEstrategia } from "@/lib/plataforma/plan";
 import { usePlan } from "@/lib/plataforma/store";
@@ -26,6 +26,7 @@ function BotonSalir() {
 
 const NAV = [
   { href: "/dashboard", etiqueta: "Mi cartera", Icono: LayoutDashboard },
+  { href: "/comparador", etiqueta: "Comparador", Icono: Scale },
   { href: "/aprender", etiqueta: "Aprender", Icono: BookOpen },
   { href: "/onboarding", etiqueta: "Rehacer perfil", Icono: RefreshCw },
 ];

@@ -1,6 +1,6 @@
 // Reglas de navegación del login. Puras (sin Next ni red) para poder testearlas.
 
-export const RUTAS_PROTEGIDAS = ["/dashboard", "/aprender", "/onboarding"];
+export const RUTAS_PROTEGIDAS = ["/dashboard", "/comparador", "/aprender", "/onboarding"];
 export const RUTAS_DE_ACCESO = ["/login", "/registro"];
 export const DESTINO_POR_DEFECTO = "/dashboard";
 

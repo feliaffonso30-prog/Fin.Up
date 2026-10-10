@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { AlertTriangle, Info, Sparkles } from "lucide-react";
+import { AlertTriangle, Info, Scale, Sparkles } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,7 +11,8 @@ import { DESCRIPCION_PERFIL } from "@/lib/plataforma/perfil";
 import { DESCARGO } from "@/lib/plataforma/cartera";
 import { pct, usd } from "@/lib/plataforma/formato";
 import { usePlan } from "@/lib/plataforma/store";
-import type { Plan } from "@/lib/plataforma/tipos";
+import { hrefComparador } from "@/lib/plataforma/comparador/desde-cartera";
+import type { Plan, Posicion } from "@/lib/plataforma/tipos";
 
 export function Dashboard() {
   const { plan, cargando, error, recargar } = usePlan();
@@ -145,6 +146,7 @@ function Cartera({ plan }: { plan: Plan }) {
                     <p className="text-xs leading-relaxed text-amber-100/90">{p.queSalePuedeMal}</p>
                     <p className="mt-2 text-xs text-amber-200/70">Volatilidad: {p.volatilidad.toLowerCase()}</p>
                   </div>
+                  <VerDondeConviene posicion={p} />
                   <div>
                     <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Ejemplos para investigar</p>
                     <ul className="space-y-1.5">
@@ -205,6 +207,26 @@ function Cartera({ plan }: { plan: Plan }) {
       </Card>
 
       <p className="text-center text-[11px] leading-snug text-muted-foreground/70">{DESCARGO}</p>
+    </div>
+  );
+}
+
+// Para liquidez y renta fija: lleva al comparador con el monto de esa parte precargado.
+function VerDondeConviene({ posicion }: { posicion: Posicion }) {
+  const href = hrefComparador(posicion);
+  if (!href) return null;
+  return (
+    <div className="flex flex-col gap-2 rounded-lg border border-blue-500/20 bg-blue-500/10 p-3 sm:flex-row sm:items-center sm:justify-between">
+      <p className="text-xs leading-relaxed text-foreground/85">
+        Compará tasas de plazo fijo, billeteras y fondos en pesos
+        {posicion.montoInicial > 0 ? ` para los ${usd(posicion.montoInicial)} de esta parte` : ""}.
+      </p>
+      <Button asChild size="sm" variant="outline" className="shrink-0">
+        <Link href={href}>
+          <Scale className="h-4 w-4" aria-hidden />
+          Ver dónde conviene
+        </Link>
+      </Button>
     </div>
   );
 }
