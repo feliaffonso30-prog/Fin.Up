@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { Bot, Send, X, Sparkles, Loader2 } from "lucide-react";
+import { EVENTO_ABRIR_FINBOT, type DetalleAbrirFinBot } from "@/lib/finbot/abrir";
 import type { ContextoEstrategia, EventoChat, MensajeChat } from "@/lib/finbot/types";
 
 const SUGERENCIAS_BASE = [
@@ -59,12 +60,25 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
   const [estado, setEstado] = useState<string | null>(null);
   const finRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     finRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [mensajes, estado]);
 
   useEffect(() => () => abortRef.current?.abort(), []);
+
+  // Otras pantallas pueden abrir el chat con una pregunta precargada (ver lib/finbot/abrir.ts).
+  useEffect(() => {
+    const alAbrir = (e: Event) => {
+      const { pregunta } = (e as CustomEvent<DetalleAbrirFinBot>).detail ?? {};
+      setAbierto(true);
+      if (pregunta) setInput(pregunta);
+      requestAnimationFrame(() => inputRef.current?.focus());
+    };
+    window.addEventListener(EVENTO_ABRIR_FINBOT, alAbrir);
+    return () => window.removeEventListener(EVENTO_ABRIR_FINBOT, alAbrir);
+  }, []);
 
   async function enviar(texto: string) {
     const pregunta = texto.trim();
@@ -211,6 +225,7 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
           >
             <div className="flex items-center gap-2">
               <input
+                ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 maxLength={2000}

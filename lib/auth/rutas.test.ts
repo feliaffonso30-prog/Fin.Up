@@ -19,6 +19,8 @@ describe("rutas", () => {
     expect(esRutaProtegida("/aprender/x")).toBe(true);
     expect(esRutaProtegida("/comparador")).toBe(true);
     expect(esRutaProtegida("/api/comparador")).toBe(false);
+    expect(esRutaProtegida("/instrumentos")).toBe(true);
+    expect(esRutaProtegida("/instrumentos/SPY")).toBe(true);
     expect(esRutaProtegida("/login")).toBe(false);
     expect(esRutaProtegida("/dashboardfalso")).toBe(false);
     expect(esRutaProtegida("/api/chat")).toBe(false);

@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { GraficoProyeccion } from "@/components/plataforma/grafico-proyeccion";
+import { VerEjemplos } from "@/components/plataforma/instrumentos/ver-ejemplos";
+import { CATEGORIAS_CON_EJEMPLOS } from "@/lib/plataforma/instrumentos/catalogo";
 import { DESCRIPCION_PERFIL } from "@/lib/plataforma/perfil";
 import { DESCARGO } from "@/lib/plataforma/cartera";
 import { pct, usd } from "@/lib/plataforma/formato";
@@ -147,17 +149,22 @@ function Cartera({ plan }: { plan: Plan }) {
                     <p className="mt-2 text-xs text-amber-200/70">Volatilidad: {p.volatilidad.toLowerCase()}</p>
                   </div>
                   <VerDondeConviene posicion={p} />
-                  <div>
-                    <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Ejemplos para investigar</p>
-                    <ul className="space-y-1.5">
-                      {p.ejemplos.map((e) => (
-                        <li key={e.nombre} className="text-xs leading-relaxed text-muted-foreground">
-                          <span className="font-medium text-foreground/90">{e.nombre}</span> · {e.tipoInstrumento}. {e.porQue}
-                        </li>
-                      ))}
-                    </ul>
-                    <p className="mt-2 text-[11px] text-muted-foreground/70">Son ejemplos educativos, no recomendaciones de compra. Preguntale a FinBot para entenderlos mejor.</p>
-                  </div>
+                  {CATEGORIAS_CON_EJEMPLOS.includes(p.categoria) ? (
+                    <VerEjemplos categoria={p.categoria} perfil={perfil.perfil} />
+                  ) : (
+                    // Liquidez y alternativos: siguen los ejemplos genéricos del catálogo de FinBot.
+                    <div>
+                      <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Ejemplos para investigar</p>
+                      <ul className="space-y-1.5">
+                        {p.ejemplos.map((e) => (
+                          <li key={e.nombre} className="text-xs leading-relaxed text-muted-foreground">
+                            <span className="font-medium text-foreground/90">{e.nombre}</span> · {e.tipoInstrumento}. {e.porQue}
+                          </li>
+                        ))}
+                      </ul>
+                      <p className="mt-2 text-[11px] text-muted-foreground/70">Son ejemplos educativos, no recomendaciones de compra. Preguntale a FinBot para entenderlos mejor.</p>
+                    </div>
+                  )}
                 </AccordionContent>
               </AccordionItem>
             ))}

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, LayoutDashboard, LogOut, RefreshCw, Scale } from "lucide-react";
+import { BookOpen, LayoutDashboard, Library, LogOut, RefreshCw, Scale } from "lucide-react";
 import { FinBotChat } from "@/components/finbot/finbot-chat";
 import { aContextoEstrategia } from "@/lib/plataforma/plan";
 import { usePlan } from "@/lib/plataforma/store";
@@ -27,6 +27,7 @@ function BotonSalir() {
 const NAV = [
   { href: "/dashboard", etiqueta: "Mi cartera", Icono: LayoutDashboard },
   { href: "/comparador", etiqueta: "Comparador", Icono: Scale },
+  { href: "/instrumentos", etiqueta: "Instrumentos", Icono: Library },
   { href: "/aprender", etiqueta: "Aprender", Icono: BookOpen },
   { href: "/onboarding", etiqueta: "Rehacer perfil", Icono: RefreshCw },
 ];
@@ -36,7 +37,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
   const { plan } = usePlan();
 
   const enlaces = NAV.map(({ href, etiqueta, Icono }) => {
-    const activo = pathname === href;
+    const activo = pathname === href || pathname.startsWith(href + "/");
     return (
       <Link
         key={href}

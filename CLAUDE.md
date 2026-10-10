@@ -31,6 +31,11 @@ Next.js 16 (App Router) · React 19 · Tailwind 4 + shadcn/ui · Supabase · Gem
   - `lib/plataforma/comparador/` → dominio puro: normalizar (JSON de ArgentinaDatos → `Alternativa`), cotizar (ranking por monto/plazo/cliente), textos legales y educativos, `enlaces.ts` (mapa entidad → link, con `esReferido`).
   - `lib/comparador/fuentes.ts` → descarga + `unstable_cache` + respaldo (`respaldo.ts`). Al cambiar la normalización, subir `VERSION_CACHE`. Los FCI (`/fci/fondos`, ~30 MB) no se esperan en la página: llegan por streaming.
   - Desde la cartera, `liquidez` y `fija` llevan al comparador con `?usd=` (se pasa a ARS con el dólar MEP).
+- **Biblioteca de instrumentos** (`/instrumentos` y `/instrumentos/[ticker]`, fichas estáticas): CEDEARs, acciones del panel líder, bonos y ONs, como ejemplos EDUCATIVOS por categoría de la cartera.
+  - `lib/plataforma/instrumentos/` → `datos.ts` (lista curada, versionada en el repo; `LISTA_EN_BORRADOR` muestra un aviso), `tipos.ts` (schema zod), `catalogo.ts` (carga validada por ítem, filtros, `ejemplosPara(categoria, perfil)`), `textos.ts` (textos legales), `glosario.ts`.
+  - "Ver ejemplos" en la cartera para `variable`, `dividendos` y `fija`; ordena por el riesgo propio del perfil. Los tests exigen 3-5 ejemplos en todas las combinaciones, nada de riesgo alto para Conservador y ningún texto del tipo "comprá" / "te recomendamos".
+  - El botón de la ficha abre FinBot con una pregunta precargada vía `lib/finbot/abrir.ts` (evento de `window`; no la envía).
+  - Precio: "No disponible" a propósito. Mostrar precios de BYMA en un producto comercial requiere licencia de Market Data de BYMA (marketdata@byma.com.ar), venga de donde venga el dato.
 
 ## Decisiones de producto que el código respeta
 
@@ -42,7 +47,7 @@ Next.js 16 (App Router) · React 19 · Tailwind 4 + shadcn/ui · Supabase · Gem
 
 ## Hoja de ruta (en orden)
 
-1. ✅ **Login con Supabase Auth** (email + contraseña, confirmación por email). Hecho: `proxy.ts` (refresca sesión y protege `/dashboard`, `/comparador`, `/aprender`, `/onboarding`), `lib/supabase/*`, `lib/auth/rutas.ts` (reglas puras + tests), páginas `/login` y `/registro`, `/auth/callback` y `/auth/salir` (POST). **Sin las variables `NEXT_PUBLIC_SUPABASE_*` la app corre en "modo sin cuenta"** (no protege nada, plan en `localStorage`). Falta: probarlo contra un proyecto Supabase real.
+1. ✅ **Login con Supabase Auth** (email + contraseña, confirmación por email). Hecho: `proxy.ts` (refresca sesión y protege las rutas de `RUTAS_PROTEGIDAS`: `/dashboard`, `/comparador`, `/instrumentos`, `/aprender`, `/onboarding`), `lib/supabase/*`, `lib/auth/rutas.ts` (reglas puras + tests), páginas `/login` y `/registro`, `/auth/callback` y `/auth/salir` (POST). **Sin las variables `NEXT_PUBLIC_SUPABASE_*` la app corre en "modo sin cuenta"** (no protege nada, plan en `localStorage`). Falta: probarlo contra un proyecto Supabase real.
 2. ✅ **Plan guardado en Supabase** (`planes_inversion`) cuando hay login: `usePlan()` (en `store.ts`) elige Supabase (`remoto.ts`) o `localStorage` según `AUTH_CONFIGURADA`. Rehacer el cuestionario archiva el plan anterior (historial). Un plan local previo se pasa a la cuenta la primera vez. Falta: probarlo contra el proyecto Supabase real.
 3. **Límites Free/Plus en `/api/chat`** con `uso_finbot` (escribe solo el servidor con service role) y reemplazar `rate-limit.ts` (en memoria, por IP).
 4. Pantalla de planes y cuenta.
@@ -55,4 +60,5 @@ Next.js 16 (App Router) · React 19 · Tailwind 4 + shadcn/ui · Supabase · Gem
 - Los mensajes de límite de FinBot dicen "de la demo" (texto heredado). Se reemplazan al implementar los límites por plan.
 - `npm run lint` apunta a `eslint .` pero eslint no está instalado como dependencia.
 - Comparador: completar `ENLACES` en `lib/plataforma/comparador/enlaces.ts` (hoy muchas entidades dicen "Sin link disponible").
+- Biblioteca: verificar los datos marcados `TODO-VERIFICAR` en `lib/plataforma/instrumentos/datos.ts` (ratios de CEDEARs, series reales de las ONs `YPF-ON`/`PAMP-ON`, panel líder) y después pasar `LISTA_EN_BORRADOR` a `false`.
 - Aún no hay revisión legal (términos, privacidad, límites de lo que puede decir FinBot); el entregable 2 la contempla.

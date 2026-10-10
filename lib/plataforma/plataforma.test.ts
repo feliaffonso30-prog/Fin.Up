@@ -304,3 +304,19 @@ describe("validación de respuestas", () => {
     );
   });
 });
+
+describe("ejemplos de la biblioteca en la cartera", () => {
+  it("toda parte con 'Ver ejemplos' tiene entre 3 y 5, y el conservador nunca ve riesgo alto", async () => {
+    const { CATEGORIAS_CON_EJEMPLOS, ejemplosPara } = await import("./instrumentos/catalogo");
+    for (const r of todasLasCombinaciones()) {
+      const plan = generarPlan(r, FECHA);
+      for (const p of plan.posiciones) {
+        if (!CATEGORIAS_CON_EJEMPLOS.includes(p.categoria)) continue;
+        const ej = ejemplosPara(p.categoria, plan.perfil.perfil);
+        expect(ej.length).toBeGreaterThanOrEqual(3);
+        expect(ej.length).toBeLessThanOrEqual(5);
+        if (plan.perfil.perfil === "Conservador") expect(ej.some((i) => i.riesgo === "alto")).toBe(false);
+      }
+    }
+  });
+});
