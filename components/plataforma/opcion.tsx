@@ -45,9 +45,26 @@ export function Opcion({
   );
 }
 
-export function GrupoOpciones({ etiqueta, children }: { etiqueta: string; children: ReactNode }) {
+// `labelledBy` apunta a la pregunta visible; `etiqueta` queda como nombre de respaldo.
+export function GrupoOpciones({
+  etiqueta,
+  labelledBy,
+  describedBy,
+  children,
+}: {
+  etiqueta?: string;
+  labelledBy?: string;
+  describedBy?: string;
+  children: ReactNode;
+}) {
   return (
-    <div role="radiogroup" aria-label={etiqueta} className="space-y-2">
+    <div
+      role="radiogroup"
+      aria-label={labelledBy ? undefined : etiqueta}
+      aria-labelledby={labelledBy}
+      aria-describedby={describedBy}
+      className="space-y-2"
+    >
       {children}
     </div>
   );

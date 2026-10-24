@@ -42,6 +42,8 @@ export function VerEjemplos({ categoria, perfil }: { categoria: Categoria; perfi
                 <span className="min-w-0 flex-1">
                   <span className="line-clamp-2 text-xs font-medium leading-snug">{i.nombre}</span>
                   <span className="block truncate text-[11px] text-muted-foreground">{i.tipo}</span>
+                  {/* En celular el riesgo va debajo del tipo para no apretar el nombre; en sm+ queda a la derecha. */}
+                  <BadgeRiesgo riesgo={i.riesgo} className="mt-1 sm:hidden" />
                 </span>
                 <BadgeRiesgo riesgo={i.riesgo} className="hidden sm:inline-flex" />
                 <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />

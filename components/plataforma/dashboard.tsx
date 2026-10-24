@@ -116,7 +116,9 @@ function Cartera({ plan }: { plan: Plan }) {
 
       <Card className="border-border bg-card/70">
         <CardHeader>
-          <CardTitle className="text-xl">Cómo se reparte tu plata</CardTitle>
+          <CardTitle className="text-xl">
+            <h2>Cómo se reparte tu plata</h2>
+          </CardTitle>
           <CardDescription>Tocá cada parte para ver qué es, por qué está en tu cartera y qué puede salir mal.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-5">
@@ -145,7 +147,7 @@ function Cartera({ plan }: { plan: Plan }) {
                   <Bloque titulo="Su ventaja">{p.ventaja}</Bloque>
                   <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-3">
                     <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-amber-300">Qué puede salir mal</p>
-                    <p className="text-xs leading-relaxed text-amber-100/90">{p.queSalePuedeMal}</p>
+                    <p className="text-sm leading-relaxed text-amber-100/90">{p.queSalePuedeMal}</p>
                     <p className="mt-2 text-xs text-amber-200/70">Volatilidad: {p.volatilidad.toLowerCase()}</p>
                   </div>
                   <VerDondeConviene posicion={p} />
@@ -174,7 +176,11 @@ function Cartera({ plan }: { plan: Plan }) {
 
       <Card className="border-border bg-card/70">
         <CardHeader>
-          <CardTitle className="text-xl">Proyección a {plan.anios} {plan.anios === 1 ? "año" : "años"}</CardTitle>
+          <CardTitle className="text-xl">
+            <h2>
+              Proyección a {plan.anios} {plan.anios === 1 ? "año" : "años"}
+            </h2>
+          </CardTitle>
           <CardDescription>
             {sinMontos || !ultimo
               ? "Cargá un capital inicial o un aporte mensual al rehacer tu perfil para ver la proyección."
@@ -193,7 +199,9 @@ function Cartera({ plan }: { plan: Plan }) {
 
       <Card className="border-border bg-card/70">
         <CardHeader>
-          <CardTitle className="text-xl">Por qué te salió este perfil</CardTitle>
+          <CardTitle className="text-xl">
+            <h2>Por qué te salió este perfil</h2>
+          </CardTitle>
           <CardDescription>Puntaje de {perfil.puntaje} sobre 100 según tus respuestas.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">

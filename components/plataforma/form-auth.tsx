@@ -28,9 +28,9 @@ export function FormAuth({ modo, siguiente, errorEnlace }: Props) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Cuentas no configuradas</CardTitle>
+          <CardTitle>Por ahora podés usar FinUp sin cuenta</CardTitle>
           <CardDescription>
-            Faltan las variables de Supabase en este entorno. Mientras tanto podés usar la plataforma sin cuenta: tu plan se guarda solo en este navegador.
+            Tu plan se guarda solo en este navegador: si borrás los datos o cambiás de dispositivo, se pierde.
           </CardDescription>
         </CardHeader>
         <CardContent>

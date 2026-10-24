@@ -13,6 +13,7 @@ import { GrupoOpciones, Opcion } from "@/components/plataforma/opcion";
 import { DESCRIPCION_PERFIL, validarRespuestas } from "@/lib/plataforma/perfil";
 import { generarPlan } from "@/lib/plataforma/plan";
 import { URL_LANDING } from "@/lib/config";
+import { AUTH_CONFIGURADA } from "@/lib/supabase/config";
 import { usePlan } from "@/lib/plataforma/store";
 import type { Plan, Respuestas } from "@/lib/plataforma/tipos";
 
@@ -27,6 +28,11 @@ const PASOS: { titulo: string; ayuda: string; campos: Clave[] }[] = [
   { titulo: "¿Cómo reaccionás ante el riesgo?", ayuda: "No hay respuestas buenas o malas. Conocerte bien evita decisiones por pánico.", campos: ["reaccionCaida", "prioridad"] },
   { titulo: "¿Cuánto sabés de inversiones?", ayuda: "Sirve para explicarte las cosas al nivel justo.", campos: ["conocimiento"] },
 ];
+
+// Pasos cuyo input recibe el foco con autoFocus: ahí no se mueve el foco al título.
+const PASOS_CON_AUTOFOCUS = [0, 3];
+// Clases visuales de components/ui/label.tsx, para preguntas que no son un <label>.
+const CLASES_PREGUNTA = "flex items-center gap-2 text-sm leading-none font-medium select-none";
 
 const numero = (s: string) => (s.trim() === "" ? Number.NaN : Number(s));
 
@@ -69,6 +75,18 @@ export function Onboarding() {
   const enResultado = paso === PASOS.length;
   const def = PASOS[Math.min(paso, PASOS.length - 1)];
   const err = (c: Clave) => (intento ? errores[c] : undefined);
+
+  // Al cambiar de paso, el foco va al título para que el lector de pantalla anuncie la pregunta nueva.
+  // Se compara con el paso anterior (no con un flag de "primer render") para no disparar en el montaje,
+  // tampoco con el doble efecto de StrictMode.
+  const tituloRef = useRef<HTMLHeadingElement>(null);
+  const pasoPrevio = useRef(paso);
+  useEffect(() => {
+    if (pasoPrevio.current === paso) return;
+    pasoPrevio.current = paso;
+    if (paso >= PASOS.length || PASOS_CON_AUTOFOCUS.includes(paso)) return;
+    tituloRef.current?.focus();
+  }, [paso]);
 
   function siguiente() {
     if (def.campos.some((c) => errores[c])) {
@@ -123,7 +141,11 @@ export function Onboarding() {
                 <Progress value={(paso / PASOS.length) * 100} aria-label="Avance del cuestionario" />
               </div>
               <div>
-                <CardTitle className="text-2xl font-bold">{def.titulo}</CardTitle>
+                <CardTitle className="text-2xl font-bold">
+                  <h1 id="titulo-paso" ref={tituloRef} tabIndex={-1} className="outline-none">
+                    {def.titulo}
+                  </h1>
+                </CardTitle>
                 <CardDescription className="mt-1.5 text-muted-foreground">{def.ayuda}</CardDescription>
               </div>
             </CardHeader>
@@ -154,7 +176,7 @@ export function Onboarding() {
                 )}
 
                 {paso === 1 && (
-                  <GrupoOpciones etiqueta="Objetivo">
+                  <GrupoOpciones labelledBy="titulo-paso">
                     <Opcion seleccionada={resp.objetivo === "Preservar capital"} onClick={() => set("objetivo", "Preservar capital")} titulo="Preservar mi capital" detalle="Que mi plata no pierda valor. No busco crecer rápido." />
                     <Opcion seleccionada={resp.objetivo === "Crecimiento"} onClick={() => set("objetivo", "Crecimiento")} titulo="Hacerla crecer" detalle="Que mi plata crezca a largo plazo, aunque haya altibajos." />
                     <Opcion seleccionada={resp.objetivo === "Generar ingresos"} onClick={() => set("objetivo", "Generar ingresos")} titulo="Generar ingresos" detalle="Cobrar rentas o dividendos de forma periódica." />
@@ -163,7 +185,7 @@ export function Onboarding() {
                 )}
 
                 {paso === 2 && (
-                  <GrupoOpciones etiqueta="Plazo">
+                  <GrupoOpciones labelledBy="titulo-paso">
                     <Opcion seleccionada={resp.horizonte === "menos-2"} onClick={() => set("horizonte", "menos-2")} titulo="En menos de 2 años" detalle="Para algo cercano: un viaje, una mudanza, un estudio." />
                     <Opcion seleccionada={resp.horizonte === "2-5"} onClick={() => set("horizonte", "2-5")} titulo="Entre 2 y 5 años" />
                     <Opcion seleccionada={resp.horizonte === "5-10"} onClick={() => set("horizonte", "5-10")} titulo="Entre 5 y 10 años" />
@@ -186,9 +208,9 @@ export function Onboarding() {
                 {paso === 4 && (
                   <div className="space-y-6">
                     <div className="space-y-2">
-                      <Label>¿Tenés un fondo de emergencia?</Label>
-                      <p className="text-xs text-muted-foreground">Plata guardada para imprevistos, equivalente a 3 meses de gastos o más.</p>
-                      <GrupoOpciones etiqueta="Fondo de emergencia">
+                      <p id="pregunta-fondo" className={CLASES_PREGUNTA}>¿Tenés un fondo de emergencia?</p>
+                      <p id="ayuda-fondo" className="text-xs text-muted-foreground">Plata guardada para imprevistos, equivalente a 3 meses de gastos o más.</p>
+                      <GrupoOpciones labelledBy="pregunta-fondo" describedBy="ayuda-fondo">
                         <Opcion seleccionada={resp.fondoEmergencia === "si"} onClick={() => set("fondoEmergencia", "si")} titulo="Sí, ya lo tengo" />
                         <Opcion seleccionada={resp.fondoEmergencia === "parcial"} onClick={() => set("fondoEmergencia", "parcial")} titulo="Tengo una parte" />
                         <Opcion seleccionada={resp.fondoEmergencia === "no"} onClick={() => set("fondoEmergencia", "no")} titulo="Todavía no" />
@@ -196,9 +218,9 @@ export function Onboarding() {
                       </GrupoOpciones>
                     </div>
                     <div className="space-y-2">
-                      <Label>¿Tenés deudas con tasas altas?</Label>
-                      <p className="text-xs text-muted-foreground">Por ejemplo, saldo de tarjeta financiado o préstamos personales caros.</p>
-                      <GrupoOpciones etiqueta="Deudas">
+                      <p id="pregunta-deudas" className={CLASES_PREGUNTA}>¿Tenés deudas con tasas altas?</p>
+                      <p id="ayuda-deudas" className="text-xs text-muted-foreground">Por ejemplo, saldo de tarjeta financiado o préstamos personales caros.</p>
+                      <GrupoOpciones labelledBy="pregunta-deudas" describedBy="ayuda-deudas">
                         <Opcion seleccionada={resp.deudasCaras === false} onClick={() => set("deudasCaras", false)} titulo="No" />
                         <Opcion seleccionada={resp.deudasCaras === true} onClick={() => set("deudasCaras", true)} titulo="Sí" />
                         <MensajeError texto={err("deudasCaras")} />
@@ -210,8 +232,8 @@ export function Onboarding() {
                 {paso === 5 && (
                   <div className="space-y-6">
                     <div className="space-y-2">
-                      <Label>Invertiste y, en unos meses, tu inversión cae 20%. ¿Qué harías?</Label>
-                      <GrupoOpciones etiqueta="Reacción ante una caída">
+                      <p id="pregunta-caida" className={CLASES_PREGUNTA}>Invertiste y, en unos meses, tu inversión cae 20%. ¿Qué harías?</p>
+                      <GrupoOpciones labelledBy="pregunta-caida">
                         <Opcion seleccionada={resp.reaccionCaida === "vendo-todo"} onClick={() => set("reaccionCaida", "vendo-todo")} titulo="Vendería todo para no perder más" />
                         <Opcion seleccionada={resp.reaccionCaida === "vendo-parte"} onClick={() => set("reaccionCaida", "vendo-parte")} titulo="Vendería una parte para sentirme más tranquilo" />
                         <Opcion seleccionada={resp.reaccionCaida === "espero"} onClick={() => set("reaccionCaida", "espero")} titulo="Esperaría sin hacer nada" />
@@ -220,8 +242,8 @@ export function Onboarding() {
                       </GrupoOpciones>
                     </div>
                     <div className="space-y-2">
-                      <Label>¿Qué te importa más?</Label>
-                      <GrupoOpciones etiqueta="Prioridad">
+                      <p id="pregunta-prioridad" className={CLASES_PREGUNTA}>¿Qué te importa más?</p>
+                      <GrupoOpciones labelledBy="pregunta-prioridad">
                         <Opcion seleccionada={resp.prioridad === "seguridad"} onClick={() => set("prioridad", "seguridad")} titulo="No perder lo que ya tengo" />
                         <Opcion seleccionada={resp.prioridad === "equilibrio"} onClick={() => set("prioridad", "equilibrio")} titulo="Un equilibrio entre cuidar mi plata y hacerla crecer" />
                         <Opcion seleccionada={resp.prioridad === "crecimiento"} onClick={() => set("prioridad", "crecimiento")} titulo="Que crezca lo máximo posible, aunque haya subas y bajas" />
@@ -232,7 +254,7 @@ export function Onboarding() {
                 )}
 
                 {paso === 6 && (
-                  <GrupoOpciones etiqueta="Conocimiento">
+                  <GrupoOpciones labelledBy="titulo-paso">
                     <Opcion seleccionada={resp.conocimiento === "ninguno"} onClick={() => set("conocimiento", "ninguno")} titulo="Recién empiezo" detalle="Casi no sé cómo funcionan las inversiones." />
                     <Opcion seleccionada={resp.conocimiento === "basico"} onClick={() => set("conocimiento", "basico")} titulo="Tengo nociones básicas" detalle="Sé qué es un plazo fijo, una acción o un bono." />
                     <Opcion seleccionada={resp.conocimiento === "intermedio"} onClick={() => set("conocimiento", "intermedio")} titulo="Ya invierto o conozco bastante" detalle="Entiendo conceptos como diversificación o volatilidad." />
@@ -256,7 +278,9 @@ export function Onboarding() {
         )}
 
         <p className="mt-6 text-center text-[11px] leading-snug text-muted-foreground/70">
-          Contenido educativo, no es asesoramiento financiero. Tus respuestas se guardan solo en este dispositivo.
+          {AUTH_CONFIGURADA
+            ? "Contenido educativo, no es asesoramiento financiero. Tus respuestas se guardan en tu cuenta para que puedas verlas desde cualquier dispositivo."
+            : "Contenido educativo, no es asesoramiento financiero. Tus respuestas se guardan solo en este dispositivo."}
         </p>
       </main>
     </div>
@@ -277,12 +301,19 @@ function Resultado({
   errorGuardado: boolean;
 }) {
   const { perfil } = plan;
+  // Al llegar al resultado, el foco va a su título.
+  const tituloRef = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    tituloRef.current?.focus();
+  }, []);
   return (
     <Card className="animate-in fade-in border-border bg-card shadow-2xl shadow-black/40 duration-500">
       <CardHeader className="space-y-3">
         <p className="text-xs font-semibold uppercase tracking-widest text-blue-400">Tu perfil de inversor</p>
         <CardTitle className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-4xl font-extrabold text-transparent">
-          {perfil.perfil}
+          <h1 ref={tituloRef} tabIndex={-1} className="outline-none">
+            {perfil.perfil}
+          </h1>
         </CardTitle>
         <CardDescription className="text-sm leading-relaxed text-muted-foreground">
           {DESCRIPCION_PERFIL[perfil.perfil]}

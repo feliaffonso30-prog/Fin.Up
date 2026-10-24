@@ -1,7 +1,14 @@
 "use client";
 
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
-import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
+import {
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
 import { usd } from "@/lib/plataforma/formato";
 import type { PuntoProyeccion } from "@/lib/plataforma/tipos";
 
@@ -17,7 +24,7 @@ const abreviar = (n: number) =>
 
 export function GraficoProyeccion({ datos }: { datos: PuntoProyeccion[] }) {
   return (
-    <ChartContainer config={config} className="h-64 w-full">
+    <ChartContainer config={config} className="h-72 w-full">
       <LineChart data={datos} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
         <CartesianGrid vertical={false} strokeOpacity={0.15} />
         <XAxis dataKey="anio" tickLine={false} axisLine={false} interval="preserveStartEnd" minTickGap={24} tickFormatter={(v) => `Año ${v}`} />
@@ -35,6 +42,8 @@ export function GraficoProyeccion({ datos }: { datos: PuntoProyeccion[] }) {
             />
           }
         />
+        {/* Leyenda visible: en celular el tooltip requiere tocar, así que las líneas no pueden depender solo de él */}
+        <ChartLegend verticalAlign="bottom" content={<ChartLegendContent className="flex-wrap gap-x-4 gap-y-1" />} />
         <Line dataKey="aportado" type="monotone" stroke="var(--color-aportado)" strokeWidth={2} strokeDasharray="5 5" dot={false} />
         <Line dataKey="bajo" type="monotone" stroke="var(--color-bajo)" strokeWidth={2.5} dot={false} />
         <Line dataKey="alto" type="monotone" stroke="var(--color-alto)" strokeWidth={2.5} dot={false} />

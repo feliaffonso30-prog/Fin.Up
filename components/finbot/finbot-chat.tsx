@@ -61,10 +61,44 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
   const finRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const botonRef = useRef<HTMLButtonElement>(null);
+  // Solo devolvemos el foco al botón flotante cuando el usuario cerró el panel (no en el primer render).
+  const devolverFocoRef = useRef(false);
+  // Texto completo de la última respuesta, para lectores de pantalla (no se anuncia token por token).
+  const [anuncio, setAnuncio] = useState("");
 
   useEffect(() => {
-    finRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    const reducir = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    finRef.current?.scrollIntoView({ behavior: reducir ? "auto" : "smooth", block: "end" });
   }, [mensajes, estado]);
+
+  function abrir() {
+    setAbierto(true);
+    requestAnimationFrame(() => inputRef.current?.focus());
+  }
+
+  function cerrar() {
+    devolverFocoRef.current = true;
+    setAbierto(false);
+  }
+
+  // Al cerrar, el botón flotante se vuelve a montar: le devolvemos el foco después del render.
+  useEffect(() => {
+    if (!abierto && devolverFocoRef.current) {
+      devolverFocoRef.current = false;
+      botonRef.current?.focus();
+    }
+  }, [abierto]);
+
+  // Esc cierra el panel; el listener existe solo mientras está abierto.
+  useEffect(() => {
+    if (!abierto) return;
+    const alTeclear = (e: KeyboardEvent) => {
+      if (e.key === "Escape") cerrar();
+    };
+    window.addEventListener("keydown", alTeclear);
+    return () => window.removeEventListener("keydown", alTeclear);
+  }, [abierto]);
 
   useEffect(() => () => abortRef.current?.abort(), []);
 
@@ -89,14 +123,19 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
     setInput("");
     setCargando(true);
     setEstado("Pensando…");
+    setAnuncio("");
 
-    const agregar = (t: string) =>
+    let respuesta = "";
+    let abortado = false;
+    const agregar = (t: string) => {
+      respuesta += t;
       setMensajes((prev) => {
         const copia = [...prev];
         const ultimo = copia[copia.length - 1];
         copia[copia.length - 1] = { ...ultimo, content: ultimo.content + t };
         return copia;
       });
+    };
 
     abortRef.current = new AbortController();
     try {
@@ -133,10 +172,13 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
         }
       }
     } catch (e) {
-      if ((e as Error).name !== "AbortError") agregar("No pude conectarme. Revisá tu conexión y probá de nuevo.");
+      if ((e as Error).name === "AbortError") abortado = true;
+      else agregar("No pude conectarme. Revisá tu conexión y probá de nuevo.");
     } finally {
       setCargando(false);
       setEstado(null);
+      // Un solo anuncio con la respuesta completa (o el mensaje de error) cuando termina el stream.
+      if (!abortado && respuesta) setAnuncio(respuesta);
       // Si el asistente no llegó a responder, sacamos la burbuja vacía.
       setMensajes((prev) => (prev.at(-1)?.content ? prev : prev.slice(0, -1)));
     }
@@ -144,9 +186,14 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
 
   return (
     <>
+      <div aria-live="polite" className="sr-only">
+        {anuncio}
+      </div>
+
       {!abierto && (
         <button
-          onClick={() => setAbierto(true)}
+          ref={botonRef}
+          onClick={abrir}
           className="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 px-4 py-3 text-sm font-semibold text-white shadow-xl shadow-blue-500/20 transition-transform hover:scale-105 cursor-pointer"
         >
           <Bot className="h-5 w-5" />
@@ -155,20 +202,24 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
       )}
 
       {abierto && (
-        <div className="fixed inset-x-3 bottom-3 z-50 flex h-[min(620px,calc(100dvh-1.5rem))] flex-col overflow-hidden rounded-2xl border border-border bg-card/95 shadow-2xl shadow-black/50 backdrop-blur-md sm:inset-x-auto sm:right-5 sm:bottom-5 sm:w-[400px] animate-in fade-in slide-in-from-bottom-4 duration-300">
+        <div
+          role="dialog"
+          aria-labelledby="finbot-titulo"
+          className="fixed inset-x-3 bottom-3 z-50 flex h-[min(620px,calc(100dvh-1.5rem))] flex-col overflow-hidden rounded-2xl border border-border bg-card/95 shadow-2xl shadow-black/50 backdrop-blur-md sm:inset-x-auto sm:right-5 sm:bottom-5 sm:w-[400px] animate-in fade-in slide-in-from-bottom-4 duration-300"
+        >
           <header className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
             <div className="flex items-center gap-2.5 min-w-0">
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 text-white">
                 <Bot className="h-4 w-4" />
               </div>
               <div className="min-w-0">
-                <p className="text-sm font-semibold leading-tight">FinBot</p>
+                <p id="finbot-titulo" className="text-sm font-semibold leading-tight">FinBot</p>
                 <p className="text-[11px] text-muted-foreground leading-tight truncate">
-                  {contexto ? `Conoce tu estrategia ${contexto.perfil.toLowerCase()}` : "Mercado en vivo y conceptos simples"}
+                  {contexto ? `Conoce tu perfil ${contexto.perfil.toLowerCase()}` : "Mercado en vivo y conceptos simples"}
                 </p>
               </div>
             </div>
-            <button onClick={() => setAbierto(false)} aria-label="Cerrar chat" className="rounded-md p-1 text-muted-foreground hover:text-foreground cursor-pointer">
+            <button onClick={cerrar} aria-label="Cerrar chat" className="rounded-md p-1 text-muted-foreground hover:text-foreground cursor-pointer">
               <X className="h-4 w-4" />
             </button>
           </header>
@@ -207,13 +258,17 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
               ) : null,
             )}
 
-            {estado && (
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Loader2 className="h-3.5 w-3.5 animate-spin text-cyan-400" />
-                {estado}
-              </div>
-            )}
-            <div ref={finRef} />
+            {/* Siempre en el DOM para que el lector de pantalla detecte los cambios. Incluye el ancla
+                de scroll y su propio space-y-3 para que el espaciado quede igual que antes. */}
+            <div role="status" aria-live="polite" className="space-y-3">
+              {estado && (
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin text-cyan-400" />
+                  {estado}
+                </div>
+              )}
+              <div ref={finRef} />
+            </div>
           </div>
 
           <form
@@ -226,6 +281,7 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
             <div className="flex items-center gap-2">
               <input
                 ref={inputRef}
+                aria-label="Escribí tu pregunta para FinBot"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 maxLength={2000}

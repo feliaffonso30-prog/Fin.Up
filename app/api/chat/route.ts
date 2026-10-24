@@ -91,7 +91,8 @@ export async function POST(req: Request) {
 
       try {
         if (!process.env.GEMINI_API_KEY) {
-          send({ type: "error", message: "El chat no está configurado: falta la variable GEMINI_API_KEY (en .env.local o en las Environment Variables de Vercel)." });
+          console.error("[finbot] falta GEMINI_API_KEY (en .env.local o en las Environment Variables de Vercel)");
+          send({ type: "error", message: "FinBot no está disponible en este momento. Probá más tarde." });
           return;
         }
 
@@ -186,8 +187,10 @@ export async function POST(req: Request) {
           console.error("[finbot]", err);
           let message = "Tuve un problema para responder. Probá de nuevo en un momento.";
           if (saturado(err)) message = "Llegamos al límite gratuito de consultas por ahora. Esperá un minuto y volvé a intentar.";
-          else if (err instanceof ApiError && (err.status === 400 || err.status === 403) && /API key/i.test(err.message))
-            message = "La API key de Gemini no es válida. Revisá GEMINI_API_KEY en .env.local.";
+          else if (err instanceof ApiError && (err.status === 400 || err.status === 403) && /API key/i.test(err.message)) {
+            console.error("[finbot] la API key de Gemini no es válida: revisá GEMINI_API_KEY");
+            message = "FinBot no está disponible en este momento. Probá más tarde.";
+          }
           // Si el stream se cortó a mitad de respuesta, el aviso va en un párrafo aparte.
           if (huboTexto) message = `\n\n(Se cortó la respuesta. ${message})`;
           send({ type: "error", message });
