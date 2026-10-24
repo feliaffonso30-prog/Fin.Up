@@ -27,14 +27,14 @@ export function Opcion({
       className={cn(
         "flex w-full cursor-pointer items-start justify-between gap-3 rounded-xl border px-4 py-3 text-left transition-all",
         seleccionada
-          ? "border-blue-400 bg-gradient-to-r from-blue-600/90 to-cyan-600/90 text-white shadow-lg shadow-blue-500/10"
-          : "border-slate-600 bg-transparent text-slate-200 hover:border-blue-400",
+          ? "border-ring bg-primary text-primary-foreground shadow-lg shadow-blue-500/10"
+          : "border-input bg-transparent text-slate-200 hover:border-ring",
       )}
     >
       <span className="min-w-0">
         <span className="block text-sm font-semibold">{titulo}</span>
         {detalle && (
-          <span className={cn("mt-0.5 block text-xs leading-snug", seleccionada ? "text-white/85" : "text-muted-foreground")}>
+          <span className={cn("mt-0.5 block text-xs leading-snug", seleccionada ? "text-primary-foreground" : "text-muted-foreground")}>
             {detalle}
           </span>
         )}

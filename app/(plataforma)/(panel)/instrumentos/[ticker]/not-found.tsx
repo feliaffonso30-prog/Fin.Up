@@ -13,7 +13,7 @@ export default function NoEncontrado() {
         La biblioteca es chica a propósito: solo incluye instrumentos muy negociados que sirven para explicar cada parte de una cartera. Revisá
         que el ticker esté bien escrito o buscalo en el listado.
       </p>
-      <Button asChild className="mt-6 bg-gradient-to-r from-blue-500 to-cyan-500 font-semibold text-white hover:opacity-95">
+      <Button asChild className="mt-6 font-semibold">
         <Link href="/instrumentos">Ver todos los instrumentos</Link>
       </Button>
     </div>

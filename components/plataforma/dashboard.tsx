@@ -55,7 +55,7 @@ function SinPlan() {
       <p className="mt-2 text-sm text-muted-foreground">
         Respondé unas pocas preguntas y te mostramos una cartera simple, explicando el porqué de cada parte y qué puede salir mal.
       </p>
-      <Button asChild className="mt-6 bg-gradient-to-r from-blue-500 to-cyan-500 font-semibold text-white hover:opacity-95">
+      <Button asChild className="mt-6 font-semibold">
         <Link href="/onboarding">Armar mi perfil</Link>
       </Button>
     </div>
@@ -72,7 +72,7 @@ function Cartera({ plan }: { plan: Plan }) {
     <div className="space-y-8">
       <header className="space-y-2">
         <p className="text-xs font-semibold uppercase tracking-widest text-blue-400">Tu cartera sugerida</p>
-        <h1 className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-3xl font-extrabold text-transparent md:text-4xl">
+        <h1 className="text-3xl font-extrabold text-foreground md:text-4xl">
           Perfil {perfil.perfil.toLowerCase()}
         </h1>
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">{DESCRIPCION_PERFIL[perfil.perfil]}</p>

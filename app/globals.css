@@ -15,28 +15,34 @@
   --popover: #131a2c;
   --popover-foreground: #f8fafc;
   
-  /* Color Principal: Azul Eléctrico Vibrante (para botones activos y perfiles) */
-  --primary: #3b82f6; /* blue-500 */
+  /* Color Principal: relleno de las acciones principales. #2563eb deja el texto blanco en 5,17:1 (AA).
+     El azul de marca #3b82f6 sigue en --chart-1 y en los acentos. */
+  --primary: #2563eb; /* blue-600 */
   --primary-foreground: #ffffff;
+  --primary-hover: #3069ee; /* un poco más claro: 4,79:1 con texto blanco */
+  --primary-active: #1d4ed8; /* blue-700: 6,7:1 con texto blanco */
   
   /* Color Secundario: Azul noche profundo para elementos inactivos o fondos sutiles */
   --secondary: #1e293b; /* slate-800 */
   --secondary-foreground: #60a5fa; /* blue-400 */
   
   --muted: #1e293b;
-  --muted-foreground: #bae6fd; /* slate-500 para textos secundarios menos importantes */
+  --muted-foreground: #a8bcd9; /* texto secundario: 8,6:1 sobre el fondo y 4,8:1 con /70 en avisos legales */
   
   /* Color de Acento: Cyan brillante (perfecto para destacar los porcentajes de la estrategia o bordes activos) */
   --accent: #06b6d4; /* cyan-500 */
   --accent-foreground: #0b0f19;
   
-  --destructive: #ef4444;
+  /* Errores: #f87171 se lee a 6:1 sobre el fondo (#ef4444 quedaba en 4,44:1) */
+  --destructive: #f87171;
   --destructive-foreground: #ffffff;
-  
-  /* Bordes y líneas divisorias sutiles */
-  --border: #1e293b; 
-  --input: #0b0f19;
-  --ring: rgba(59, 130, 246, 0.4); /* Brillo azul eléctrico para cuando hacés foco */
+
+  /* Bordes y líneas divisorias: separan tarjetas y bloques del fondo sin recargar (1,63:1) */
+  --border: #2a3d7a;
+  /* Borde de campos, selects y switch apagado: 3,4:1 sobre las tarjetas (WCAG 1.4.11) */
+  --input: #566b98;
+  /* Foco del teclado: sólido, 6,6:1 sobre el fondo */
+  --ring: #60a5fa;
   
   --radius: 1rem; /* Bordes redondeados de 16px, muy suaves */
 
@@ -96,6 +102,8 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-active: var(--primary-active);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -129,7 +137,13 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring;
+  }
+  /* Foco visible y coherente para controles propios (opciones, navegación, FinBot).
+     Los componentes de ui/ usan su propio anillo con outline-none, que tiene prioridad. */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
   }
   body {
     @apply bg-background text-foreground;

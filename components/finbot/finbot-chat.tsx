@@ -194,7 +194,7 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
         <button
           ref={botonRef}
           onClick={abrir}
-          className="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 px-4 py-3 text-sm font-semibold text-white shadow-xl shadow-blue-500/20 transition-transform hover:scale-105 cursor-pointer"
+          className="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-full bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary-hover active:bg-primary-active shadow-xl shadow-blue-500/20 transition-transform hover:scale-105 cursor-pointer"
         >
           <Bot className="h-5 w-5" />
           Preguntale a FinBot
@@ -248,7 +248,7 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
 
             {mensajes.map((m, i) =>
               m.role === "user" ? (
-                <div key={i} className="ml-auto max-w-[85%] w-fit rounded-2xl rounded-br-sm bg-gradient-to-r from-blue-600 to-cyan-600 px-3.5 py-2 text-white break-words">
+                <div key={i} className="ml-auto max-w-[85%] w-fit rounded-2xl rounded-br-sm bg-primary px-3.5 py-2 text-primary-foreground break-words">
                   {m.content}
                 </div>
               ) : m.content ? (
@@ -286,13 +286,13 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
                 onChange={(e) => setInput(e.target.value)}
                 maxLength={2000}
                 placeholder="Escribí tu pregunta…"
-                className="min-w-0 flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none placeholder:text-muted-foreground/50 focus-visible:ring-2 focus-visible:ring-primary/50"
+                className="min-w-0 flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
               />
               <button
                 type="submit"
                 disabled={cargando || !input.trim()}
                 aria-label="Enviar"
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-cyan-500 text-white disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground hover:bg-primary-hover active:bg-primary-active disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
               >
                 <Send className="h-4 w-4" />
               </button>

@@ -84,7 +84,7 @@ export function Comparador({ datos, fci, montoUrl, usdUrl, tabUrl }: Props) {
     <div className="space-y-6">
       <header className="space-y-2">
         <p className="text-xs font-semibold uppercase tracking-widest text-blue-400">Comparador</p>
-        <h1 className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-3xl font-extrabold text-transparent md:text-4xl">
+        <h1 className="text-3xl font-extrabold text-foreground md:text-4xl">
           Alternativas en pesos
         </h1>
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">

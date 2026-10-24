@@ -266,7 +266,7 @@ export function Onboarding() {
                   <Button type="button" variant="ghost" onClick={volver} disabled={paso === 0} className="cursor-pointer text-muted-foreground">
                     <ArrowLeft className="mr-1 h-4 w-4" /> Atrás
                   </Button>
-                  <Button type="submit" className="cursor-pointer bg-gradient-to-r from-blue-500 to-cyan-500 font-semibold text-white hover:opacity-95">
+                  <Button type="submit" className="cursor-pointer font-semibold">
                     {paso === PASOS.length - 1 ? "Ver mi perfil" : "Siguiente"} <ArrowRight className="ml-1 h-4 w-4" />
                   </Button>
                 </div>
@@ -359,7 +359,7 @@ function Resultado({
           <Button type="button" variant="ghost" onClick={onVolver} className="cursor-pointer text-muted-foreground">
             <ArrowLeft className="mr-1 h-4 w-4" /> Cambiar respuestas
           </Button>
-          <Button type="button" onClick={onContinuar} disabled={guardando} className="cursor-pointer bg-gradient-to-r from-blue-500 to-cyan-500 font-semibold text-white hover:opacity-95">
+          <Button type="button" onClick={onContinuar} disabled={guardando} className="cursor-pointer font-semibold">
             {guardando ? "Guardando…" : "Ver mi cartera"} <ArrowRight className="ml-1 h-4 w-4" />
           </Button>
         </div>
