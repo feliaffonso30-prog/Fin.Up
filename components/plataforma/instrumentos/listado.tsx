@@ -117,7 +117,7 @@ export function ListadoInstrumentos({ instrumentos }: { instrumentos: readonly I
             <h2 id={`cat-${g.categoria}`} className="text-lg font-semibold">
               {NOMBRE_CATEGORIA[g.categoria]}
             </h2>
-            <ul className="grid gap-3 sm:grid-cols-2">
+            <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {g.items.map((i) => (
                 <li key={i.ticker}>
                   <TarjetaInstrumento instrumento={i} />
@@ -140,7 +140,7 @@ function TarjetaInstrumento({ instrumento: i }: { instrumento: Instrumento }) {
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="font-mono text-sm font-bold text-blue-300">{i.ticker}</p>
-          <p className="truncate text-sm font-medium">{i.nombre}</p>
+          <p className="line-clamp-2 text-sm font-medium">{i.nombre}</p>
         </div>
         <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden />
       </div>
