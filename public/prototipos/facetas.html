@@ -1,0 +1,1848 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>FinUp Facetas</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: documento de propuesta en una columna ancha; el prototipo vive en un "banco de pruebas" con conmutadores Actual/Propuesta y Escritorio/Celular. */
+:root {
+  color-scheme: dark;
+  /* Tokens vigentes en FinUp (Etapa 1, ya commiteada) */
+  --bg: #0a1752;
+  --card: #08142e;
+  --border: #2a3d7a;
+  --input: #566b98;
+  --ring: #60a5fa;
+  --primary: #2563eb;
+  --primary-hover: #3069ee;
+  --primary-active: #1d4ed8;
+  --fg: #f9fcfe;
+  --muted: #a8bcd9;
+  --secondary: #1e293b;
+  --accent: #06b6d4;
+  --danger: #f87171;
+  --warn: #fcd34d;
+  --warn-bg: rgba(245, 158, 11, 0.1);
+  --warn-bd: rgba(245, 158, 11, 0.28);
+  /* Tokens propuestos: la paleta de la gema */
+  --gema-1: #0739a3;
+  --gema-2: #1673e0;
+  --gema-3: #3d9cff;
+  --gema-4: #16b4ff;
+  --gema-5: #74dcff;
+  --filo: linear-gradient(90deg, transparent 0%, var(--gema-3) 22%, var(--gema-5) 50%, var(--gema-3) 78%, transparent 100%);
+  --surface-2: #0c1b4a;
+  --halo: rgba(61, 156, 255, 0.16);
+  --riesgo-bajo: #b8e6fe;
+  --riesgo-medio: #fee685;
+  --riesgo-alto: #ff8904;
+  /* Documento */
+  --page: #070f33;
+  --ink-2: #c7d4ea;
+  /* Tipografía */
+  --f-display: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --chamfer: 14px;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--fg);
+  font: 15px/1.6 var(--f-body);
+  -webkit-font-smoothing: antialiased;
+}
+.wrap {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 40px 80px;
+  display: grid;
+  gap: 72px;
+}
+h1, h2, h3, h4 { font-family: var(--f-display); text-wrap: balance; margin: 0; letter-spacing: -0.015em; }
+h2 { font-size: clamp(26px, 3.4vw, 34px); font-weight: 800; }
+h3 { font-size: 19px; font-weight: 700; }
+h4 { font-size: 15px; font-weight: 700; }
+p { margin: 0; }
+.lead { color: var(--ink-2); max-width: 68ch; font-size: 16px; }
+.eyebrow { font: 600 11.5px/1 var(--f-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--gema-3); }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+.num { font-variant-numeric: tabular-nums; }
+section { display: grid; gap: 22px; min-width: 0; }
+.sec-head { display: grid; gap: 10px; }
+a { color: var(--ring); }
+:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+/* ---------- Hero ---------- */
+.hero { position: relative; display: grid; gap: 20px; padding-block: 28px 8px; isolation: isolate; }
+.hero::before {
+  content: ""; position: absolute; z-index: -1; inset: -40px 0 auto auto; width: min(520px, 100%); height: 420px;
+  background: radial-gradient(closest-side, var(--halo), transparent); pointer-events: none;
+}
+.hero h1 { font-size: clamp(36px, 6vw, 64px); font-weight: 800; line-height: 1.02; max-width: 15ch; }
+.hero h1 .dim { color: var(--muted); }
+.hero-gem { position: absolute; right: 0; top: 10px; width: min(300px, 38vw); opacity: 0.95; z-index: -1; }
+.meta-row { display: flex; flex-wrap: wrap; gap: 8px 18px; font: 500 12px/1.4 var(--f-mono); color: var(--muted); letter-spacing: 0.04em; }
+
+/* ---------- Bloques de texto ---------- */
+.cols { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.panel { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 20px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.panel ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; color: var(--ink-2); font-size: 14px; }
+.tag { display: inline-flex; align-items: center; gap: 6px; font: 600 11px/1 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 9px; border-radius: 999px; border: 1px solid var(--border); color: var(--ink-2); width: fit-content; }
+.tag.func { border-color: rgba(248,113,113,.45); color: #fecaca; }
+.tag.est { border-color: rgba(96,165,250,.45); color: #bfdbfe; }
+.mix { display: grid; gap: 10px; }
+.mix-bar { display: flex; height: 14px; border-radius: 999px; overflow: hidden; gap: 3px; }
+.mix-bar span { display: block; height: 100%; }
+.mix-legend { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 13px; color: var(--ink-2); }
+.mix-legend b { font-family: var(--f-display); color: var(--fg); }
+
+/* ---------- Rasgos ---------- */
+.rasgos { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.rasgo { position: relative; background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 18px; display: grid; gap: 10px; align-content: start; overflow: hidden; min-width: 0; }
+.rasgo .demo { height: 86px; border-radius: 12px; background: var(--bg); border: 1px solid var(--border); display: grid; place-items: center; position: relative; overflow: hidden; }
+
+/* ---------- Banco de pruebas ---------- */
+.bench { display: grid; gap: 14px; }
+.controls { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; justify-content: space-between; }
+.seg { display: inline-flex; padding: 3px; gap: 3px; border-radius: 12px; background: var(--secondary); border: 1px solid var(--border); flex-wrap: wrap; }
+.seg button { appearance: none; border: 1px solid transparent; background: transparent; color: var(--muted); font: 600 13px/1 var(--f-body); padding: 9px 13px; border-radius: 9px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--primary); color: #fff; border-color: var(--ring); }
+.seg button:hover:not([aria-pressed="true"]) { color: var(--fg); }
+.stage { border-radius: 22px; border: 1px solid var(--border); background: #050b26; padding: 18px; overflow: hidden; }
+.frame { margin: 0 auto; max-width: 1040px; transition: max-width .35s ease; }
+.stage[data-device="movil"] .frame { max-width: 380px; }
+.stage-note { font-size: 12.5px; color: var(--muted); }
+
+/* Escena de app (común a ambas versiones) */
+.app { background: var(--bg); border-radius: 16px; border: 1px solid #1b2a5e; overflow: hidden; position: relative; }
+.app-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+.app-top .logo { display: flex; align-items: center; gap: 8px; font: 800 17px/1 var(--f-display); letter-spacing: -0.02em; }
+.app-top .logo svg { width: 24px; height: 24px; }
+.app-nav { display: flex; gap: 4px; flex-wrap: wrap; }
+.app-nav span { font-size: 12.5px; padding: 6px 10px; border-radius: 8px; color: var(--muted); }
+.app-nav span.on { background: var(--secondary); color: #60a5fa; font-weight: 600; }
+.app-body { padding: 20px; display: grid; gap: 16px; }
+.stage[data-device="movil"] .app-nav { display: none; }
+.stage[data-device="movil"] .app-body { padding: 14px; }
+.v-prop, .v-act { display: grid; gap: 16px; }
+.bench[data-mode="actual"] .v-prop { display: none; }
+.bench[data-mode="propuesta"] .v-act { display: none; }
+
+/* ----- Versión actual (recreación aproximada tras la Etapa 1) ----- */
+.a-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: #60a5fa; }
+.a-h1 { font: 800 28px/1.15 var(--f-body); }
+.a-card { background: rgba(8,20,46,.7); border: 1px solid var(--border); border-radius: 18px; padding: 18px; display: grid; gap: 12px; }
+.a-tiles { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.a-tile { background: rgba(30,41,59,.4); border: 1px solid var(--border); border-radius: 14px; padding: 14px; display: grid; gap: 4px; }
+.a-tile .l { font-size: 12px; color: var(--muted); }
+.a-tile .v { font: 600 20px/1.2 var(--f-body); }
+.a-tile .n { font-size: 11px; color: var(--muted); }
+.a-bar { display: flex; height: 14px; border-radius: 999px; overflow: hidden; border: 1px solid rgba(42,61,122,.5); }
+.a-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 14px; border: 1px solid var(--border); border-radius: 14px; background: rgba(30,41,59,.3); font-size: 13.5px; }
+.a-row .dot { width: 11px; height: 11px; border-radius: 50%; flex: none; }
+.a-row .pc { font: 600 13px/1 var(--f-mono); padding: 4px 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); }
+.a-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 38px; padding: 0 16px; border-radius: 14px; background: var(--primary); color: #fff; font: 600 14px/1 var(--f-body); border: 0; width: fit-content; }
+.a-badge { display: inline-flex; font-size: 12px; font-weight: 500; padding: 2px 8px; border-radius: 12px; border: 1px solid; }
+
+/* ----- Versión propuesta "Facetas" ----- */
+.p-hero { position: relative; isolation: isolate; border: 1px solid var(--border); background: linear-gradient(180deg, #0b1a4a 0%, var(--card) 70%); padding: 22px; display: grid; gap: 16px; clip-path: polygon(0 0, calc(100% - 34px) 0, 100% 34px, 100% 100%, 0 100%); border-radius: 18px 0 18px 18px; overflow: hidden; }
+.p-hero::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 1px; background: var(--filo); }
+.p-hero::after { content: ""; position: absolute; z-index: -1; right: -60px; top: -80px; width: 320px; height: 320px; background: radial-gradient(closest-side, var(--halo), transparent); }
+.p-hero .gem-bg { position: absolute; right: 10px; top: 14px; width: 120px; opacity: .22; z-index: -1; }
+.p-eyebrow { font: 600 11px/1 var(--f-mono); letter-spacing: .16em; text-transform: uppercase; color: var(--gema-3); }
+.p-h1 { font: 800 clamp(26px, 4vw, 34px)/1.05 var(--f-display); letter-spacing: -0.025em; }
+.p-sub { color: var(--muted); font-size: 14px; max-width: 58ch; }
+.meter { display: grid; gap: 8px; }
+.meter-track { position: relative; height: 10px; display: grid; grid-template-columns: 40fr 30fr 30fr; gap: 3px; }
+.meter-track i { display: block; height: 100%; background: #16285f; clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%); }
+.meter-track i.on { background: linear-gradient(90deg, var(--gema-2), var(--gema-3)); }
+.meter-pin { position: absolute; top: -5px; width: 2px; height: 20px; background: var(--gema-5); box-shadow: 0 0 10px var(--gema-4); border-radius: 2px; }
+.meter-legend { display: flex; justify-content: space-between; font: 500 11px/1 var(--f-mono); color: var(--muted); letter-spacing: .04em; }
+.meter-legend b { color: var(--fg); }
+.p-tiles { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+.p-tile { position: relative; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 14px 16px; display: grid; gap: 6px; }
+.p-tile .l { font: 600 10.5px/1 var(--f-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.p-tile .v { font: 700 24px/1.1 var(--f-display); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.p-tile .n { font-size: 12px; color: var(--muted); }
+.p-tile.warn .v { color: var(--warn); }
+.drop { height: 6px; border-radius: 4px; background: #16285f; position: relative; overflow: hidden; }
+.drop i { position: absolute; inset: 0 22% 0 0; background: linear-gradient(90deg, var(--gema-2), var(--gema-3)); }
+.drop b { position: absolute; inset: 0 0 0 78%; background: repeating-linear-gradient(135deg, rgba(252,211,77,.55) 0 3px, transparent 3px 6px); }
+.p-card { position: relative; background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 18px; display: grid; gap: 14px; }
+.p-card h3 { font-size: 17px; }
+.prisma { display: flex; height: 18px; gap: 0; }
+.prisma span { height: 100%; margin-left: -5px; clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%); }
+.prisma span:first-child { margin-left: 0; clip-path: polygon(0 0, 100% 0, calc(100% - 6px) 100%, 0 100%); border-radius: 6px 0 0 6px; }
+.prisma span:last-child { clip-path: polygon(6px 0, 100% 0, 100% 100%, 0 100%); border-radius: 0 6px 6px 0; }
+.p-list { display: grid; gap: 8px; }
+.p-row { display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 12px; background: rgba(12,27,74,.55); border: 1px solid transparent; font-size: 13.5px; }
+.p-row:hover { border-color: var(--border); }
+.p-row .sw { width: 12px; height: 12px; clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+.p-row .usd { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 12.5px; }
+.p-row .pc { font: 700 15px/1 var(--f-display); font-variant-numeric: tabular-nums; min-width: 42px; text-align: right; }
+.stage[data-device="movil"] .p-row { grid-template-columns: auto 1fr auto; }
+.stage[data-device="movil"] .p-row .usd { display: none; }
+.chart-legend { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 12px; color: var(--muted); }
+.chart-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.chart-legend svg { width: 22px; height: 8px; }
+.p-btn { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 42px; padding: 0 18px; border-radius: 12px; background: var(--primary); color: #fff; font: 700 14px/1 var(--f-display); border: 1px solid #3b6ff0; box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 6px 18px -8px rgba(37,99,235,.8); width: fit-content; cursor: pointer; transition: background .15s ease, transform .15s ease; }
+.p-btn:hover { background: var(--primary-hover); }
+.p-btn:active { background: var(--primary-active); transform: translateY(1px); }
+.p-btn.sec { background: transparent; border-color: var(--input); box-shadow: none; color: var(--fg); }
+.p-btn.sec:hover { background: var(--secondary); }
+
+/* Resultado */
+.res { position: relative; isolation: isolate; overflow: hidden; border: 1px solid var(--border); border-radius: 22px 0 22px 22px; clip-path: polygon(0 0, calc(100% - 44px) 0, 100% 44px, 100% 100%, 0 100%); background: radial-gradient(120% 80% at 90% 0%, #10297a 0%, var(--card) 55%); padding: 26px; display: grid; gap: 18px; }
+.res::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 1px; background: var(--filo); }
+.res .gem-bg { position: absolute; right: -10px; top: -6px; width: 190px; opacity: .5; z-index: -1; filter: drop-shadow(0 0 30px rgba(22,180,255,.35)); }
+.res .big { font: 800 clamp(44px, 9vw, 64px)/.95 var(--f-display); letter-spacing: -0.04em; background: linear-gradient(100deg, #8ec5ff 0%, var(--gema-5) 45%, #fff 60%, var(--gema-4) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.why { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.why li { display: grid; grid-template-columns: 14px 1fr; gap: 10px; font-size: 14px; color: var(--ink-2); }
+.why li::before { content: ""; width: 9px; height: 9px; margin-top: 7px; background: linear-gradient(135deg, var(--gema-5), var(--gema-2)); clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+.res-foot { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; }
+.steps { display: flex; gap: 4px; }
+.steps i { width: 22px; height: 4px; border-radius: 2px; background: var(--gema-3); }
+
+/* Instrumentos */
+.inst-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.inst { min-width: 0; position: relative; background: var(--card); border: 1px solid var(--border); padding: 16px; display: grid; gap: 8px; border-radius: 16px; }
+.inst.p { clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%); border-radius: 16px 0 16px 16px; }
+.inst.p:hover { border-color: #3a54a3; }
+.inst .tk { font: 600 12.5px/1 var(--f-mono); color: #8ec5ff; letter-spacing: .04em; }
+.inst .nm { font: 700 15px/1.3 var(--f-display); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.inst .ds { font-size: 12.5px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.inst .ft { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 4px; }
+.inst .a-nm { font: 500 14px/1.3 var(--f-body); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; padding: 4px 9px; border-radius: 999px; border: 1px solid; white-space: nowrap; }
+@media (max-width: 560px) { .r2, .r3 { padding: 14px; } .stage { padding: 8px; } }
+.cifras b { flex-wrap: wrap; }
+.chip.cat { color: var(--ink-2); border-color: var(--input); background: rgba(86,107,152,.14); }
+.bars { display: inline-flex; align-items: flex-end; gap: 2px; height: 10px; }
+.bars i { width: 3px; border-radius: 1px; background: currentColor; }
+.bars i:nth-child(1) { height: 5px; } .bars i:nth-child(2) { height: 7.5px; } .bars i:nth-child(3) { height: 10px; }
+.bars i.off { opacity: .35; }
+.r-bajo { color: var(--riesgo-bajo); border-color: rgba(0,166,244,.32); background: rgba(0,166,244,.1); }
+.r-medio { color: var(--riesgo-medio); border-color: rgba(254,154,0,.32); background: rgba(254,154,0,.1); }
+.r-alto { color: var(--riesgo-alto); border-color: rgba(255,105,0,.5); background: rgba(255,105,0,.16); }
+
+/* FinBot */
+.fb-wrap { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr) minmax(0, 380px); align-items: start; }
+.stage[data-device="movil"] .fb-wrap { grid-template-columns: 1fr; }
+.fb { border: 1px solid var(--border); border-radius: 18px; background: rgba(8,20,46,.96); overflow: hidden; display: grid; }
+.fb-head { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid var(--border); position: relative; }
+.fb.p .fb-head::after { content: ""; position: absolute; inset: auto 0 -1px 0; height: 1px; background: var(--filo); }
+.fb-av { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(135deg, #2b7fff, #00b8db); flex: none; }
+.fb.p .fb-av { border-radius: 10px; background: #0b1a4a; border: 1px solid var(--border); }
+.fb-av svg { width: 20px; height: 20px; }
+.fb-t { display: grid; gap: 1px; }
+.fb-t b { font: 700 14px/1.2 var(--f-display); }
+.fb-t span { font-size: 11.5px; color: var(--muted); }
+.fb-body { padding: 14px; display: grid; gap: 10px; font-size: 13.5px; }
+.ctx { display: flex; flex-wrap: wrap; gap: 6px; }
+.ctx span { font: 500 11px/1 var(--f-mono); color: var(--ink-2); padding: 6px 8px; border-radius: 8px; border: 1px solid var(--border); background: rgba(12,27,74,.6); }
+.msg-u { justify-self: end; max-width: 85%; background: var(--primary); color: #fff; padding: 9px 13px; border-radius: 16px 16px 4px 16px; }
+.msg-b { max-width: 92%; background: rgba(30,41,59,.4); border: 1px solid var(--border); padding: 10px 13px; border-radius: 16px 16px 16px 4px; color: var(--ink-2); line-height: 1.55; }
+.fb.p .msg-b { background: transparent; border: 0; border-left: 2px solid; border-image: linear-gradient(180deg, var(--gema-5), var(--gema-2)) 1; border-radius: 0; padding: 2px 0 2px 12px; }
+.src { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.src span { font: 500 10.5px/1 var(--f-mono); color: var(--muted); border: 1px dashed var(--input); padding: 5px 7px; border-radius: 6px; }
+.thinking { display: inline-flex; gap: 4px; align-items: center; font-size: 12px; color: var(--muted); }
+.thinking i { width: 7px; height: 7px; background: var(--gema-3); clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); animation: pulse 1.2s ease-in-out infinite; }
+.thinking i:nth-child(2) { animation-delay: .15s; } .thinking i:nth-child(3) { animation-delay: .3s; }
+@keyframes pulse { 0%, 100% { opacity: .25; transform: scale(.8); } 50% { opacity: 1; transform: scale(1); } }
+.fb-in { display: flex; gap: 8px; padding: 12px 14px; border-top: 1px solid var(--border); }
+.fb-in div { flex: 1; min-width: 0; height: 38px; border-radius: 10px; border: 1px solid var(--input); display: flex; align-items: center; padding: 0 12px; color: var(--muted); font-size: 13px; }
+.fb-in b { width: 38px; height: 38px; border-radius: 10px; background: var(--primary); display: grid; place-items: center; flex: none; }
+.fb-in b svg { width: 16px; height: 16px; }
+
+/* ---------- Sistema ---------- */
+.swatches { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.sw-c { border: 1px solid var(--border); border-radius: 14px; overflow: hidden; background: var(--card); display: grid; }
+.sw-c .c { height: 56px; }
+.sw-c .t { padding: 9px 11px; display: grid; gap: 2px; font-size: 12px; }
+.sw-c .t b { font-family: var(--f-display); font-size: 13px; }
+.sw-c .t code { font: 500 11.5px/1.3 var(--f-mono); color: var(--muted); }
+.sw-c .t em { font-style: normal; font-size: 11px; color: var(--gema-3); font-family: var(--f-mono); }
+.typescale { display: grid; gap: 4px; }
+.ts { display: grid; grid-template-columns: 150px 1fr; gap: 14px; align-items: baseline; padding: 10px 0; border-bottom: 1px solid #16285f; min-width: 0; }
+.ts code { font: 500 11.5px/1.4 var(--f-mono); color: var(--muted); }
+.ts > div { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 560px) { .ts { grid-template-columns: 1fr; gap: 4px; } }
+.table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 16px; background: var(--card); }
+table { border-collapse: collapse; width: 100%; min-width: 680px; font-size: 13.5px; }
+th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid #16285f; vertical-align: top; }
+th { font: 600 11px/1.3 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); background: #0a1740; position: sticky; top: 0; }
+tr:last-child td { border-bottom: 0; }
+td .pill { display: inline-block; font: 600 11px/1 var(--f-mono); padding: 5px 7px; border-radius: 6px; border: 1px solid var(--border); white-space: nowrap; }
+.pill.alto { color: #fecaca; border-color: rgba(248,113,113,.4); }
+.pill.medio { color: var(--riesgo-medio); border-color: rgba(254,154,0,.35); }
+.pill.bajo { color: var(--riesgo-bajo); border-color: rgba(0,166,244,.35); }
+.states { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.field { display: grid; gap: 6px; min-width: 0; flex: 1 1 220px; }
+.field label { font-size: 13px; font-weight: 500; }
+.field input { height: 40px; border-radius: 12px; border: 1px solid var(--input); background: transparent; color: var(--fg); padding: 0 12px; font: 400 15px var(--f-body); width: 100%; }
+.field input::placeholder { color: #7c8fb0; }
+.field input:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-color: var(--ring); }
+.tabs-demo { display: inline-flex; padding: 3px; gap: 3px; border-radius: 12px; background: var(--secondary); }
+.tabs-demo span { font-size: 13px; padding: 7px 12px; border-radius: 9px; color: var(--muted); border: 1px solid transparent; }
+.tabs-demo span.on { background: var(--primary); color: #fff; border-color: var(--ring); }
+.refs { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.ref { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 18px; display: grid; gap: 8px; align-content: start; }
+.ref .site { font: 600 12px/1 var(--f-mono); color: var(--gema-3); letter-spacing: .06em; }
+.plan { display: grid; gap: 12px; }
+.etapa { display: grid; grid-template-columns: 74px 1fr; gap: 16px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+.etapa .id { font: 800 15px/1 var(--f-display); color: var(--gema-3); }
+.etapa .id small { display: block; margin-top: 6px; font: 500 11px/1.3 var(--f-mono); color: var(--muted); }
+.etapa ul { margin: 6px 0 0; padding-left: 18px; color: var(--ink-2); font-size: 14px; display: grid; gap: 4px; }
+@media (max-width: 560px) { .etapa { grid-template-columns: 1fr; gap: 8px; } }
+.decision { border-left: 2px solid var(--gema-3); padding: 4px 0 4px 14px; display: grid; gap: 4px; }
+footer.fin { color: var(--muted); font-size: 13px; border-top: 1px solid var(--border); padding-top: 18px; }
+
+/* ---------- Ronda 2: decisiones pendientes ---------- */
+.r2 { border: 1px solid var(--border); border-radius: 24px; background: linear-gradient(180deg, #0a1a4c 0%, var(--page) 60%); padding: 24px; display: grid; gap: 28px; position: relative; overflow: hidden; }
+.r2::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 1px; background: var(--filo); }
+.r2-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.r2-block { display: grid; gap: 16px; min-width: 0; }
+.opts { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+.opt { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 16px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.opt.rec { border-color: var(--ring); box-shadow: 0 0 0 1px rgba(96,165,250,.25); }
+.opt-h { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.opt-h b { font: 700 15px/1.2 var(--f-display); }
+.badge-rec { font: 700 10.5px/1 var(--f-display); letter-spacing: .08em; text-transform: uppercase; color: #0b1a4a; background: var(--gema-5); padding: 5px 8px; border-radius: 999px; }
+.mini { background: var(--bg); border: 1px solid var(--border); border-radius: 14px; padding: 14px; display: grid; gap: 10px; }
+.mini .tk-row { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.lbl-mono { font: 600 11px/1 var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--gema-3); }
+.lbl-jak { font: 700 11px/1 var(--f-display); letter-spacing: .14em; text-transform: uppercase; color: var(--gema-3); }
+.lbl-inter { font: 600 11px/1 var(--f-body); letter-spacing: .12em; text-transform: uppercase; color: var(--gema-3); }
+.tk-mono { font: 600 14px/1 var(--f-mono); color: #8ec5ff; letter-spacing: .02em; }
+.tk-jak { font: 800 14px/1 var(--f-display); color: #8ec5ff; letter-spacing: .06em; font-variant-numeric: tabular-nums; }
+.tk-inter { font: 600 14px/1 var(--f-body); color: #8ec5ff; letter-spacing: .04em; font-variant-numeric: tabular-nums; }
+.tasa-col { display: grid; grid-template-columns: 1fr auto; gap: 4px 14px; font-size: 13px; }
+.tasa-col span:nth-child(even) { text-align: right; font-variant-numeric: tabular-nums; }
+.kv { display: grid; gap: 6px; font-size: 13px; color: var(--ink-2); }
+.kv div { display: flex; justify-content: space-between; gap: 10px; }
+.kv b { color: var(--fg); font-weight: 600; }
+.verdict { border-left: 2px solid var(--gema-3); padding: 2px 0 2px 14px; color: var(--ink-2); font-size: 14px; display: grid; gap: 6px; }
+.verdict b { color: var(--fg); }
+.risk-demo { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.warn-box { border-radius: 14px; border: 1px solid var(--warn-bd); background: var(--warn-bg); padding: 12px 14px; display: grid; gap: 6px; }
+.warn-box b { font: 700 11.5px/1.2 var(--f-body); letter-spacing: .08em; text-transform: uppercase; color: #ffd230; display: flex; gap: 8px; align-items: center; }
+.warn-box p { font-size: 13px; color: #fef3c6; }
+.cmp-row { display: grid; grid-template-columns: 1fr auto; gap: 6px 10px; align-items: center; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: rgba(30,41,59,.3); font-size: 13px; }
+.cmp-row .tasa { font: 700 16px/1 var(--f-display); font-variant-numeric: tabular-nums; }
+.cmp-row .chips { grid-column: 1 / -1; display: flex; gap: 6px; flex-wrap: wrap; }
+.phones { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.phone { border: 1px solid #22306a; border-radius: 28px; padding: 10px; background: #040a22; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.screen { position: relative; height: 430px; border-radius: 20px; overflow: hidden; background: var(--bg); border: 1px solid #1b2a5e; }
+.scr-head { position: absolute; inset: 0 0 auto 0; background: rgba(10,23,82,.94); border-bottom: 1px solid var(--border); z-index: 3; }
+.scr-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px; }
+.scr-top .lg { display: flex; align-items: center; gap: 6px; font: 800 14px/1 var(--f-display); }
+.scr-top .lg svg { width: 20px; height: 20px; }
+.scr-nav { display: flex; gap: 4px; padding: 0 10px 8px; overflow: hidden; white-space: nowrap; position: relative; }
+.scr-nav span { font-size: 11.5px; padding: 6px 9px; border-radius: 8px; color: var(--muted); flex: none; }
+.scr-nav span.on { background: var(--secondary); color: #60a5fa; font-weight: 600; }
+.scr-nav.fade::after { content: ""; position: absolute; right: 0; top: 0; bottom: 8px; width: 46px; background: linear-gradient(90deg, transparent, var(--bg)); }
+.scr-nav .cut { opacity: .9; }
+.scr-body { position: absolute; inset: 0; padding: 10px 12px; display: grid; gap: 8px; align-content: start; overflow: hidden; }
+.ph-line { height: 9px; border-radius: 5px; background: #1a2b63; }
+.ph-tile { border: 1px solid var(--border); border-radius: 12px; padding: 9px; background: rgba(30,41,59,.4); display: grid; gap: 5px; }
+.ph-tile b { font: 700 15px/1 var(--f-display); }
+.ph-tile small { font-size: 10px; color: var(--muted); }
+.fab { position: absolute; z-index: 4; right: 12px; bottom: 12px; height: 34px; padding: 0 12px; border-radius: 999px; background: var(--primary); color: #fff; font: 700 11.5px/34px var(--f-display); display: flex; gap: 6px; align-items: center; box-shadow: 0 6px 18px -6px rgba(37,99,235,.9); }
+.fab.icon { width: 42px; height: 42px; padding: 0; justify-content: center; border-radius: 14px; }
+.fab svg { width: 16px; height: 16px; }
+.overlap { position: absolute; z-index: 3; right: 8px; bottom: 8px; width: 150px; height: 44px; border: 1.5px dashed #f87171; border-radius: 999px; }
+.tabbar { position: absolute; inset: auto 0 0 0; z-index: 4; display: grid; grid-template-columns: repeat(5, 1fr); background: rgba(8,20,46,.97); border-top: 1px solid var(--border); padding: 6px 4px 10px; }
+.tabbar span { display: grid; justify-items: center; gap: 3px; font-size: 9.5px; color: var(--muted); }
+.tabbar span i { width: 18px; height: 18px; border-radius: 5px; background: #1a2b63; display: block; }
+.tabbar span.on { color: #fff; }
+.tabbar span.on i { background: var(--primary); }
+.tabbar span.bot i { background: none; }
+.tabbar span.bot svg { width: 18px; height: 18px; }
+.sheet { position: absolute; z-index: 5; inset: auto 0 0 0; background: var(--surface-2); border-top: 1px solid var(--border); border-radius: 18px 18px 0 0; padding: 12px; display: grid; gap: 6px; box-shadow: 0 -18px 40px -16px rgba(0,0,0,.7); }
+.sheet::before { content: ""; width: 36px; height: 4px; border-radius: 2px; background: var(--input); justify-self: center; margin-bottom: 4px; }
+.sheet span { font-size: 12.5px; padding: 9px 10px; border-radius: 10px; color: var(--ink-2); border: 1px solid transparent; }
+.sheet span.on { background: var(--primary); color: #fff; border-color: var(--ring); }
+.sheet .sep { height: 1px; background: var(--border); padding: 0; margin: 2px 0; }
+.dim-screen { position: absolute; inset: 0; z-index: 4; background: rgba(4,10,34,.55); }
+.pc-table td:first-child { font-weight: 600; }
+
+/* ---------- Ronda 3: recorrido guiado ---------- */
+.r3 { border: 1px solid var(--border); border-radius: 24px; background: linear-gradient(180deg, #0b1d55 0%, var(--page) 55%); padding: 24px; display: grid; gap: 22px; position: relative; overflow: hidden; }
+.r3::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 1px; background: var(--filo); }
+.g-app { display: grid; grid-template-columns: 188px minmax(0, 1fr); min-height: 640px; background: var(--bg); border-radius: 16px; border: 1px solid #1b2a5e; overflow: hidden; position: relative; }
+.stage[data-device="movil"] .g-app { grid-template-columns: 1fr; min-height: 720px; }
+.g-side { border-right: 1px solid var(--border); background: rgba(8,20,46,.6); padding: 14px 10px; display: flex; flex-direction: column; gap: 4px; }
+.stage[data-device="movil"] .g-side { display: none; }
+.g-side .logo { display: flex; align-items: center; gap: 8px; font: 800 17px/1 var(--f-display); padding: 4px 8px 16px; }
+.g-side .logo svg { width: 24px; height: 24px; }
+.g-nav { appearance: none; border: 0; background: transparent; color: var(--muted); font: 500 13px/1.2 var(--f-body); text-align: left; padding: 9px 10px; border-radius: 10px; display: flex; align-items: center; gap: 9px; cursor: pointer; position: relative; }
+.g-nav svg { width: 16px; height: 16px; flex: none; }
+.g-nav:hover { color: var(--fg); background: rgba(30,41,59,.5); }
+.g-nav[aria-current="page"] { background: var(--secondary); color: #fff; font-weight: 600; }
+.g-nav .dot { position: absolute; right: 10px; top: 50%; width: 7px; height: 7px; margin-top: -3.5px; background: var(--gema-5); clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+.g-nav.bot { margin-top: auto; border: 1px solid var(--border); }
+.g-main { min-width: 0; display: grid; align-content: start; }
+.g-top { display: none; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+.stage[data-device="movil"] .g-top { display: flex; }
+.g-top .logo { display: flex; align-items: center; gap: 7px; font: 800 15px/1 var(--f-display); }
+.g-top .logo svg { width: 22px; height: 22px; }
+.g-screen { padding: 22px; display: grid; gap: 18px; align-content: start; min-width: 0; }
+.stage[data-device="movil"] .g-screen { padding: 14px 14px 24px; gap: 14px; }
+.g-tabbar { display: none; position: sticky; bottom: 0; z-index: 4; grid-template-columns: repeat(5, 1fr); background: rgba(8,20,46,.97); border-top: 1px solid var(--border); padding: 6px 4px 12px; }
+.stage[data-device="movil"] .g-tabbar { display: grid; }
+.g-tab { appearance: none; border: 0; background: transparent; color: var(--muted); font: 500 10.5px/1.2 var(--f-body); display: grid; justify-items: center; gap: 4px; padding: 4px 0; cursor: pointer; position: relative; min-height: 48px; }
+.g-tab svg { width: 20px; height: 20px; }
+.g-tab[aria-current="page"] { color: #fff; }
+.g-tab[aria-current="page"]::before { content: ""; position: absolute; top: -6px; width: 22px; height: 2px; border-radius: 2px; background: var(--ring); }
+.g-tab .dot { position: absolute; top: 2px; right: calc(50% - 16px); width: 7px; height: 7px; background: var(--gema-5); clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+.g-tab.bot span.circ { width: 46px; height: 46px; margin-top: -18px; border-radius: 16px; display: grid; place-items: center; background: #0b1a4a; border: 1px solid var(--input); }
+.g-tab.bot span.circ svg { width: 26px; height: 26px; }
+.g-h { display: grid; gap: 6px; }
+.g-h .p-h1 { font-size: clamp(24px, 3vw, 30px); }
+.g-grid { display: grid; gap: 16px; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); align-items: start; }
+.stage[data-device="movil"] .g-grid { grid-template-columns: 1fr; }
+.frases { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.frases li { display: grid; grid-template-columns: 14px 1fr; gap: 10px; font-size: 14.5px; color: var(--ink-2); }
+.frases li::before { content: ""; width: 8px; height: 8px; margin-top: 7px; background: var(--gema-4); clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+.frases b { color: var(--fg); font-weight: 600; }
+.cifras { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--border); padding-top: 12px; gap: 12px; }
+.stage[data-device="movil"] .cifras { grid-template-columns: 1fr; }
+.cifras div { display: grid; gap: 4px; min-width: 0; }
+.cifras small { font: 700 10.5px/1 var(--f-display); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.cifras b { font: 700 22px/1.1 var(--f-display); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.cifras span { font-size: 12px; color: var(--muted); }
+.rec { position: relative; background: var(--surface-2); border: 1px solid var(--border); border-radius: 18px; padding: 16px; display: grid; gap: 12px; }
+.rec-head { display: flex; align-items: center; gap: 12px; }
+.rec-head svg.glifo { width: 38px; height: 38px; flex: none; }
+.rec-head b { font: 700 15px/1.2 var(--f-display); }
+.rec-head span { font-size: 12.5px; color: var(--muted); display: block; }
+.sug { position: relative; border: 1px solid var(--border); border-radius: 14px; padding: 14px; display: grid; gap: 8px; background: rgba(8,20,46,.7); overflow: hidden; }
+.sug::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 1px; background: var(--filo); }
+.sug .k { font: 700 10.5px/1 var(--f-display); letter-spacing: .12em; text-transform: uppercase; color: var(--gema-5); }
+.sug b { font: 700 17px/1.25 var(--f-display); }
+.sug p { font-size: 13.5px; color: var(--ink-2); }
+.pasos { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.pasos li { display: grid; grid-template-columns: 22px 1fr auto; gap: 10px; align-items: center; padding: 8px 4px; font-size: 13.5px; color: var(--ink-2); border-top: 1px solid #16285f; }
+.pasos li:first-child { border-top: 0; }
+.pasos li .ic { width: 16px; height: 16px; clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); background: transparent; box-shadow: inset 0 0 0 1.5px var(--input); justify-self: center; }
+.pasos li.hecho { color: rgba(249,252,254,.8); }
+.pasos li.hecho .ic { background: linear-gradient(135deg, var(--gema-5), var(--gema-2)); box-shadow: none; }
+.pasos li.hecho em, .pasos li.ahora em { font-style: normal; font: 600 11px/1 var(--f-display); letter-spacing: .06em; color: var(--muted); }
+.pasos li.ahora { color: var(--fg); font-weight: 600; }
+.pasos li.ahora .ic { box-shadow: inset 0 0 0 1.5px var(--gema-5); }
+.pasos li.ahora em { color: var(--gema-5); }
+.rec-foot { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 12.5px; }
+.linkbtn { appearance: none; border: 0; background: none; padding: 0; color: var(--ring); font: 500 13px var(--f-body); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.linkbtn.muted { color: var(--muted); }
+.stage[data-device="movil"] .rec .pasos, .stage[data-device="movil"] .rec .rec-foot .solo-esc { display: none; }
+.stage[data-device="movil"] .rec.abierto .pasos { display: grid; }
+.solo-movil { display: none; }
+.stage[data-device="movil"] .solo-movil { display: inline; }
+.antes { border: 1px solid var(--warn-bd); background: var(--warn-bg); border-radius: 16px; padding: 14px 16px; display: grid; gap: 8px; }
+.antes > b { font: 700 11.5px/1.2 var(--f-body); letter-spacing: .1em; text-transform: uppercase; color: #ffd230; display: flex; gap: 8px; align-items: center; }
+.antes .fila { display: grid; gap: 2px; }
+.antes .fila b { font-size: 14px; color: #fef3c6; }
+.antes .fila p { font-size: 13.5px; color: #fef3c6; opacity: .92; }
+.partes { display: grid; border-top: 1px solid var(--border); }
+.parte { border-bottom: 1px solid var(--border); }
+.parte > button { appearance: none; border: 0; background: transparent; color: var(--fg); width: 100%; display: grid; grid-template-columns: auto 1fr auto auto; gap: 12px; align-items: center; padding: 13px 4px; font: 500 14px var(--f-body); cursor: pointer; text-align: left; }
+.parte > button .sw { width: 12px; height: 12px; clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+.parte > button .pc { font: 700 16px/1 var(--f-display); font-variant-numeric: tabular-nums; }
+.parte > button .usd { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.parte > button .chev { width: 16px; height: 16px; transition: transform .2s ease; color: var(--muted); }
+.parte.open > button .chev { transform: rotate(180deg); }
+.parte .det { display: none; padding: 0 4px 16px 28px; gap: 12px; }
+.parte.open .det { display: grid; }
+.det .dos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.stage[data-device="movil"] .det .dos { grid-template-columns: 1fr; }
+.det h5 { margin: 0 0 4px; font: 700 10.5px/1 var(--f-display); letter-spacing: .12em; text-transform: uppercase; color: var(--gema-3); }
+.det p { font-size: 14px; color: var(--ink-2); }
+.det .mal { border: 1px solid var(--warn-bd); background: var(--warn-bg); border-radius: 12px; padding: 12px; }
+.det .mal h5 { color: #ffd230; }
+.det .mal p { color: #fef3c6; }
+.det .acc { display: flex; gap: 16px; flex-wrap: wrap; font-size: 13.5px; }
+.stage[data-device="movil"] .parte > button { grid-template-columns: auto 1fr auto auto; }
+.stage[data-device="movil"] .parte > button .usd { display: none; }
+.plegado { border: 1px solid var(--border); border-radius: 14px; background: rgba(8,20,46,.5); }
+.plegado summary { cursor: pointer; padding: 13px 16px; font: 600 14.5px var(--f-display); list-style: none; display: flex; justify-content: space-between; gap: 10px; }
+.plegado summary::-webkit-details-marker { display: none; }
+.plegado summary span { font: 500 12.5px var(--f-body); color: var(--muted); }
+.plegado > div { padding: 0 16px 16px; }
+.legal { font-size: 12px; color: var(--muted); line-height: 1.55; }
+.ask-bot { display: flex; align-items: center; gap: 10px; border: 1px dashed var(--input); border-radius: 12px; padding: 10px 12px; font-size: 13px; color: var(--ink-2); background: transparent; cursor: pointer; text-align: left; }
+.ask-bot svg { width: 22px; height: 22px; flex: none; }
+.toast { min-height: 18px; font-size: 13px; color: var(--gema-5); }
+/* Bienvenida */
+.bienv { max-width: 520px; margin: 18px auto; width: 100%; display: grid; gap: 18px; justify-items: start; position: relative; isolation: isolate; }
+.bienv .gem-big { width: 96px; height: 96px; filter: drop-shadow(0 0 26px rgba(22,180,255,.35)); }
+.bienv h3 { font: 800 clamp(26px, 4vw, 32px)/1.08 var(--f-display); letter-spacing: -.025em; }
+.bienv p.lead { font-size: 15.5px; }
+.bienv .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.bienv .chips span { font: 600 12px/1 var(--f-display); padding: 8px 11px; border-radius: 999px; border: 1px solid var(--border); background: rgba(12,27,74,.7); color: var(--ink-2); }
+.recibe { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; width: 100%; }
+.recibe li { display: grid; grid-template-columns: 30px 1fr; gap: 12px; align-items: start; padding: 12px; border: 1px solid var(--border); border-radius: 14px; background: var(--card); }
+.recibe li i { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 9px; background: #0b1a4a; font: 800 13px/1 var(--f-display); color: var(--gema-5); font-style: normal; }
+.recibe li b { display: block; font: 700 14.5px/1.3 var(--f-display); }
+.recibe li span { font-size: 13px; color: var(--muted); }
+.seg7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; width: 100%; }
+.seg7 i { height: 5px; background: #16285f; clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%); }
+.seg7 i:first-child { background: linear-gradient(90deg, var(--gema-2), var(--gema-3)); }
+/* Tus pesos */
+.preg { display: grid; gap: 14px; }
+.preg .q { display: grid; gap: 8px; }
+.preg .q > b { font: 700 15px/1.3 var(--f-display); }
+.segbtns { display: flex; flex-wrap: wrap; gap: 6px; }
+.segbtns button { appearance: none; min-height: 44px; min-width: 64px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--input); background: transparent; color: var(--ink-2); font: 600 14px var(--f-display); cursor: pointer; font-variant-numeric: tabular-nums; }
+.segbtns button[aria-pressed="true"] { background: var(--primary); color: #fff; border-color: var(--ring); }
+.monto { display: flex; align-items: baseline; gap: 8px; border: 1px solid var(--input); border-radius: 14px; padding: 12px 14px; font: 700 26px/1 var(--f-display); font-variant-numeric: tabular-nums; letter-spacing: -.02em; width: fit-content; max-width: 100%; }
+.monto small { font: 500 13px var(--f-body); color: var(--muted); letter-spacing: 0; }
+.opc { display: grid; gap: 10px; }
+.op { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 14px; align-items: start; padding: 14px 16px; border: 1px solid var(--border); border-radius: 16px; background: var(--card); overflow: hidden; }
+.op.top::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 1px; background: var(--filo); }
+.op .nm { font: 700 15.5px/1.25 var(--f-display); }
+.op .qe { font-size: 13px; color: var(--muted); }
+.op .gan { text-align: right; display: grid; gap: 2px; }
+.op .gan b { font: 700 20px/1 var(--f-display); font-variant-numeric: tabular-nums; }
+.op .gan span { font-size: 11.5px; color: var(--muted); }
+.op .tags { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; }
+.op.off { opacity: .7; }
+.tag-ok { color: #a2f4fd; border-color: rgba(0,184,219,.4); background: rgba(0,184,219,.1); }
+.tag-no { color: var(--fg); border-color: var(--input); background: transparent; }
+.tag-neu { color: var(--ink-2); border-color: var(--input); background: transparent; }
+.note { font-size: 12.5px; color: var(--muted); }
+/* Ejemplos */
+.partchips { display: flex; flex-wrap: wrap; gap: 8px; }
+.partchips button { appearance: none; display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--input); background: transparent; color: var(--ink-2); font: 600 13.5px var(--f-display); cursor: pointer; }
+.partchips button i { width: 10px; height: 10px; clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+.partchips button b { font-variant-numeric: tabular-nums; color: var(--fg); }
+.partchips button[aria-pressed="true"] { border-color: var(--ring); background: rgba(37,99,235,.16); color: #fff; }
+.ej-list { display: grid; border-top: 1px solid var(--border); }
+.ej { appearance: none; border: 0; border-bottom: 1px solid var(--border); background: transparent; color: var(--fg); display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 12px 4px; text-align: left; cursor: pointer; font: inherit; }
+.ej .tk { font: 800 12.5px/1 var(--f-display); letter-spacing: .06em; color: #8ec5ff; }
+.ej .nm { font: 600 14.5px/1.3 var(--f-body); }
+.ej .nm small { display: block; font-size: 12.5px; color: var(--muted); font-weight: 400; }
+.ej[aria-pressed="true"] { background: rgba(37,99,235,.1); }
+.ficha { position: relative; isolation: isolate; border: 1px solid var(--border); border-radius: 18px 0 18px 18px; clip-path: polygon(0 0, calc(100% - 26px) 0, 100% 26px, 100% 100%, 0 100%); background: linear-gradient(180deg, #0b1a4a 0%, var(--card) 60%); padding: 18px; display: grid; gap: 14px; }
+.ficha .dos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.stage[data-device="movil"] .ficha .dos { grid-template-columns: 1fr; }
+.ficha h4 { font: 800 22px/1.15 var(--f-display); letter-spacing: -.02em; }
+.ficha .blk { border: 1px solid var(--border); border-radius: 12px; padding: 12px; display: grid; gap: 6px; background: rgba(8,20,46,.6); }
+.ficha .blk h5 { margin: 0; font: 700 10.5px/1 var(--f-display); letter-spacing: .12em; text-transform: uppercase; color: var(--gema-3); }
+.ficha .blk p, .ficha .blk li { font-size: 13.5px; color: var(--ink-2); }
+.ficha .blk ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+.ficha .blk.mal { border-color: var(--warn-bd); background: var(--warn-bg); }
+.ficha .blk.mal h5 { color: #ffd230; }
+.ficha .blk.mal li { color: #fef3c6; }
+.ficha .blk.tuyo { position: relative; overflow: hidden; }
+.ficha .blk.tuyo::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 1px; background: var(--filo); }
+.datos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; font-size: 13px; }
+.stage[data-device="movil"] .datos { grid-template-columns: 1fr; }
+.datos div { display: grid; gap: 2px; }
+.datos small { color: var(--muted); font-size: 12px; }
+/* Aprender */
+.ruta { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; position: relative; }
+.ruta li { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; padding: 10px 0; position: relative; }
+.ruta li::before { content: ""; position: absolute; left: 16px; top: 38px; bottom: -10px; width: 1px; background: var(--border); }
+.ruta li:last-child::before { display: none; }
+.ruta .n { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; border: 1px solid var(--input); font: 800 14px/1 var(--f-display); color: var(--muted); background: var(--bg); position: relative; z-index: 1; }
+.ruta li.leida .n { background: linear-gradient(135deg, var(--gema-5), var(--gema-2)); color: #06123a; border-color: transparent; }
+.ruta li.prox .n { border-color: var(--gema-5); color: var(--gema-5); }
+.ruta b { font: 700 15px/1.3 var(--f-display); display: block; }
+.ruta span { font-size: 13px; color: var(--muted); }
+.ruta em { font-style: normal; font: 600 11px/1 var(--f-display); letter-spacing: .06em; color: var(--gema-5); margin-left: 6px; }
+.leccion ul { margin: 0; padding-left: 20px; display: grid; gap: 8px; font-size: 15px; line-height: 1.6; color: var(--ink-2); }
+.enCartera { font-size: 13px; color: var(--ink-2); border-top: 1px solid var(--border); padding-top: 10px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<!-- ================= HERO ================= -->
+<header class="hero">
+  <svg class="hero-gem" viewBox="180 228 480 480" aria-hidden="true"><use href="#gema"/></svg>
+  <p class="eyebrow">Dirección visual · propuesta para aprobar</p>
+  <h1>Facetas. <span class="dim">La gema de FinUp convertida en sistema.</span></h1>
+  <p class="lead">Una identidad tecnológica y oscura que nace del logo que ya tienen: sus facetas, sus cinco azules y su ángulo. La luz se usa como información (qué está activo, qué es tuyo, qué importa) y nunca como decoración suelta. Debajo vas a encontrar el diagnóstico, el sistema propuesto, un prototipo que compara el estado actual con la propuesta, y el plan para implementarlo.</p>
+  <div class="meta-row"><span>Rama comparador-y-biblioteca</span><span>Base: Etapa 1 commiteada (59b3433)</span><span>Sin cambios en el repo</span></div>
+</header>
+
+<!-- ================= RONDA 3 ================= -->
+<section class="r3" aria-labelledby="s-r3">
+  <div class="sec-head">
+    <p class="eyebrow">Ronda 3 · Recorrido guiado</p>
+    <h2 id="s-r3">FinUp paso a paso: un prototipo para recorrer</h2>
+    <p class="lead">Una persona Moderada que recién armó su perfil. La app le sugiere un paso por vez, pero todo queda accesible. Tocá “Siguiente paso” en Mi plan para ver cómo avanza el recorrido, o navegá libre con el menú. Los nombres nuevos (“Mi plan”, “Dónde dejar tus pesos”, “Ejemplos de tu cartera”) son propuestas que todavía tenés que aprobar.</p>
+  </div>
+
+  <div class="bench" id="g-bench">
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Pantalla del recorrido">
+        <button type="button" data-g="bienvenida" aria-pressed="false">Bienvenida</button>
+        <button type="button" data-g="plan" aria-pressed="true">Mi plan</button>
+        <button type="button" data-g="pesos" aria-pressed="false">Tus pesos</button>
+        <button type="button" data-g="ejemplos" aria-pressed="false">Ejemplos</button>
+        <button type="button" data-g="aprender" aria-pressed="false">Aprender</button>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <div class="seg" role="group" aria-label="Dispositivo">
+          <button type="button" data-gdev="escritorio" aria-pressed="true">Escritorio</button>
+          <button type="button" data-gdev="movil" aria-pressed="false">Celular</button>
+        </div>
+        <button type="button" class="linkbtn" id="g-reset">Reiniciar recorrido</button>
+      </div>
+    </div>
+
+    <div class="stage" id="g-stage" data-device="escritorio">
+      <div class="frame">
+        <div class="g-app">
+          <aside class="g-side" aria-label="Menú de ejemplo">
+            <span class="logo"><svg viewBox="180 228 480 480" aria-hidden="true"><use href="#gema"/></svg>finup</span>
+            <button type="button" class="g-nav" data-go="plan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 13h6V4H4zM14 20h6v-9h-6zM14 4v4h6V4zM4 20h6v-3H4z"/></svg>Mi plan</button>
+            <button type="button" class="g-nav" data-go="pesos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 7h18v10H3z"/><circle cx="12" cy="12" r="2.5"/></svg>Tus pesos</button>
+            <button type="button" class="g-nav" data-go="ejemplos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 5h7v14H4zM13 5h7v14h-7z"/></svg>Ejemplos</button>
+            <button type="button" class="g-nav" data-go="aprender"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 6l9-3 9 3-9 3zM7 8v5c0 1.5 2.5 3 5 3s5-1.5 5-3V8"/></svg>Aprender</button>
+            <button type="button" class="g-nav bot" data-go="plan" data-bot="1"><svg viewBox="180 228 480 480" aria-hidden="true"><use href="#gema"/></svg>FinBot</button>
+          </aside>
+
+          <div class="g-main">
+            <div class="g-top"><span class="logo"><svg viewBox="180 228 480 480" aria-hidden="true"><use href="#gema"/></svg>finup</span><span class="tag" style="padding:3px 7px">Beta</span></div>
+
+            <!-- BIENVENIDA -->
+            <div class="g-screen" data-gs="bienvenida" hidden>
+              <div class="bienv">
+                <svg class="gem-big" viewBox="180 228 480 480" aria-hidden="true"><use href="#gema"/></svg>
+                <div class="seg7" aria-label="Paso 1 de 7"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                <h3>Antes de hablar de inversiones, queremos conocerte.</h3>
+                <p class="lead">Con tus respuestas te armamos un plan de ejemplo y te explicamos por qué es así y qué puede salir mal. No tenés que invertir nada para usar FinUp.</p>
+                <div class="chips"><span>10 preguntas</span><span>Unos 3 minutos</span><span>No movemos tu plata</span></div>
+                <ul class="recibe">
+                  <li><i>1</i><div><b>Tu perfil de inversor</b><span>Cuánto riesgo te conviene según tu plazo y cómo reaccionás ante una caída.</span></div></li>
+                  <li><i>2</i><div><b>Una cartera de ejemplo</b><span>Cómo se repartiría tu plata, parte por parte.</span></div></li>
+                  <li><i>3</i><div><b>Qué puede salir mal</b><span>En cada parte, contado sin vueltas.</span></div></li>
+                </ul>
+                <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"><button type="button" class="p-btn" data-go="plan">Empezar →</button><button type="button" class="linkbtn muted" data-go="plan">Ya sé cómo funciona</button></div>
+                <p class="legal">Contenido educativo, no es asesoramiento financiero.</p>
+              </div>
+            </div>
+
+            <!-- MI PLAN -->
+            <div class="g-screen" data-gs="plan">
+              <div class="g-h"><span class="p-eyebrow">Mi plan</span><div class="p-h1">Perfil moderado</div><p class="p-sub">Buscás un equilibrio: estás dispuesto a tolerar subas y bajas para que tu plata crezca, pero con una parte protegida que amortigua los golpes.</p></div>
+              <div class="g-grid">
+                <div class="p-hero" style="gap:14px">
+                  <svg class="gem-bg" viewBox="180 228 480 480" aria-hidden="true"><use href="#gema"/></svg>
+                  <span class="p-eyebrow">Tu plan en 3 frases</span>
+                  <ul class="frases">
+                    <li><span>Tu plata se reparte en <b>4 partes</b>: casi la mitad en empresas, el resto para amortiguar.</span></li>
+                    <li><span>Pensado para <b>5 a 10 años</b>: tiempo suficiente para esperar a que se recupere una caída.</span></li>
+                    <li><span>En un año muy malo podría caer cerca de <b>22%</b>: tus USD 1.000 pasarían a valer unos USD 785 por un tiempo.</span></li>
+                  </ul>
+                  <div class="prisma" role="img" aria-label="Acciones y ETFs 45%, renta fija 25%, dividendos 15%, liquidez 15%" style="height:22px"><span style="flex:45;background:var(--gema-2)"></span><span style="flex:25;background:var(--gema-1);outline:1px solid #2a4fae"></span><span style="flex:15;background:var(--gema-4)"></span><span style="flex:15;background:var(--gema-5)"></span></div>
+                  <div class="cifras">
+                    <div><small>Por año, en promedio</small><b>3,3–8,1%</b><span>Supuesto ilustrativo, no es una promesa.</span></div>
+                    <div><small>En un mal año</small><b style="color:var(--warn)">−22%</b><span>Puede durar más de un año.</span></div>
+                    <div><small>Riesgo</small><b style="display:flex;gap:8px;align-items:center">Medio <span class="chip r-medio"><span class="bars" aria-hidden="true"><i></i><i></i><i class="off"></i></span>2 de 3</span></b><span>Según cuánto podría caer.</span></div>
+                  </div>
+                </div>
+
+                <div class="rec" id="g-rec">
+                  <div class="rec-head"><svg class="glifo" id="g-glifo" viewBox="0 0 40 40" aria-hidden="true"></svg><div><b>Tu recorrido</b><span id="g-cuenta">1 de 6</span></div></div>
+                  <div class="sug" id="g-sug"></div>
+                  <p class="toast" id="g-toast" aria-live="polite"></p>
+                  <ul class="pasos" id="g-pasos"></ul>
+                  <div class="rec-foot"><button type="button" class="linkbtn solo-movil" id="g-vertodo">Ver tu recorrido</button><span class="muted solo-esc">Tu plan no cambia por hacer el recorrido.</span><button type="button" class="linkbtn muted" id="g-cerrar">No necesito el recorrido</button></div>
+                </div>
+              </div>
+
+              <div class="antes"><b><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3 2 21h20L12 3z"/><path d="M12 10v5M12 18h.01"/></svg>Antes de empezar</b>
+                <div class="fila"><b>Armá tu fondo de emergencia</b><p>Antes de invertir en activos que suben y bajan, conviene tener guardado entre 3 y 6 meses de gastos. Así no te ves obligado a vender con pérdida si surge un imprevisto.</p></div>
+              </div>
+
+              <div class="p-card" style="gap:6px">
+                <h3>Las partes de tu cartera</h3>
+                <p class="muted small">Tocá una parte para ver qué es, por qué está y qué puede salir mal.</p>
+                <div class="partes" id="g-partes">
+                  <div class="parte" data-parte="variable"><button type="button" aria-expanded="false"><i class="sw" style="background:var(--gema-2)"></i><span>Partes de empresas <span class="muted">(acciones y ETFs)</span></span><span class="usd">USD 450</span><span class="pc">45%</span></button>
+                    <div class="det"><p>Partes de empresas, o canastas con muchas empresas. Su valor sube y baja según los resultados de las empresas y el humor del mercado.</p>
+                      <div class="dos"><div><h5>Su ventaja</h5><p>Históricamente es lo que más crece en plazos largos.</p></div><div class="mal"><h5>Qué puede salir mal</h5><p>Puede caer 30% o 40% en un mal año y tardar años en recuperarse. Si necesitás la plata justo cuando está abajo, la perdés.</p></div></div>
+                      <div class="acc"><button type="button" class="linkbtn" data-go="ejemplos" data-parte-go="variable">Ver empresas de ejemplo</button><button type="button" class="linkbtn" data-ask="¿Por qué tengo 45% en acciones?">Preguntale a FinBot</button></div></div></div>
+                  <div class="parte" data-parte="fija"><button type="button" aria-expanded="false"><i class="sw" style="background:var(--gema-1);box-shadow:inset 0 0 0 1px #3d6fd8"></i><span>Préstamos a gobiernos y empresas <span class="muted">(renta fija)</span></span><span class="usd">USD 250</span><span class="pc">25%</span></button>
+                    <div class="det"><p>Préstamos que le hacés al Estado o a empresas: te devuelven tu plata más intereses en fechas pactadas.</p>
+                      <div class="dos"><div><h5>Su ventaja</h5><p>Amortigua las caídas de las acciones y da pagos más previsibles.</p></div><div class="mal"><h5>Qué puede salir mal</h5><p>Si quien emitió el bono no paga (default), perdés parte o todo. Además, si suben las tasas el precio del bono baja.</p></div></div>
+                      <div class="acc"><button type="button" class="linkbtn" data-go="ejemplos" data-parte-go="fija">Ver bonos de ejemplo</button></div></div></div>
+                  <div class="parte" data-parte="dividendos"><button type="button" aria-expanded="false"><i class="sw" style="background:var(--gema-4)"></i><span>Empresas que reparten ganancias <span class="muted">(dividendos)</span></span><span class="usd">USD 150</span><span class="pc">15%</span></button>
+                    <div class="det"><p>Empresas maduras que reparten parte de sus ganancias en efectivo, de forma periódica.</p>
+                      <div class="dos"><div><h5>Su ventaja</h5><p>Suelen moverse menos y pagan algo mientras esperás.</p></div><div class="mal"><h5>Qué puede salir mal</h5><p>Los dividendos no están garantizados: una empresa puede reducirlos o suspenderlos, y el precio puede caer igual.</p></div></div>
+                      <div class="acc"><button type="button" class="linkbtn" data-go="ejemplos" data-parte-go="dividendos">Ver empresas de ejemplo</button></div></div></div>
+                  <div class="parte" data-parte="liquidez"><button type="button" aria-expanded="false"><i class="sw" style="background:var(--gema-5)"></i><span>Plata disponible al instante <span class="muted">(liquidez)</span></span><span class="usd">USD 150</span><span class="pc">15%</span></button>
+                    <div class="det"><p>Plata disponible casi al instante que rinde algo mientras tanto.</p>
+                      <div class="dos"><div><h5>Su ventaja</h5><p>La sacás cuando la necesitás, sin esperar a que se recupere nada.</p></div><div class="mal"><h5>Qué puede salir mal</h5><p>Rinde poco y, si la inflación es alta, puede perder poder de compra. En un FCI el rendimiento no está garantizado.</p></div></div>
+                      <div class="acc"><button type="button" class="linkbtn" data-go="pesos">Ver opciones en pesos</button></div></div></div>
+                </div>
+              </div>
+
+              <details class="plegado"><summary>Proyección a 7 años <span>Ver más</span></summary><div><p class="small muted">Aportarías USD 9.400 y podrías tener entre USD 10.674 y USD 12.833. Montos en dólares, con supuestos ilustrativos. En un mal año el resultado puede quedar por debajo del escenario bajo.</p></div></details>
+              <details class="plegado"><summary>Por qué te salió este perfil <span>Ver más</span></summary><div><ul class="why"><li>Podés dejar tu plata invertida entre 5 y 10 años.</li><li>Ante una caída del 20% esperarías a que se recupere sin tocar nada.</li><li>Buscás un equilibrio entre cuidar tu plata y hacerla crecer.</li><li>Todavía no tenés conocimientos de inversiones.</li></ul><p style="margin-top:10px"><button type="button" class="linkbtn" data-go="bienvenida">Rehacer mi perfil</button></p></div></details>
+              <p class="legal">FinUp es una herramienta educativa. No es asesoramiento financiero ni garantiza resultados: toda inversión puede perder valor.</p>
+            </div>
+
+            <!-- TUS PESOS -->
+            <div class="g-screen" data-gs="pesos" hidden>
+              <div class="g-h"><span class="p-eyebrow">Dónde dejar tus pesos</span><div class="p-h1">Para la plata que vas a necesitar pronto</div><p class="p-sub">Cuánto ganarías en cada opción y si le gana a la inflación. Es para tu parte de corto plazo, no para toda tu cartera.</p></div>
+              <div class="p-hero preg">
+                <div class="q"><b>¿Cuándo vas a necesitar esta plata?</b><div class="segbtns" role="group" aria-label="Plazo" id="g-plazo"><button type="button" data-d="30" aria-pressed="true">30 días</button><button type="button" data-d="60" aria-pressed="false">60 días</button><button type="button" data-d="90" aria-pressed="false">90 días</button><button type="button" data-d="180" aria-pressed="false">180 días</button></div></div>
+                <div class="q"><b>¿Cuánto?</b><div class="monto">$ 384.250 <small>tu parte de liquidez (USD 250 al dólar MEP)</small></div></div>
+              </div>
+              <p class="legal">Información educativa y comparativa, basada en datos públicos. No es asesoramiento financiero. Verificá las tasas en la entidad antes de decidir.</p>
+              <div class="opc" id="g-opc"></div>
+              <p class="note">En este prototipo las tasas son de ejemplo, no las de hoy. En la app salen de ArgentinaDatos, con la fecha del dato. Inflación de referencia del ejemplo: 1,9% mensual.</p>
+              <details class="plegado"><summary>Ver todas las entidades y tasas <span>TNA, TEA, ranking completo</span></summary><div><p class="small muted">Acá queda el comparador actual completo: las cinco pestañas, el ranking por entidad y los datos técnicos, para quien quiera profundizar.</p></div></details>
+            </div>
+
+            <!-- EJEMPLOS -->
+            <div class="g-screen" data-gs="ejemplos" hidden>
+              <div class="g-h"><span class="p-eyebrow">Ejemplos de tu cartera</span><div class="p-h1">Qué hay adentro de cada parte</div><p class="p-sub">Instrumentos reales que sirven para entender cada parte. Son ejemplos educativos, no una recomendación de compra.</p></div>
+              <div class="partchips" role="group" aria-label="Parte de tu cartera" id="g-chips">
+                <button type="button" data-p="variable" aria-pressed="true"><i style="background:var(--gema-2)"></i>Empresas <b>45%</b></button>
+                <button type="button" data-p="fija" aria-pressed="false"><i style="background:var(--gema-1);box-shadow:inset 0 0 0 1px #3d6fd8"></i>Préstamos <b>25%</b></button>
+                <button type="button" data-p="dividendos" aria-pressed="false"><i style="background:var(--gema-4)"></i>Dividendos <b>15%</b></button>
+                <button type="button" data-go="pesos"><i style="background:var(--gema-5)"></i>Liquidez <b>15%</b> →</button>
+              </div>
+              <div class="ej-list" id="g-ejlist"></div>
+              <article class="ficha" id="g-ficha" aria-live="polite"></article>
+              <p class="note">Lista en revisión: algunos datos técnicos (como los ratios de conversión) todavía se están verificando. <button type="button" class="linkbtn">Explorar toda la lista (25)</button></p>
+            </div>
+
+            <!-- APRENDER -->
+            <div class="g-screen" data-gs="aprender" hidden>
+              <div class="g-h"><span class="p-eyebrow">Aprender</span><div class="p-h1">Lecciones de 2 minutos</div><p class="p-sub">En orden, de a una. Cada lección te dice dónde aparece en tu cartera.</p></div>
+              <div class="g-grid">
+                <div class="p-hero leccion" id="g-lec"></div>
+                <div class="rec" style="gap:6px"><b style="font:700 15px var(--f-display)">Tu ruta</b><ol class="ruta" id="g-ruta"></ol><button type="button" class="linkbtn" style="justify-self:start;margin-top:6px">Abrir el diccionario (20 términos)</button></div>
+              </div>
+            </div>
+
+            <nav class="g-tabbar" aria-label="Navegación de ejemplo en celular">
+              <button type="button" class="g-tab" data-go="plan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 13h6V4H4zM14 20h6v-9h-6zM14 4v4h6V4zM4 20h6v-3H4z"/></svg>Mi plan</button>
+              <button type="button" class="g-tab" data-go="pesos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 7h18v10H3z"/><circle cx="12" cy="12" r="2.5"/></svg>Tus pesos</button>
+              <button type="button" class="g-tab bot" data-go="plan" data-bot="1" aria-label="FinBot"><span class="circ"><svg viewBox="180 228 480 480" aria-hidden="true"><use href="#gema"/></svg></span>FinBot</button>
+              <button type="button" class="g-tab" data-go="ejemplos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 5h7v14H4zM13 5h7v14h-7z"/></svg>Ejemplos</button>
+              <button type="button" class="g-tab" data-go="aprender"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 6l9-3 9 3-9 3zM7 8v5c0 1.5 2.5 3 5 3s5-1.5 5-3V8"/></svg>Aprender</button>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="stage-note">El prototipo guarda el avance solo en esta página, mientras la tenés abierta. Las tasas del comparador y los montos son de ejemplo. Los textos legales y de riesgo son los de la app.</p>
+  </div>
+
+  <div class="cols">
+    <div class="panel"><h4>Qué muestra este prototipo</h4><ul>
+      <li><b>Bienvenida</b> antes del cuestionario: qué vas a recibir, cuánto tarda y que no se mueve plata.</li>
+      <li><b>Mi plan</b> con una sola superficie protagonista, “Tu plan en 3 frases” y la tarjeta “Tu recorrido” con un solo paso sugerido.</li>
+      <li><b>Avisos juntos</b> en “Antes de empezar”, siempre visibles; partes como filas y “Qué puede salir mal” con el mismo peso que la ventaja.</li>
+      <li><b>Herramientas por pregunta:</b> “Dónde dejar tus pesos” (dos preguntas y cinco opciones en humano), “Ejemplos de tu cartera” (entrada por tus partes, ficha con qué es y qué puede salir mal juntos) y Aprender como ruta.</li>
+      <li><b>Celular:</b> barra inferior con FinBot al centro y un punto en la sección sugerida.</li>
+    </ul></div>
+    <div class="panel"><h4>Reglas que respeta</h4><ul>
+      <li>Nada se bloquea: el menú lleva a cualquier sección en cualquier momento.</li>
+      <li>Sin puntos, rachas ni festejos. El avance mide comprensión y termina en “No hace falta que inviertas hoy”.</li>
+      <li>Ningún paso se completa yendo a una entidad o eligiendo un activo.</li>
+      <li>No se pliega nada de riesgo ni legal: solo la proyección, el puntaje y los datos técnicos.</li>
+    </ul></div>
+    <div class="panel"><h4>Lo que todavía decidís vos</h4><ul>
+      <li>Los nombres nuevos de las secciones y de las partes de la cartera.</li>
+      <li>Si “Rehacer perfil” sale del menú (en el prototipo está dentro de “Por qué te salió este perfil”).</li>
+      <li>El monto del comparador desde el menú (en el prototipo, tu parte de liquidez).</li>
+      <li>Si rehacer el perfil reinicia el recorrido.</li>
+    </ul></div>
+  </div>
+</section>
+
+<!-- ================= RONDA 2 ================= -->
+<section class="r2" aria-labelledby="s-r2">
+  <div class="sec-head">
+    <p class="eyebrow">Ronda 2 · Decisiones pendientes</p>
+    <h2 id="s-r2">Tipografía de rótulos, escala de riesgo y navegación en celular</h2>
+    <p class="lead">La dirección Facetas quedó aprobada como concepto. Esta sección resuelve lo que faltaba validar antes de implementar. Más abajo sigue la propuesta completa de la ronda 1.</p>
+  </div>
+  <nav class="r2-tabs" aria-label="Ir a una decisión">
+    <a class="tag" href="#d-mono">A · Tercera tipografía</a>
+    <a class="tag" href="#d-riesgo">B · Escala de riesgo</a>
+    <a class="tag" href="#d-nav">C · Navegación en celular</a>
+  </nav>
+
+  <!-- A. Tipografía -->
+  <div class="r2-block" id="d-mono">
+    <h3>A · ¿Hace falta JetBrains Mono?</h3>
+    <p class="lead">Los rótulos y los tickers son el único lugar donde una monoespaciada tendría sentido. Los montos y las tasas nunca la usan. Estas son las tres opciones en los mismos contextos reales.</p>
+    <div class="opts">
+      <div class="opt">
+        <div class="opt-h"><b>1 · JetBrains Mono</b><span class="tag">+1 familia</span></div>
+        <div class="mini">
+          <span class="lbl-mono">Tu cartera sugerida</span>
+          <div class="tk-row"><span class="tk-mono">YPF-ON</span><span class="small">Obligación negociable de YPF</span></div>
+          <div class="tk-row"><span class="tk-mono">AL30</span><span class="tk-mono">GD35</span><span class="tk-mono">SPY</span></div>
+          <div class="tasa-col"><span class="lbl-mono">Entidad</span><span class="lbl-mono">TNA</span><span>Banco Nación</span><span>31,00%</span><span>Mercado Pago</span><span>27,50%</span></div>
+        </div>
+        <div class="kv"><div><span>Carácter</span><b>Técnico, de código</b></div><div><span>Peso extra</span><b>≈ 2 pesos, subset latino</b></div><div><span>Riesgo</span><b>Volver a la estética de terminal</b></div></div>
+      </div>
+      <div class="opt rec">
+        <div class="opt-h"><b>2 · Plus Jakarta Sans</b><span class="badge-rec">Recomendada</span></div>
+        <div class="mini">
+          <span class="lbl-jak">Tu cartera sugerida</span>
+          <div class="tk-row"><span class="tk-jak">YPF-ON</span><span class="small">Obligación negociable de YPF</span></div>
+          <div class="tk-row"><span class="tk-jak">AL30</span><span class="tk-jak">GD35</span><span class="tk-jak">SPY</span></div>
+          <div class="tasa-col"><span class="lbl-jak">Entidad</span><span class="lbl-jak">TNA</span><span>Banco Nación</span><span>31,00%</span><span>Mercado Pago</span><span>27,50%</span></div>
+        </div>
+        <div class="kv"><div><span>Carácter</span><b>Tecnológico y premium</b></div><div><span>Peso extra</span><b>Ninguno (ya se descarga)</b></div><div><span>Riesgo</span><b>Bajo</b></div></div>
+      </div>
+      <div class="opt">
+        <div class="opt-h"><b>3 · Inter</b><span class="tag">sin cambios de carga</span></div>
+        <div class="mini">
+          <span class="lbl-inter">Tu cartera sugerida</span>
+          <div class="tk-row"><span class="tk-inter">YPF-ON</span><span class="small">Obligación negociable de YPF</span></div>
+          <div class="tk-row"><span class="tk-inter">AL30</span><span class="tk-inter">GD35</span><span class="tk-inter">SPY</span></div>
+          <div class="tasa-col"><span class="lbl-inter">Entidad</span><span class="lbl-inter">TNA</span><span>Banco Nación</span><span>31,00%</span><span>Mercado Pago</span><span>27,50%</span></div>
+        </div>
+        <div class="kv"><div><span>Carácter</span><b>Neutro, se pierde identidad</b></div><div><span>Peso extra</span><b>Ninguno</b></div><div><span>Riesgo</span><b>Rótulos y texto se confunden</b></div></div>
+      </div>
+    </div>
+    <div class="verdict">
+      <p><b>Recomendación: no sumar JetBrains Mono.</b> Los rótulos en Jakarta con mayúsculas y espaciado ya dan el tono técnico, y los tickers en Jakarta pesada se leen como “código” sin parecer una terminal. La tercera familia aportaría poco para dos usos.</p>
+      <p><b>Dato del repo:</b> hoy los tickers y algunos porcentajes usan <code>font-mono</code>, que apunta a Geist Mono, una fuente que la app no carga. Por eso cada sistema operativo muestra una distinta (Consolas en Windows, Menlo en Mac). Pasar esos usos a Jakarta corrige esa inconsistencia sin agregar fuentes.</p>
+      <p class="small muted">Las tasas de la tabla son ejemplos para mostrar la tipografía, no datos actuales.</p>
+    </div>
+  </div>
+
+  <!-- B. Riesgo -->
+  <div class="r2-block" id="d-riesgo">
+    <h3>B · Escala de riesgo: verificación</h3>
+    <div class="risk-demo">
+      <div class="opt">
+        <div class="opt-h"><b>En Instrumentos</b><span class="tag">relativo a la lista</span></div>
+        <article class="inst p"><span class="tk">YPF-ON</span><span class="nm">Obligación negociable de YPF en dólares</span><div class="ft"><span class="chip r-bajo"><span class="bars" aria-hidden="true"><i></i><i class="off"></i><i class="off"></i></span>Riesgo bajo</span><span class="chip cat">Bonos y ONs</span></div></article>
+        <article class="inst p"><span class="tk">AL30</span><span class="nm">Bonar 2030</span><div class="ft"><span class="chip r-medio"><span class="bars" aria-hidden="true"><i></i><i></i><i class="off"></i></span>Riesgo medio</span><span class="chip cat">Bonos y ONs</span></div></article>
+        <article class="inst p"><span class="tk">GD35</span><span class="nm">Global 2035</span><div class="ft"><span class="chip r-alto"><span class="bars" aria-hidden="true"><i></i><i></i><i></i></span>Riesgo alto</span><span class="chip cat">Bonos y ONs</span></div></article>
+      </div>
+      <div class="opt">
+        <div class="opt-h"><b>En el Comparador</b><span class="tag">según el tipo de producto</span></div>
+        <div class="cmp-row"><span>Plazo fijo · 30 días</span><span class="tasa">31,00%</span><div class="chips"><span class="chip r-bajo"><span class="bars" aria-hidden="true"><i></i><i class="off"></i><i class="off"></i></span>Riesgo bajo</span><span class="chip cat">Pesos</span></div></div>
+        <div class="cmp-row"><span>Billetera · cuenta remunerada</span><span class="tasa">27,50%</span><div class="chips"><span class="chip r-medio"><span class="bars" aria-hidden="true"><i></i><i></i><i class="off"></i></span>Riesgo medio</span><span class="chip cat">Pesos</span></div></div>
+        <div class="cmp-row"><span>FCI renta fija · largo plazo</span><span class="tasa">33,10%</span><div class="chips"><span class="chip r-alto"><span class="bars" aria-hidden="true"><i></i><i></i><i></i></span>Riesgo alto</span><span class="chip cat">Pesos</span></div></div>
+      </div>
+      <div class="opt">
+        <div class="opt-h"><b>Junto a una advertencia</b><span class="tag">ficha · Riesgos</span></div>
+        <div class="warn-box"><b><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3 2 21h20L12 3z"/><path d="M12 10v5M12 18h.01"/></svg>Qué puede salir mal</b><p>Si sube la tasa en EE.UU., los bonos largos suelen bajar de precio.</p></div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="chip r-medio"><span class="bars" aria-hidden="true"><i></i><i></i><i class="off"></i></span>Riesgo medio</span><span class="small muted">según su volatilidad</span></div>
+        <p class="small muted">Comparten tono ámbar. Se distinguen por forma: la advertencia es un bloque con ícono y título en mayúsculas, y el riesgo es una pastilla con barras.</p>
+      </div>
+    </div>
+    <p class="small muted">Las tasas de ejemplo de esta sección son ilustrativas. Las filas del Comparador muestran cómo se asigna el riesgo en el código, no cotizaciones de hoy.</p>
+
+    <div class="table-wrap">
+      <table class="pc-table">
+        <thead><tr><th>Verificación</th><th>Bajo</th><th>Medio</th><th>Alto</th><th>Resultado</th></tr></thead>
+        <tbody>
+          <tr><td>Texto de la etiqueta sobre tarjeta</td><td class="num">11,93</td><td class="num">12,80</td><td class="num">6,42</td><td>Pasa AA (≥ 4,5) en tarjeta, fondo y filas</td></tr>
+          <tr><td>Peor superficie (tile del dashboard)</td><td class="num">10,34</td><td class="num">11,15</td><td class="num">5,63</td><td>Pasa AA</td></tr>
+          <tr><td>Barra encendida frente al fondo del badge</td><td class="num">11,93</td><td class="num">12,80</td><td class="num">6,42</td><td>Pasa 3:1 para indicadores</td></tr>
+          <tr><td>Barra encendida frente a apagada</td><td class="num">6,00</td><td class="num">6,22</td><td class="num">4,04</td><td>Se distinguen; propongo subir la apagada de 25% a 35% de opacidad para que se vean los tres lugares</td></tr>
+          <tr><td>Distinción sin color</td><td colspan="3">1 · 2 · 3 barras y la palabra</td><td>No depende del color</td></tr>
+          <tr><td>Daltonismo (rojo‑verde)</td><td colspan="3">Celeste y amarillo se separan bien; amarillo y naranja se separan por claridad (1,9:1 entre sí) y por las barras</td><td>Aceptable</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Dónde aparece</th><th>Qué significa en los datos</th><th>Distribución real</th><th>Coincide la etiqueta</th></tr></thead>
+        <tbody>
+          <tr><td><b>Instrumentos</b><br><span class="small muted">lib/plataforma/instrumentos/datos.ts</span></td><td>Riesgo <b>relativo dentro de la lista</b>, lo aclara <code>NOTA_RIESGO</code> en el listado y la ficha.</td><td><span class="num">2 bajo</span> (YPF-ON, PAMP-ON) · <span class="num">7 medio</span> (SPY, DIA, KO, PG, JNJ, AL30, GD30) · <span class="num">16 alto</span></td><td>Sí, dentro de su contexto.</td></tr>
+          <tr><td><b>Comparador</b><br><span class="small muted">lib/plataforma/comparador/normalizar.ts</span></td><td>Fijo por tipo: plazo fijo y UVA bajo; billetera medio; FCI money market bajo; FCI renta fija medio, o alto si es de largo plazo o dura más de 3 años.</td><td>Depende del día: lo calcula con los datos de ArgentinaDatos.</td><td>Sí, pero <b>no hay ninguna nota</b> que explique de dónde sale.</td></tr>
+          <tr><td><b>Dashboard</b><br><span class="small muted">lib/plataforma/cartera.ts</span></td><td>Nivel de la cartera según la caída en un mal año: bajo si cae menos de 12%, medio hasta 22%, alto desde 22%.</td><td>En el ejemplo: caída de 21,5% → “Medio”.</td><td>Sí, con un borde fino: la pantalla redondea a “−22%” y muestra “Medio”, aunque “Alto” empieza en 22%.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="verdict">
+      <p><b>La escala visual funciona, y conviene unificarla.</b> Pasa todos los contrastes y no depende del color.</p>
+      <p><b>Un riesgo de comprensión que la unificación vuelve más visible:</b> “Riesgo bajo” significa cosas distintas según la pantalla. Para Instrumentos son dos obligaciones negociables en dólares, y para el Comparador es un plazo fijo en pesos. Con los mismos colores en todos lados, alguien podría creer que una ON es tan segura como un plazo fijo. No propongo cambiar los datos, sino mostrar el contexto junto a cada badge, por ejemplo una nota en el Comparador como la que ya tiene Instrumentos. Es un cambio de texto, así que lo decidís vos.</p>
+      <p><b>Sin cambios en la lógica:</b> la unificación solo afecta a los componentes <code>BadgeRiesgo</code> de Instrumentos y del Comparador. El “Nivel de riesgo” del dashboard hoy es texto, sin badge.</p>
+    </div>
+  </div>
+
+  <!-- C. Navegación -->
+  <div class="r2-block" id="d-nav">
+    <h3>C · Navegación en celular</h3>
+    <div class="cols">
+      <div class="panel">
+        <h4>Qué pasa hoy (375 px)</h4>
+        <ul>
+          <li><b>Secciones ocultas:</b> la barra superior tiene 5 enlaces en una fila que se desliza de costado. Se ven “Mi cartera”, “Comparador” y la mitad de “Instrumentos”. <b>“Aprender” y “Rehacer perfil” quedan fuera de la pantalla</b>, sin ninguna señal de que se puede deslizar.</li>
+          <li><b>Activo fuera de vista:</b> al entrar a Aprender, el enlace activo queda fuera de la pantalla, porque la barra no se desplaza sola hasta él (no hay código que lo haga en <code>shell.tsx</code>).</li>
+          <li><b>Espacio fijo:</b> la cabecera mide unos 100 px y queda fija arriba: es el 12% de un teléfono de 812 px.</li>
+          <li><b>Una acción mezclada con secciones:</b> “Rehacer perfil” está al mismo nivel que las secciones.</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h4>Cómo tapa FinBot</h4>
+        <ul>
+          <li>El botón “Preguntale a FinBot” es una pastilla de unos 190 × 44 px fija abajo a la derecha (<code>finbot-chat.tsx</code>).</li>
+          <li>Mientras se desplaza la pantalla, queda encima de la columna derecha. En las capturas vi que tapa la nota de “Nivel de riesgo” del dashboard y los montos de las barras del comparador.</li>
+          <li>Al final de la página no tapa, porque el contenido tiene un margen inferior de 112 px.</li>
+          <li>Abierto, el panel ocupa casi toda la pantalla pero no es un modal: con Tab se sale a la página de atrás.</li>
+        </ul>
+        <p class="small muted">Las medidas salen de lo que observé en la app en las etapas anteriores y del código. Hoy no pude volver a medirlas: tu servidor de desarrollo ocupa el puerto y, como tiene Supabase configurado, el panel pide iniciar sesión.</p>
+      </div>
+    </div>
+
+    <div class="phones">
+      <div class="phone">
+        <div class="opt-h"><b>Hoy</b><span class="tag func">problema</span></div>
+        <div class="screen">
+          <div class="scr-body" style="padding-top:96px">
+            <div class="ph-tile"><small>En un mal año</small><b style="color:var(--warn)">−22%</b><small>Con USD 1.000 invertidos…</small></div>
+            <div class="ph-tile"><small>Nivel de riesgo</small><b>Medio</b><small>Según cuánto podría caer la cartera…</small></div>
+            <div class="ph-line"></div><div class="ph-line" style="width:70%"></div><div class="ph-line"></div><div class="ph-line" style="width:60%"></div>
+          </div>
+          <div class="scr-head">
+            <div class="scr-top"><span class="lg"><svg viewBox="180 228 480 480" aria-hidden="true"><use href="#gema"/></svg>finup</span><span class="tag" style="padding:3px 6px">Beta</span></div>
+            <div class="scr-nav"><span class="on">Mi cartera</span><span>Comparador</span><span class="cut">Instrumen</span></div>
+          </div>
+          <span class="fab"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" aria-hidden="true"><rect x="5" y="8" width="14" height="10" rx="2"/></svg>Preguntale a FinBot</span>
+          <span class="overlap" aria-hidden="true"></span>
+        </div>
+        <p class="small muted">La línea roja punteada marca el área que tapa el botón de FinBot.</p>
+      </div>
+
+      <div class="phone">
+        <div class="opt-h"><b>A · Barra superior mejorada</b><span class="tag">cambio mínimo</span></div>
+        <div class="screen">
+          <div class="scr-body" style="padding-top:84px">
+            <div class="ph-tile"><small>En un mal año</small><b style="color:var(--warn)">−22%</b><small>Con USD 1.000 invertidos…</small></div>
+            <div class="ph-tile"><small>Nivel de riesgo</small><b>Medio</b><small>Según cuánto podría caer la cartera…</small></div>
+            <div class="ph-line"></div><div class="ph-line" style="width:70%"></div>
+          </div>
+          <div class="scr-head">
+            <div class="scr-top" style="padding-block:6px"><span class="lg"><svg viewBox="180 228 480 480" aria-hidden="true"><use href="#gema"/></svg>finup</span></div>
+            <div class="scr-nav fade"><span>Mi cartera</span><span>Comparador</span><span class="on">Instrumentos</span><span>Aprender</span></div>
+          </div>
+          <span class="fab icon" aria-label="FinBot"><svg viewBox="180 228 480 480" aria-hidden="true"><use href="#gema"/></svg></span>
+        </div>
+        <ul class="small" style="margin:0;padding-left:18px;color:var(--ink-2);display:grid;gap:4px">
+          <li>4 secciones con desvanecido al borde y desplazamiento automático hasta la activa.</li>
+          <li>“Rehacer perfil” pasa a la pantalla Mi cartera.</li>
+          <li>FinBot como botón de ícono de 42 px.</li>
+          <li><b>Contra:</b> “Aprender” sigue oculta hasta deslizar.</li>
+        </ul>
+      </div>
+
+      <div class="phone">
+        <div class="opt-h"><b>B · Menú desplegable</b><span class="tag">cambio medio</span></div>
+        <div class="screen">
+          <div class="scr-body" style="padding-top:52px">
+            <div class="ph-tile"><small>En un mal año</small><b style="color:var(--warn)">−22%</b><small>Con USD 1.000 invertidos…</small></div>
+            <div class="ph-tile"><small>Nivel de riesgo</small><b>Medio</b><small>Según cuánto podría caer…</small></div>
+          </div>
+          <div class="scr-head">
+            <div class="scr-top"><span class="lg"><svg viewBox="180 228 480 480" aria-hidden="true"><use href="#gema"/></svg>finup</span><span style="display:flex;gap:8px;align-items:center"><span class="fab icon" style="position:static;width:30px;height:30px;border-radius:9px" aria-label="FinBot"><svg viewBox="180 228 480 480" aria-hidden="true"><use href="#gema"/></svg></span><span class="tag" style="padding:6px 8px">Menú</span></span></div>
+          </div>
+          <div class="dim-screen"></div>
+          <div class="sheet"><span class="on">Mi cartera</span><span>Comparador</span><span>Instrumentos</span><span>Aprender</span><span class="sep"></span><span>Rehacer perfil</span></div>
+        </div>
+        <ul class="small" style="margin:0;padding-left:18px;color:var(--ink-2);display:grid;gap:4px">
+          <li>Cabecera de 52 px; el menú abre una hoja con todas las opciones (<code>sheet.tsx</code> ya está instalado).</li>
+          <li>FinBot va en la cabecera y no tapa nada.</li>
+          <li><b>Contra:</b> las secciones quedan detrás de un toque; un principiante puede no descubrirlas.</li>
+        </ul>
+      </div>
+
+      <div class="phone">
+        <div class="opt-h"><b>C · Barra inferior</b><span class="badge-rec">Recomendada</span></div>
+        <div class="screen">
+          <div class="scr-body" style="padding-top:52px">
+            <div class="ph-tile"><small>En un mal año</small><b style="color:var(--warn)">−22%</b><small>Con USD 1.000 invertidos…</small></div>
+            <div class="ph-tile"><small>Nivel de riesgo</small><b>Medio</b><small>Según cuánto podría caer la cartera…</small></div>
+            <div class="ph-line"></div><div class="ph-line" style="width:70%"></div><div class="ph-line"></div>
+          </div>
+          <div class="scr-head">
+            <div class="scr-top"><span class="lg"><svg viewBox="180 228 480 480" aria-hidden="true"><use href="#gema"/></svg>finup</span><span class="tag" style="padding:3px 6px">Beta</span></div>
+          </div>
+          <div class="tabbar"><span class="on"><i></i>Mi cartera</span><span><i></i>Comparador</span><span class="bot"><svg viewBox="180 228 480 480" aria-hidden="true"><use href="#gema"/></svg>FinBot</span><span><i></i>Instrum.</span><span><i></i>Aprender</span></div>
+        </div>
+        <ul class="small" style="margin:0;padding-left:18px;color:var(--ink-2);display:grid;gap:4px">
+          <li>Las 4 secciones siempre visibles, al alcance del pulgar.</li>
+          <li>FinBot en el centro de la barra, con la gema: deja de flotar sobre el contenido.</li>
+          <li>“Rehacer perfil” pasa a Mi cartera.</li>
+          <li><b>Contra:</b> ocupa unos 60 px abajo y necesita el margen del área segura del teléfono. Las etiquetas cortas (“Instrum.”) son un cambio de texto: alternativa, solo íconos con nombre accesible.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Criterio</th><th>A · Barra superior</th><th>B · Menú</th><th>C · Barra inferior</th></tr></thead>
+        <tbody>
+          <tr><td>Todas las secciones a la vista</td><td>No (Aprender oculta)</td><td>No (tras un toque)</td><td><b>Sí</b></td></tr>
+          <tr><td>FinBot sin tapar contenido</td><td>Casi (ícono más chico)</td><td><b>Sí</b></td><td><b>Sí</b></td></tr>
+          <tr><td>Espacio fijo ocupado</td><td>≈ 84 px arriba</td><td><b>≈ 52 px arriba</b></td><td>≈ 52 px arriba + 60 px abajo</td></tr>
+          <tr><td>Alcance con el pulgar</td><td>Bajo</td><td>Bajo</td><td><b>Alto</b></td></tr>
+          <tr><td>Archivos a tocar</td><td><code>shell.tsx</code>, <code>finbot-chat.tsx</code></td><td><code>shell.tsx</code>, <code>finbot-chat.tsx</code></td><td><code>shell.tsx</code>, <code>finbot-chat.tsx</code></td></tr>
+          <tr><td>Escritorio</td><td colspan="3">Sin cambios: la barra lateral se mantiene en las tres opciones.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="verdict">
+      <p><b>Recomendación: C, barra inferior.</b> Es la única que deja las cuatro secciones siempre visibles y resuelve FinBot sin esconderlo. Para alguien que recién empieza, ver “Aprender” todo el tiempo es parte del valor del producto.</p>
+      <p><b>Si preferís no cambiar el patrón todavía:</b> A es la mejora mínima y se puede hacer primero sin cerrar la puerta a C.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 1. DIAGNÓSTICO ================= -->
+<section aria-labelledby="s-diag">
+  <div class="sec-head">
+    <p class="eyebrow">1 · Identidad actual</p>
+    <h2 id="s-diag">Una base correcta que todavía no tiene firma</h2>
+    <p class="lead">Después de la Etapa 1, FinUp es accesible y consistente: un solo azul de acción, bordes y foco visibles, texto secundario legible. Lo que falta es lo que la haría reconocible. Hoy cualquier producto con fondo azul noche y componentes shadcn se vería parecido.</p>
+  </div>
+  <div class="cols">
+    <div class="panel">
+      <h3>Lo que ya es de FinUp</h3>
+      <ul>
+        <li>La gema facetada del logo, con cinco tonos de azul a cyan y un corte diagonal muy característico. Hoy solo aparece en el logo.</li>
+        <li>El azul noche <code>#0a1752</code>: menos frío que el negro de Linear o Raycast, más propio.</li>
+        <li>El bloque ámbar “Qué puede salir mal”: es el gesto anti‑humo y conviene que sea parte de la identidad.</li>
+        <li>Plus Jakarta Sans ya se descarga en <code>app/layout.tsx</code>, pero ningún componente la usa.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>Lo que la vuelve genérica</h3>
+      <ul>
+        <li>Todo está en tarjetas iguales (<code>rounded-xl</code>, mismo borde, misma sombra): no hay jerarquía de superficies.</li>
+        <li>El dato más importante (tu perfil, tu caída posible) tiene el mismo peso visual que cualquier nota.</li>
+        <li>Los gráficos son los de Recharts por defecto y la barra de distribución usa colores de Tailwind sin relación con la marca (<code>lib/plataforma/cartera.ts</code>).</li>
+        <li>FinBot se ve como un widget de chat agregado: burbuja flotante genérica, sin contexto visible del plan.</li>
+        <li>Celular: el menú se desliza sin aviso y el botón de FinBot tapa contenido (pendiente desde la auditoría).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 2. DIRECCIÓN ================= -->
+<section aria-labelledby="s-dir">
+  <div class="sec-head">
+    <p class="eyebrow">2 · Dirección creativa</p>
+    <h2 id="s-dir">Tecnología que se nota, finanzas que se leen</h2>
+    <p class="lead">La mezcla que pidieron se traduce en reglas concretas. La tecnología manda en la superficie (luz, profundidad, movimiento, forma); el fintech premium manda en el oficio (tipografía, espaciado, detalle); las finanzas profesionales mandan dentro de los datos (números tabulares, escalas honestas, unidades siempre visibles).</p>
+  </div>
+  <div class="mix">
+    <div class="mix-bar" role="img" aria-label="Tecnología 60 por ciento, fintech premium 25, finanzas profesionales 15">
+      <span style="flex:60; background: linear-gradient(90deg, var(--gema-2), var(--gema-4));"></span>
+      <span style="flex:25; background: var(--gema-5);"></span>
+      <span style="flex:15; background: #c7d4ea;"></span>
+    </div>
+    <div class="mix-legend">
+      <span><b>60 · Tecnología</b> — facetas, filo de luz, halos medidos, transiciones de refracción, tipografía display pesada.</span>
+      <span><b>25 · Fintech premium</b> — superficies en capas, márgenes generosos, una sola acción principal por pantalla.</span>
+      <span><b>15 · Finanzas profesionales</b> — cifras tabulares, ejes y leyendas siempre presentes, riesgo con forma y no solo color.</span>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="panel">
+      <h4>Por qué esta dirección y no otra</h4>
+      <ul>
+        <li>Parte de un activo que ya existe y que nadie más tiene: la gema. No hace falta inventar un símbolo nuevo.</li>
+        <li>Evita los dos clichés del rubro: la terminal de trading (verde/rojo, monoespaciado en todo) y la landing de IA (gradientes violetas, brillos por todos lados).</li>
+        <li>La luz cumple una función: marca lo activo, lo personal y lo importante. Eso la vuelve aprendible y no decorativa.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h4>Qué no cambia</h4>
+      <ul>
+        <li>Logo, fondo azul noche y todos los tokens de la Etapa 1 (botón <code>#2563eb</code>, foco <code>#60a5fa</code>, campos <code>#566b98</code>, texto secundario <code>#a8bcd9</code>).</li>
+        <li>Textos, fórmulas, datos, avisos legales y la caja “Qué puede salir mal”.</li>
+        <li>La regla anti‑humo: ningún efecto puede hacer que una estimación parezca una promesa.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 3. RASGOS ================= -->
+<section aria-labelledby="s-rasgos">
+  <div class="sec-head">
+    <p class="eyebrow">3 · Rasgos reconocibles</p>
+    <h2 id="s-rasgos">Seis gestos que se repiten con intención</h2>
+    <p class="lead">Cada rasgo tiene una regla de uso. Si se usa fuera de su regla, deja de identificar a FinUp y pasa a ser decoración.</p>
+  </div>
+  <div class="rasgos">
+    <article class="rasgo">
+      <div class="demo"><div style="width:70%;height:54px;background:var(--card);border:1px solid var(--border);clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,0 100%);border-radius:12px 0 12px 12px"></div></div>
+      <h4>El corte de gema</h4>
+      <p class="small muted">Esquina superior derecha cortada en diagonal, con el ángulo de la gema. <b>Regla:</b> solo en la superficie protagonista de cada pantalla (tu perfil, tu resultado, la ficha abierta) y en las tarjetas de instrumentos.</p>
+    </article>
+    <article class="rasgo">
+      <div class="demo"><div style="position:relative;width:70%;height:54px;background:var(--card);border:1px solid var(--border);border-radius:12px"><span style="position:absolute;inset:0 0 auto;height:1px;background:var(--filo)"></span></div></div>
+      <h4>El filo de luz</h4>
+      <p class="small muted">Una línea de 1 px que va de azul a hielo, como el reflejo en una arista. <b>Regla:</b> marca lo activo o lo personal (tu cartera, la pestaña elegida, FinBot hablando de tu plan). Nunca más de uno por vista.</p>
+    </article>
+    <article class="rasgo">
+      <div class="demo"><div class="prisma" style="width:80%"><span style="flex:45;background:var(--gema-2)"></span><span style="flex:25;background:var(--gema-1)"></span><span style="flex:15;background:var(--gema-4)"></span><span style="flex:15;background:var(--gema-5)"></span></div></div>
+      <h4>El prisma de datos</h4>
+      <p class="small muted">Las proporciones se dibujan como facetas inclinadas, con los cinco azules del logo. <b>Regla:</b> cualquier “parte de un todo” (cartera, composición de un fondo) usa esta forma y esta paleta.</p>
+    </article>
+    <article class="rasgo">
+      <div class="demo"><span class="chip r-bajo"><span class="bars"><i></i><i class="off"></i><i class="off"></i></span>Riesgo bajo</span>&nbsp;<span class="chip r-medio"><span class="bars"><i></i><i></i><i class="off"></i></span>Medio</span>&nbsp;<span class="chip r-alto"><span class="bars"><i></i><i></i><i></i></span>Alto</span></div>
+      <h4>Riesgo con forma</h4>
+      <p class="small muted">Barras de uno a tres además del color y la palabra. <b>Regla:</b> el riesgo nunca depende solo del color. <em>La escala de colores sigue pendiente de tu aprobación.</em></p>
+    </article>
+    <article class="rasgo">
+      <div class="demo"><div style="font:800 28px/1 var(--f-display);letter-spacing:-.03em">Moderado</div></div>
+      <h4>La voz tipográfica</h4>
+      <p class="small muted">Plus Jakarta Sans muy pesada y apretada para titulares y cifras clave; Inter para leer; JetBrains Mono solo para rótulos y tickers. <b>Regla:</b> los montos nunca van en monoespaciada (eso era la estética de terminal).</p>
+    </article>
+    <article class="rasgo">
+      <div class="demo"><span class="thinking" aria-label="Pensando"><i></i><i></i><i></i></span></div>
+      <h4>La refracción</h4>
+      <p class="small muted">Movimientos cortos (150–250 ms) que hacen “pasar la luz”: al elegir una opción, al llegar al resultado, cuando FinBot piensa. <b>Regla:</b> un momento orquestado por pantalla y nada con <code>prefers-reduced-motion</code>.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ================= 4. PROTOTIPO ================= -->
+<section aria-labelledby="s-proto">
+  <div class="sec-head">
+    <p class="eyebrow">4 · Prototipo comparativo</p>
+    <h2 id="s-proto">Actual frente a propuesta, con datos reales de ejemplo</h2>
+    <p class="lead">Los números son los de la cartera de ejemplo que genera la app en modo sin cuenta (perfil Moderado, USD 1.000 iniciales y USD 100 por mes, 7 años). La versión “Actual” es una recreación aproximada de cómo se ve hoy, después de la Etapa 1; no es una captura.</p>
+  </div>
+
+  <div class="bench" id="bench" data-mode="propuesta">
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Pantalla">
+        <button type="button" data-screen="dash" aria-pressed="true">Dashboard</button>
+        <button type="button" data-screen="res" aria-pressed="false">Resultado</button>
+        <button type="button" data-screen="inst" aria-pressed="false">Instrumentos</button>
+        <button type="button" data-screen="bot" aria-pressed="false">FinBot</button>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <div class="seg" role="group" aria-label="Versión">
+          <button type="button" data-mode="actual" aria-pressed="false">Actual</button>
+          <button type="button" data-mode="propuesta" aria-pressed="true">Propuesta</button>
+        </div>
+        <div class="seg" role="group" aria-label="Dispositivo">
+          <button type="button" data-device="escritorio" aria-pressed="true">Escritorio</button>
+          <button type="button" data-device="movil" aria-pressed="false">Celular</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage" id="stage" data-device="escritorio">
+      <div class="frame">
+        <div class="app">
+          <div class="app-top">
+            <span class="logo"><svg viewBox="180 228 480 480" aria-hidden="true"><use href="#gema"/></svg>finup</span>
+            <nav class="app-nav" aria-label="Navegación de ejemplo"><span class="on">Mi cartera</span><span>Comparador</span><span>Instrumentos</span><span>Aprender</span></nav>
+          </div>
+
+          <!-- ===== DASHBOARD ===== -->
+          <div class="app-body" data-pantalla="dash">
+            <div class="v-act">
+              <div class="a-eyebrow">Tu cartera sugerida</div>
+              <div class="a-h1">Perfil moderado</div>
+              <p class="muted small">Buscás un equilibrio: estás dispuesto a tolerar subas y bajas para que tu plata crezca, pero con una parte protegida que amortigua los golpes.</p>
+              <div class="a-tiles">
+                <div class="a-tile"><span class="l">Retorno anual estimado</span><span class="v num">3,3% a 8,1%</span><span class="n">Supuesto ilustrativo, no es una promesa.</span></div>
+                <div class="a-tile"><span class="l">En un mal año</span><span class="v num" style="color:#ffd230">-22%</span><span class="n">Con USD 1.000 invertidos, quedarías cerca de USD 785.</span></div>
+                <div class="a-tile"><span class="l">Nivel de riesgo</span><span class="v">Medio</span><span class="n">Según cuánto podría caer la cartera en un mal año.</span></div>
+              </div>
+              <div class="a-card">
+                <b style="font-size:18px">Cómo se reparte tu plata</b>
+                <div class="a-bar"><span style="flex:45;background:#155dfc"></span><span style="flex:25;background:#00b8db"></span><span style="flex:15;background:#00bcff"></span><span style="flex:15;background:#90a1b9"></span></div>
+                <div class="a-row"><span style="display:flex;gap:10px;align-items:center"><i class="dot" style="background:#155dfc"></i>Acciones y ETFs (vía CEDEARs)</span><span class="pc">45%</span></div>
+                <div class="a-row"><span style="display:flex;gap:10px;align-items:center"><i class="dot" style="background:#00b8db"></i>Renta fija (bonos, Lecaps y ONs)</span><span class="pc">25%</span></div>
+                <div class="a-row"><span style="display:flex;gap:10px;align-items:center"><i class="dot" style="background:#00bcff"></i>Acciones y ETFs de dividendos</span><span class="pc">15%</span></div>
+                <div class="a-row"><span style="display:flex;gap:10px;align-items:center"><i class="dot" style="background:#90a1b9"></i>Liquidez (FCI money market y cauciones)</span><span class="pc">15%</span></div>
+              </div>
+              <div class="a-card">
+                <b style="font-size:18px">Proyección a 7 años</b>
+                <p class="muted small">Aportarías USD 9.400 y podrías tener entre USD 10.674 y USD 12.833.</p>
+                <svg id="chart-act" viewBox="0 0 600 200" role="img" aria-label="Proyección actual: tres líneas sin área" style="width:100%;height:auto"></svg>
+              </div>
+            </div>
+
+            <div class="v-prop">
+              <div class="p-hero">
+                <svg class="gem-bg" viewBox="180 228 480 480" aria-hidden="true"><use href="#gema"/></svg>
+                <div class="p-eyebrow">Tu cartera sugerida · Perfil</div>
+                <div class="p-h1">Moderado</div>
+                <p class="p-sub">Buscás un equilibrio: estás dispuesto a tolerar subas y bajas para que tu plata crezca, pero con una parte protegida que amortigua los golpes.</p>
+                <div class="meter" aria-label="Puntaje 64 de 100: perfil moderado">
+                  <div class="meter-track"><i></i><i class="on"></i><i></i><span class="meter-pin" style="left:calc(64% - 1px)"></span></div>
+                  <div class="meter-legend"><span>Conservador</span><span><b>64</b> / 100 · Moderado</span><span>Agresivo</span></div>
+                </div>
+              </div>
+              <div class="p-tiles">
+                <div class="p-tile"><span class="l">Retorno anual estimado</span><span class="v">3,3–8,1%</span><span class="n">Supuesto ilustrativo, no es una promesa.</span></div>
+                <div class="p-tile warn"><span class="l">En un mal año</span><span class="v">−22%</span><div class="drop" aria-hidden="true"><i></i><b></b></div><span class="n">Con USD 1.000 invertidos, quedarías cerca de USD 785.</span></div>
+                <div class="p-tile"><span class="l">Nivel de riesgo</span><span class="v" style="display:flex;align-items:center;gap:10px">Medio <span class="chip r-medio" style="font-size:11px"><span class="bars"><i></i><i></i><i class="off"></i></span>2 de 3</span></span><span class="n">Según cuánto podría caer la cartera en un mal año.</span></div>
+              </div>
+              <div class="p-card">
+                <h3>Cómo se reparte tu plata</h3>
+                <div class="prisma" role="img" aria-label="Acciones y ETFs 45%, renta fija 25%, dividendos 15%, liquidez 15%">
+                  <span style="flex:45;background:var(--gema-2)"></span><span style="flex:25;background:var(--gema-1);outline:1px solid #2a4fae"></span><span style="flex:15;background:var(--gema-4)"></span><span style="flex:15;background:var(--gema-5)"></span>
+                </div>
+                <div class="p-list">
+                  <div class="p-row"><i class="sw" style="background:var(--gema-2)"></i><span>Acciones y ETFs (vía CEDEARs)</span><span class="usd">USD 450</span><span class="pc">45%</span></div>
+                  <div class="p-row"><i class="sw" style="background:var(--gema-1);box-shadow:inset 0 0 0 1px #3d6fd8"></i><span>Renta fija (bonos, Lecaps y ONs)</span><span class="usd">USD 250</span><span class="pc">25%</span></div>
+                  <div class="p-row"><i class="sw" style="background:var(--gema-4)"></i><span>Acciones y ETFs de dividendos</span><span class="usd">USD 150</span><span class="pc">15%</span></div>
+                  <div class="p-row"><i class="sw" style="background:var(--gema-5)"></i><span>Liquidez (FCI money market y cauciones)</span><span class="usd">USD 150</span><span class="pc">15%</span></div>
+                </div>
+              </div>
+              <div class="p-card">
+                <h3>Proyección a 7 años</h3>
+                <p class="muted small">Aportarías USD 9.400 y podrías tener entre USD 10.674 y USD 12.833.</p>
+                <svg id="chart-prop" viewBox="0 0 600 220" role="img" aria-label="Proyección propuesta: banda entre escenario bajo y alto, línea punteada de lo aportado" style="width:100%;height:auto"></svg>
+                <div class="chart-legend">
+                  <span><svg viewBox="0 0 22 8" aria-hidden="true"><line x1="0" y1="4" x2="22" y2="4" stroke="#a8bcd9" stroke-width="2" stroke-dasharray="4 3"/></svg>Lo que aportás</span>
+                  <span><svg viewBox="0 0 22 8" aria-hidden="true"><line x1="0" y1="4" x2="22" y2="4" stroke="#3d9cff" stroke-width="2.5"/></svg>Escenario bajo</span>
+                  <span><svg viewBox="0 0 22 8" aria-hidden="true"><line x1="0" y1="4" x2="22" y2="4" stroke="#74dcff" stroke-width="2.5"/></svg>Escenario alto</span>
+                  <span><svg viewBox="0 0 22 8" aria-hidden="true"><rect width="22" height="8" rx="2" fill="#3d9cff" fill-opacity=".22"/></svg>Rango estimado</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== RESULTADO ===== -->
+          <div class="app-body" data-pantalla="res" hidden>
+            <div class="v-act">
+              <div class="a-card" style="max-width:560px;margin:0 auto;width:100%">
+                <div class="a-eyebrow">Tu perfil de inversor</div>
+                <div style="font:800 36px/1.1 var(--f-body);background:linear-gradient(90deg,#50a2ff,#53eafd);-webkit-background-clip:text;background-clip:text;color:transparent;width:fit-content">Moderado</div>
+                <p class="muted small">Buscás un equilibrio: estás dispuesto a tolerar subas y bajas para que tu plata crezca, pero con una parte protegida que amortigua los golpes.</p>
+                <b class="small">Así llegamos a este perfil</b>
+                <ul class="small muted" style="margin:0;padding-left:18px;display:grid;gap:4px">
+                  <li>Podés dejar tu plata invertida entre 5 y 10 años, tiempo suficiente para atravesar algunas caídas.</li>
+                  <li>Ante una caída del 20% esperarías a que se recupere sin tocar nada.</li>
+                  <li>Buscás un equilibrio entre cuidar tu plata y hacerla crecer.</li>
+                  <li>Todavía no tenés conocimientos de inversiones.</li>
+                </ul>
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><span class="small muted">← Cambiar respuestas</span><span class="a-btn">Ver mi cartera →</span></div>
+              </div>
+            </div>
+            <div class="v-prop">
+              <div class="res" style="max-width:620px;margin:0 auto;width:100%">
+                <svg class="gem-bg" viewBox="180 228 480 480" aria-hidden="true"><use href="#gema"/></svg>
+                <div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><span class="p-eyebrow">Tu perfil de inversor</span><span class="steps" aria-label="7 de 7 preguntas respondidas"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
+                <div class="big">Moderado</div>
+                <p class="p-sub">Buscás un equilibrio: estás dispuesto a tolerar subas y bajas para que tu plata crezca, pero con una parte protegida que amortigua los golpes.</p>
+                <div class="meter">
+                  <div class="meter-track"><i></i><i class="on"></i><i></i><span class="meter-pin" style="left:calc(64% - 1px)"></span></div>
+                  <div class="meter-legend"><span>Conservador</span><span><b>64</b> / 100</span><span>Agresivo</span></div>
+                </div>
+                <div style="display:grid;gap:10px">
+                  <span class="p-eyebrow" style="color:var(--muted)">Así llegamos a este perfil</span>
+                  <ul class="why">
+                    <li>Podés dejar tu plata invertida entre 5 y 10 años, tiempo suficiente para atravesar algunas caídas.</li>
+                    <li>Ante una caída del 20% esperarías a que se recupere sin tocar nada.</li>
+                    <li>Buscás un equilibrio entre cuidar tu plata y hacerla crecer.</li>
+                    <li>Todavía no tenés conocimientos de inversiones.</li>
+                  </ul>
+                </div>
+                <div class="res-foot"><button type="button" class="p-btn sec">← Cambiar respuestas</button><button type="button" class="p-btn">Ver mi cartera →</button></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== INSTRUMENTOS ===== -->
+          <div class="app-body" data-pantalla="inst" hidden>
+            <div class="v-act">
+              <b style="font-size:17px">Renta fija</b>
+              <div class="inst-grid">
+                <article class="inst"><span class="tk">AL30</span><span class="a-nm">Bonar 2030</span><span class="ds">Un préstamo en dólares al Estado argentino que vence en 2030. Paga intereses y devuelve el capital…</span><div class="ft"><span class="a-badge" style="color:#ffd230;border-color:rgba(254,154,0,.3);background:rgba(254,154,0,.1)">Riesgo medio</span><span class="small muted" style="font-size:11px">Deuda del Estado argentino (ley local)</span></div></article>
+                <article class="inst"><span class="tk">GD35</span><span class="a-nm">Global 2035</span><span class="ds">Bono en dólares del Estado argentino que vence en 2035. Al ser más largo, su precio se mueve más.</span><div class="ft"><span class="a-badge" style="color:#ffa1ad;border-color:rgba(255,32,86,.3);background:rgba(255,32,86,.1)">Riesgo alto</span><span class="small muted" style="font-size:11px">Deuda del Estado argentino (ley Nueva York)</span></div></article>
+                <article class="inst"><span class="tk">YPF-ON</span><span class="a-nm">Obligación negociable de YPF en dólares</span><span class="ds">Un préstamo en dólares a YPF. La empresa paga intereses periódicos y devuelve el capital al…</span><div class="ft"><span class="a-badge" style="color:#5ee9b5;border-color:rgba(0,188,125,.3);background:rgba(0,188,125,.1)">Riesgo bajo</span><span class="small muted" style="font-size:11px">Deuda de empresas (energía)</span></div></article>
+              </div>
+            </div>
+            <div class="v-prop">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap"><h3 style="font-size:18px">Renta fija</h3><span class="p-eyebrow" style="color:var(--muted)">3 de 25 instrumentos</span></div>
+              <div class="inst-grid">
+                <article class="inst p"><span class="tk">AL30</span><span class="nm">Bonar 2030</span><span class="ds">Un préstamo en dólares al Estado argentino que vence en 2030. Paga intereses y devuelve el capital…</span><div class="ft"><span class="chip r-medio"><span class="bars" aria-hidden="true"><i></i><i></i><i class="off"></i></span>Riesgo medio</span><span class="chip cat">Estado · ley local</span></div></article>
+                <article class="inst p"><span class="tk">GD35</span><span class="nm">Global 2035</span><span class="ds">Bono en dólares del Estado argentino que vence en 2035. Al ser más largo, su precio se mueve más.</span><div class="ft"><span class="chip r-alto"><span class="bars" aria-hidden="true"><i></i><i></i><i></i></span>Riesgo alto</span><span class="chip cat">Estado · ley NY</span></div></article>
+                <article class="inst p"><span class="tk">YPF-ON</span><span class="nm">Obligación negociable de YPF en dólares</span><span class="ds">Un préstamo en dólares a YPF. La empresa paga intereses periódicos y devuelve el capital al…</span><div class="ft"><span class="chip r-bajo"><span class="bars" aria-hidden="true"><i></i><i class="off"></i><i class="off"></i></span>Riesgo bajo</span><span class="chip cat">Empresas · energía</span></div></article>
+              </div>
+              <p class="stage-note">Los textos del sector se abreviaron solo para el prototipo. En la propuesta real se mantiene el texto actual y la categoría pasa a gris neutro para no confundirse con el riesgo bajo.</p>
+            </div>
+          </div>
+
+          <!-- ===== FINBOT ===== -->
+          <div class="app-body" data-pantalla="bot" hidden>
+            <div class="v-act">
+              <div class="fb-wrap">
+                <p class="muted small">FinBot se abre como un panel flotante sobre cualquier pantalla. Mismo aspecto en todas las secciones; el contexto del plan solo aparece en una línea del encabezado.</p>
+                <div class="fb">
+                  <div class="fb-head"><span class="fb-av"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" aria-hidden="true"><rect x="5" y="8" width="14" height="10" rx="2"/><path d="M12 4v4M9 13h.01M15 13h.01"/></svg></span><span class="fb-t"><b>FinBot</b><span>Conoce tu perfil moderado</span></span></div>
+                  <div class="fb-body">
+                    <div class="msg-u">¿Por qué tengo 25% en renta fija?</div>
+                    <div class="msg-b">Porque tu perfil es moderado: la renta fija amortigua las caídas de las acciones y te da pagos más previsibles…</div>
+                  </div>
+                  <div class="fb-in"><div>Escribí tu pregunta…</div><b><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></b></div>
+                </div>
+              </div>
+            </div>
+            <div class="v-prop">
+              <div class="fb-wrap">
+                <div style="display:grid;gap:8px;align-content:start">
+                  <p class="small" style="color:var(--ink-2)">FinBot usa la gema como avatar y muestra con qué datos de tu plan responde. Sus respuestas se distinguen por el filo de luz, no por una burbuja genérica.</p>
+                  <p class="stage-note">Las fuentes (“DolarAPI”, “tu plan”) existen hoy en las herramientas de FinBot (<code>lib/finbot/tools.ts</code>), pero no se muestran. Mostrarlas es una propuesta de diseño y requiere un cambio menor en el chat.</p>
+                </div>
+                <div class="fb p">
+                  <div class="fb-head"><span class="fb-av"><svg viewBox="180 228 480 480" aria-hidden="true"><use href="#gema"/></svg></span><span class="fb-t"><b>FinBot</b><span>Conoce tu perfil moderado</span></span></div>
+                  <div class="fb-body">
+                    <div class="ctx" aria-label="Contexto que usa FinBot"><span>Plan · Moderado</span><span>45% acciones</span><span>7 años</span></div>
+                    <div class="msg-u">¿Por qué tengo 25% en renta fija?</div>
+                    <div class="msg-b">Porque tu perfil es moderado: la renta fija amortigua las caídas de las acciones y te da pagos más previsibles…
+                      <div class="src"><span>Fuente · tu plan</span><span>Glosario FinUp</span></div>
+                    </div>
+                    <span class="thinking"><i></i><i></i><i></i>&nbsp;Pensando…</span>
+                  </div>
+                  <div class="fb-in"><div>Escribí tu pregunta…</div><b><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></b></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <p class="stage-note">Usá los botones para cambiar de pantalla, comparar las dos versiones y ver el ancho de un celular (380 px). El prototipo no está conectado a la app.</p>
+  </div>
+</section>
+
+<!-- ================= 5. SISTEMA ================= -->
+<section aria-labelledby="s-sis">
+  <div class="sec-head">
+    <p class="eyebrow">5 · Sistema de diseño</p>
+    <h2 id="s-sis">Lo que se conserva, lo que se agrega</h2>
+    <p class="lead">Los valores de la Etapa 1 quedan como están. La propuesta suma una paleta de marca tomada de la gema, una superficie elevada y reglas para la luz. Ningún color nuevo reemplaza a uno que ya pasó la revisión de contraste.</p>
+  </div>
+
+  <h3>Color</h3>
+  <div class="swatches">
+    <div class="sw-c"><div class="c" style="background:var(--bg)"></div><div class="t"><b>Fondo</b><code>#0a1752</code><em>se conserva</em></div></div>
+    <div class="sw-c"><div class="c" style="background:var(--card)"></div><div class="t"><b>Superficie 1 · tarjeta</b><code>#08142e</code><em>se conserva</em></div></div>
+    <div class="sw-c"><div class="c" style="background:var(--surface-2)"></div><div class="t"><b>Superficie 2 · elevada</b><code>#0c1b4a</code><em>nuevo · FinBot, menús</em></div></div>
+    <div class="sw-c"><div class="c" style="background:var(--border)"></div><div class="t"><b>Borde</b><code>#2a3d7a</code><em>se conserva</em></div></div>
+    <div class="sw-c"><div class="c" style="background:var(--primary)"></div><div class="t"><b>Acción principal</b><code>#2563eb · 5,17:1</code><em>se conserva</em></div></div>
+    <div class="sw-c"><div class="c" style="background:var(--ring)"></div><div class="t"><b>Foco · links</b><code>#60a5fa · 6,6:1</code><em>se conserva</em></div></div>
+    <div class="sw-c"><div class="c" style="background:var(--gema-1)"></div><div class="t"><b>Gema 1 · sombra</b><code>#0739a3</code><em>nuevo · solo rellenos</em></div></div>
+    <div class="sw-c"><div class="c" style="background:var(--gema-2)"></div><div class="t"><b>Gema 2 · cuerpo</b><code>#1673e0</code><em>nuevo · gráficos</em></div></div>
+    <div class="sw-c"><div class="c" style="background:var(--gema-3)"></div><div class="t"><b>Gema 3 · arista</b><code>#3d9cff</code><em>nuevo · líneas, rótulos</em></div></div>
+    <div class="sw-c"><div class="c" style="background:var(--gema-4)"></div><div class="t"><b>Gema 4 · brillo</b><code>#16b4ff</code><em>nuevo · gráficos</em></div></div>
+    <div class="sw-c"><div class="c" style="background:var(--gema-5)"></div><div class="t"><b>Gema 5 · hielo</b><code>#74dcff</code><em>nuevo · filo de luz</em></div></div>
+    <div class="sw-c"><div class="c" style="background:var(--muted)"></div><div class="t"><b>Texto secundario</b><code>#a8bcd9</code><em>se conserva</em></div></div>
+  </div>
+  <div class="cols">
+    <div class="panel">
+      <h4>Colores semánticos (sin cambios de significado)</h4>
+      <ul>
+        <li><b>Atención / qué puede salir mal:</b> ámbar <code>#fcd34d</code> sobre fondo ámbar al 10%. Se conserva.</li>
+        <li><b>Error:</b> <code>#f87171</code> (6:1). Se conserva.</li>
+        <li><b>Le gana / pierde contra la inflación:</b> verde y rojo con signo, solo en la tasa real. Se conserva.</li>
+        <li><b>Riesgo:</b> celeste, ámbar y naranja <code>#ff8904</code> con barras. <em>Pendiente de tu aprobación.</em></li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h4>Reglas de la luz</h4>
+      <ul>
+        <li>Un halo radial por pantalla como máximo, detrás del dato protagonista. Opacidad ≤ 16%.</li>
+        <li>Filo de luz (1 px) solo en lo activo o personal. Nunca dos en la misma vista.</li>
+        <li>El gradiente sobre texto queda reservado al resultado del perfil (decisión de la Etapa 1).</li>
+        <li>Ningún brillo debajo de texto: la luz va en bordes y fondos, nunca compite con la lectura.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Tipografía</h3>
+  <div class="typescale">
+    <div class="ts"><code>Display · Jakarta 800 · 48–64 · −0,04em</code><div style="font:800 44px/1 var(--f-display);letter-spacing:-.04em">Moderado</div></div>
+    <div class="ts"><code>H1 · Jakarta 800 · 30–34 · −0,025em</code><div style="font:800 30px/1.1 var(--f-display);letter-spacing:-.025em">Alternativas en pesos</div></div>
+    <div class="ts"><code>H2 · Jakarta 700 · 18–20</code><div style="font:700 19px/1.3 var(--f-display)">Cómo se reparte tu plata</div></div>
+    <div class="ts"><code>Cifra · Jakarta 700 · 24 · tabular</code><div style="font:700 24px/1.1 var(--f-display);font-variant-numeric:tabular-nums">USD 12.833 · −22%</div></div>
+    <div class="ts"><code>Cuerpo · Inter 400 · 14–15 · 1,6</code><div style="font:400 15px/1.6 var(--f-body);color:var(--ink-2)">Buscás un equilibrio entre cuidar tu plata y hacerla crecer.</div></div>
+    <div class="ts"><code>Rótulo · JetBrains Mono 600 · 11 · +0,14em</code><div class="p-eyebrow">Tu cartera sugerida</div></div>
+    <div class="ts"><code>Ticker · JetBrains Mono 600 · 12,5</code><div style="font:600 13px var(--f-mono);color:#8ec5ff">AL30 · YPF-ON · SPY</div></div>
+    <div class="ts"><code>Legal · Inter 400 · 12 mínimo</code><div class="muted" style="font-size:12px">Contenido educativo, no es asesoramiento financiero.</div></div>
+  </div>
+
+  <div class="cols">
+    <div class="panel">
+      <h4>Espaciado y layout</h4>
+      <ul>
+        <li>Escala de 4 px: 4 · 8 · 12 · 16 · 24 · 32 · 48 · 72.</li>
+        <li>Entre secciones de página: 32 en escritorio y 24 en celular. Dentro de una tarjeta: 16.</li>
+        <li>Composición modular: una superficie protagonista arriba (corte de gema), métricas en fila, detalle debajo.</li>
+        <li>Ancho de lectura máximo de 68 caracteres en textos explicativos.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h4>Superficies, bordes y profundidad</h4>
+      <ul>
+        <li>Tres niveles: fondo → tarjeta (borde <code>#2a3d7a</code>) → superficie elevada (FinBot, menús) con sombra <code>0 18px 40px -16px rgba(0,0,0,.6)</code>.</li>
+        <li>Radios: 12 en controles, 16 en tarjetas, 22 en la superficie protagonista. El corte de gema mide 18–44 px según el tamaño.</li>
+        <li>Sin sombras en tarjetas comunes: las separa el borde. Así la profundidad marca jerarquía de verdad.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h4>Gráficos e indicadores</h4>
+      <ul>
+        <li>Paleta de la gema en orden fijo (2, 1, 4, 5, 3) para cualquier serie categórica.</li>
+        <li>Proyección como banda (rango) más líneas, con leyenda que muestra el trazo real (punteado incluido).</li>
+        <li>Eje y unidades siempre visibles; grilla al 25%; etiqueta de valor en el punto final.</li>
+        <li>Medidores (perfil, caída) como barras facetadas, nunca como velocímetros.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Componentes y estados</h3>
+  <div class="panel">
+    <div class="states">
+      <button type="button" class="p-btn">Siguiente →</button>
+      <button type="button" class="p-btn sec">Atrás</button>
+      <span class="tabs-demo"><span class="on">Comparar todo</span><span>Plazo fijo</span><span>UVA</span></span>
+      <span class="chip cat">Bonos y ONs</span>
+      <span class="chip r-medio"><span class="bars" aria-hidden="true"><i></i><i></i><i class="off"></i></span>Riesgo medio</span>
+    </div>
+    <div class="states">
+      <div class="field"><label for="demo-monto">Monto a invertir</label><input id="demo-monto" placeholder="Ej. 500" inputmode="decimal"></div>
+      <div class="field"><label for="demo-edad">Edad</label><input id="demo-edad" value="24"></div>
+    </div>
+    <p class="small muted">Botón principal: hover <code>#3069ee</code>, active <code>#1d4ed8</code> con 1 px hacia abajo, foco <code>#60a5fa</code> a 2 px, disabled al 50%. Se suma un brillo interior de 1 px y una sombra azul corta solo en el botón principal. Campos: borde <code>#566b98</code>; al enfocar, borde y anillo <code>#60a5fa</code>. El texto de ejemplo del prototipo es más tenue (<code>#7c8fb0</code>, 5,1:1) para no parecer un dato cargado: eso es una propuesta, hoy la app usa el texto secundario.</p>
+  </div>
+
+  <div class="cols">
+    <div class="panel">
+      <h4>Movimiento</h4>
+      <ul>
+        <li>Duraciones: 150 ms (hover, pestañas), 250 ms (selección, apertura de FinBot), 600 ms (revelado del resultado, una sola vez).</li>
+        <li>Curva <code>cubic-bezier(.2,.8,.2,1)</code> para entradas; las salidas son más cortas.</li>
+        <li>Carga: skeleton gris con un barrido de luz diagonal, no parpadeo.</li>
+        <li>Todo se desactiva con <code>prefers-reduced-motion</code>.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h4>Accesibilidad y contraste</h4>
+      <ul>
+        <li>Texto ≥ 4,5:1; texto grande y componentes ≥ 3:1; foco siempre visible.</li>
+        <li>Los colores de la gema 1 y 2 no se usan para texto (no llegan a 4,5:1 sobre la tarjeta).</li>
+        <li>Toda información de riesgo, selección o estado tiene forma además de color.</li>
+        <li>Áreas táctiles de 44 px en celular para las acciones principales.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h4>Consistencia entre pantallas</h4>
+      <ul>
+        <li>Cada pantalla tiene exactamente una superficie protagonista y una acción principal.</li>
+        <li>Los rasgos viven en componentes compartidos (Superficie, Prisma, Medidor, BadgeRiesgo), no copiados en cada archivo.</li>
+        <li>Celular: navegación inferior de 4 secciones y FinBot como pestaña o botón de ícono, no flotando sobre el contenido.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 6. PANTALLAS ================= -->
+<section aria-labelledby="s-pant">
+  <div class="sec-head">
+    <p class="eyebrow">6 · Pantalla por pantalla</p>
+    <h2 id="s-pant">Qué conservar, qué cambiar y por qué</h2>
+    <p class="lead">Las etiquetas separan lo funcional (afecta comprensión, uso o accesibilidad) de lo estético (identidad y percepción de calidad).</p>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Pantalla</th><th>Conservar</th><th>Hoy se ve genérica porque…</th><th>Mayor impacto</th><th>Funcional pendiente</th></tr></thead>
+      <tbody>
+        <tr><td><b>Login y registro</b><br><span class="muted small">app/(auth)</span></td><td>Tarjeta centrada, mensajes claros de error y confirmación.</td><td>Es una tarjeta shadcn sobre un fondo liso; nada dice FinUp salvo el logo.</td><td>Gema grande de fondo con halo, titular en Jakarta y una línea de valor.</td><td><span class="pill alto">alta</span> Falta recuperar contraseña y reenviar el mail.</td></tr>
+        <tr><td><b>Landing</b></td><td colspan="4" class="muted">No está en este repositorio: vive en <code>FinUp-app-2</code>. No la inspeccioné. La propuesta se puede llevar allá después, para que landing y plataforma compartan los mismos rasgos.</td></tr>
+        <tr><td><b>Cuestionario</b><br><span class="muted small">onboarding.tsx</span></td><td>Un paso por pantalla, progreso visible, foco al título (Etapa 0).</td><td>Opciones como botones de lista iguales; el progreso es una barra genérica.</td><td>Progreso facetado de 7 segmentos; selección con filo de luz y transición de refracción.</td><td><span class="pill medio">media</span> Navegar opciones con flechas (radio real). Progreso que no arranque en 0%.</td></tr>
+        <tr><td><b>Resultado del perfil</b></td><td>Motivos y ajustes por seguridad: es lo mejor del producto. El gradiente del título.</td><td>Se siente como una tarjeta más, no como el cierre de un análisis.</td><td>Superficie protagonista con gema, medidor de puntaje y revelado de 600 ms.</td><td><span class="pill bajo">baja</span> Ninguno grave.</td></tr>
+        <tr><td><b>Dashboard</b></td><td>Orden de la información y las explicaciones por parte de la cartera.</td><td>Todos los bloques pesan igual; la distribución usa colores sin relación con la marca.</td><td>Perfil como protagonista, métricas tabulares, prisma de datos, proyección con banda de rango.</td><td><span class="pill medio">media</span> Colores de distribución guardados en el plan (<code>cartera.ts</code>): hace falta resolverlos por categoría.</td></tr>
+        <tr><td><b>FinBot</b><br><span class="muted small">finbot-chat.tsx</span></td><td>Accesibilidad de la Etapa 0, pregunta precargada desde las fichas.</td><td>Widget de chat estándar; el ícono de robot no es de FinUp.</td><td>Gema como avatar, chips de contexto del plan, respuestas con filo de luz y fuentes visibles.</td><td><span class="pill alto">alta</span> En celular tapa contenido; trampa de foco pendiente.</td></tr>
+        <tr><td><b>Comparador</b></td><td>Tarjetas en celular y tabla en escritorio, fuente y fecha de cada dato.</td><td>Mucho texto antes del ranking; la barra de “ganancia vs. inflación” es un gráfico genérico.</td><td>Ranking como protagonista; línea de inflación como “umbral” luminoso; pestañas con filo.</td><td><span class="pill medio">media</span> Pestañas en dos filas en celular; selector de FCI en cyan distinto de las pestañas.</td></tr>
+        <tr><td><b>Catálogo de instrumentos</b><br><span class="muted small">listado.tsx</span></td><td>Filtros, agrupación por categoría, aviso de lista en revisión.</td><td>Tarjetas idénticas a las del resto de la app.</td><td>Tarjetas con corte de gema, ticker en mono, riesgo con barras.</td><td><span class="pill alto">alta</span> Desborde horizontal en celular (425 px en 375) por <code>truncate</code> sin <code>min-w-0</code>.</td></tr>
+        <tr><td><b>Ficha de activo</b><br><span class="muted small">ficha.tsx</span></td><td>Pestañas Qué es / Riesgos / Datos, glosario de la ficha, “No disponible” en precio.</td><td>El encabezado no destaca; dos badges (categoría y riesgo) casi del mismo color.</td><td>Encabezado protagonista con ticker grande; categoría en gris; riesgo con barras.</td><td><span class="pill medio">media</span> “Qué puede salir mal” queda en una pestaña que no es la inicial.</td></tr>
+        <tr><td><b>Aprender</b><br><span class="muted small">aprender.tsx</span></td><td>Lecciones cortas y glosario con buscador.</td><td>Grilla de tarjetas de texto sin progresión.</td><td>Lecciones como recorrido facetado (1→5) y glosario con términos que se conectan a la app.</td><td><span class="pill bajo">baja</span> Faltan términos del comparador (TNA, UVA, SEDESA).</td></tr>
+        <tr><td><b>Navegación, menús, pestañas, modales, formularios</b></td><td>Foco, bordes y pestaña activa de la Etapa 1.</td><td>Barra lateral y menú móvil sin identidad; no hay modales salvo el panel de FinBot.</td><td>Barra lateral con indicador facetado; navegación inferior en celular.</td><td><span class="pill alto">alta</span> En celular “Aprender” y “Rehacer perfil” quedan fuera de vista.</td></tr>
+        <tr><td><b>Adaptable</b></td><td>Breakpoints del comparador y del shell.</td><td>En celular es la versión de escritorio angostada.</td><td>Patrones propios de celular: navegación inferior, FinBot a pantalla completa, métricas en carrusel corto.</td><td><span class="pill alto">alta</span> Áreas táctiles de 32–36 px.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ================= 7. REFERENCIAS ================= -->
+<section aria-labelledby="s-ref">
+  <div class="sec-head">
+    <p class="eyebrow">7 · Referencias reales</p>
+    <h2 id="s-ref">Qué tomar de cada una, sin copiarlas</h2>
+    <p class="lead">Las cuatro las revisé hoy en el navegador (su página principal, no su producto por dentro).</p>
+  </div>
+  <div class="refs">
+    <article class="ref"><span class="site">linear.app</span><h4>Contención y oficio</h4><p class="small muted">Fondo casi negro, titulares en dos tonos (blanco y gris), rótulos monoespaciados en mayúsculas y la interfaz real como protagonista. <b>Para FinUp:</b> titulares en dos tonos, rótulos en mono, y mostrar el producto (tu cartera) en lugar de ilustraciones.</p></article>
+    <article class="ref"><span class="site">mercury.com</span><h4>Fintech premium que inspira confianza</h4><p class="small muted">Interfaz oscura azul‑índigo, una cifra grande con un solo gráfico de línea y módulos bien separados; el aviso legal está a la vista, sin esconderlo. <b>Para FinUp:</b> la jerarquía “una cifra protagonista + un gráfico” y la convivencia elegante con los avisos.</p></article>
+    <article class="ref"><span class="site">raycast.com</span><h4>Luz que sale de la marca</h4><p class="small muted">El hero son haces de luz diagonales que repiten la forma del logo. <b>Para FinUp:</b> la misma idea con la gema. Las facetas y su ángulo se vuelven cortes, filos y halos, para que la luz sea reconocible y no genérica.</p></article>
+    <article class="ref"><span class="site">stripe.com</span><h4>Un dato vivo como identidad</h4><p class="small muted">Un número financiero que se actualiza en la portada y un solo gradiente de marca, siempre el mismo. <b>Para FinUp:</b> un único lenguaje de gradiente (azul → hielo) y datos con fuente y fecha como parte del diseño.</p></article>
+  </div>
+</section>
+
+<!-- ================= 8. PRIORIDAD ================= -->
+<section aria-labelledby="s-prio">
+  <div class="sec-head">
+    <p class="eyebrow">8 · Priorización</p>
+    <h2 id="s-prio">Impacto frente a esfuerzo</h2>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Mejora</th><th>Impacto visual</th><th>Impacto UX</th><th>Esfuerzo</th><th>Tipo</th></tr></thead>
+      <tbody>
+        <tr><td>Tipografía Jakarta en títulos y cifras + rótulos mono</td><td><span class="pill alto">alto</span></td><td><span class="pill medio">medio</span></td><td><span class="pill bajo">bajo</span></td><td>estético</td></tr>
+        <tr><td>Paleta de la gema en gráficos y distribución (prisma)</td><td><span class="pill alto">alto</span></td><td><span class="pill medio">medio</span></td><td><span class="pill medio">medio</span></td><td>estético + datos</td></tr>
+        <tr><td>Superficie protagonista con corte de gema y filo de luz</td><td><span class="pill alto">alto</span></td><td><span class="pill medio">medio</span></td><td><span class="pill medio">medio</span></td><td>estético</td></tr>
+        <tr><td>Proyección con banda de rango y leyenda de trazos</td><td><span class="pill medio">medio</span></td><td><span class="pill alto">alto</span></td><td><span class="pill bajo">bajo</span></td><td>funcional</td></tr>
+        <tr><td>Navegación inferior en celular y FinBot sin tapar</td><td><span class="pill medio">medio</span></td><td><span class="pill alto">alto</span></td><td><span class="pill medio">medio</span></td><td>funcional</td></tr>
+        <tr><td>Escala de riesgo con barras y categoría en gris</td><td><span class="pill medio">medio</span></td><td><span class="pill alto">alto</span></td><td><span class="pill bajo">bajo</span></td><td>funcional</td></tr>
+        <tr><td>FinBot con gema, contexto y fuentes</td><td><span class="pill alto">alto</span></td><td><span class="pill alto">alto</span></td><td><span class="pill medio">medio</span></td><td>ambos</td></tr>
+        <tr><td>Resultado del perfil con medidor y revelado</td><td><span class="pill alto">alto</span></td><td><span class="pill medio">medio</span></td><td><span class="pill bajo">bajo</span></td><td>estético</td></tr>
+        <tr><td>Desborde de Instrumentos en celular</td><td><span class="pill bajo">bajo</span></td><td><span class="pill alto">alto</span></td><td><span class="pill bajo">bajo</span></td><td>funcional (bug)</td></tr>
+        <tr><td>Microinteracciones (refracción, barrido de carga)</td><td><span class="pill medio">medio</span></td><td><span class="pill bajo">bajo</span></td><td><span class="pill medio">medio</span></td><td>estético</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ================= 9. PLAN ================= -->
+<section aria-labelledby="s-plan">
+  <div class="sec-head">
+    <p class="eyebrow">9 · Plan por etapas</p>
+    <h2 id="s-plan">Cada etapa termina en algo que se puede ver y revertir</h2>
+    <p class="lead">Ninguna etapa toca fórmulas, datos, autenticación ni textos. Cada una se verifica antes de pasar a la siguiente.</p>
+  </div>
+  <div class="plan">
+    <div class="etapa"><div class="id">2A<small>bugs y riesgo</small></div><div><b>Base funcional</b><ul><li>Desborde de Instrumentos en celular.</li><li>Escala de riesgo única con barras y categoría en gris (si la aprobás).</li></ul></div></div>
+    <div class="etapa"><div class="id">2B<small>tokens</small></div><div><b>Tokens de marca</b><ul><li>Paleta de la gema en <code>globals.css</code> y <code>--chart-*</code>; superficie elevada.</li><li>Jakarta en h1, h2 y cifras; JetBrains Mono para rótulos y tickers (se carga con <code>next/font</code>, sin dependencias nuevas).</li></ul></div></div>
+    <div class="etapa"><div class="id">2C<small>componentes</small></div><div><b>Rasgos como componentes</b><ul><li><code>Superficie</code> (corte de gema + filo), <code>Prisma</code>, <code>Medidor</code>, <code>BadgeRiesgo</code> único.</li><li>Colores de la cartera resueltos por categoría en la UI, no guardados en el plan.</li></ul></div></div>
+    <div class="etapa"><div class="id">2D<small>pantallas clave</small></div><div><b>Dashboard y resultado</b><ul><li>Superficie protagonista, métricas, prisma, proyección con banda.</li><li>Resultado con medidor y revelado.</li></ul></div></div>
+    <div class="etapa"><div class="id">2E<small>FinBot y celular</small></div><div><b>Integración y móvil</b><ul><li>FinBot con gema, chips de contexto y trampa de foco (sobre <code>Sheet</code>, ya instalado).</li><li>Navegación inferior en celular; áreas táctiles de 44 px.</li></ul></div></div>
+    <div class="etapa"><div class="id">2F<small>resto</small></div><div><b>Comparador, instrumentos, aprender, login</b><ul><li>Aplicar los mismos componentes, sin rediseñar flujos.</li><li>Microinteracciones finales.</li></ul></div></div>
+  </div>
+</section>
+
+<!-- ================= 10. VALIDACIÓN ================= -->
+<section aria-labelledby="s-val">
+  <div class="sec-head">
+    <p class="eyebrow">10 · Validación</p>
+    <h2 id="s-val">Cómo comprobar cada etapa</h2>
+  </div>
+  <div class="cols">
+    <div class="panel"><h4>En cada cambio</h4><ul><li><code>npm run typecheck</code> y <code>npm test</code>.</li><li>Capturas a 375, 768 y 1280 px de cada pantalla tocada, antes y después.</li><li>Sin desborde horizontal: <code>scrollWidth</code> igual al ancho de pantalla.</li></ul></div>
+    <div class="panel"><h4>Contraste y accesibilidad</h4><ul><li>Repetir la medición de contraste en todos los textos (la misma que usé para <code>#a8bcd9</code>).</li><li>Recorrido completo con teclado: foco visible, Esc, orden lógico.</li><li>Con movimiento reducido activado: nada se anima.</li></ul></div>
+    <div class="panel"><h4>Percepción</h4><ul><li>Prueba de 5 segundos con 5 personas de su público: ¿qué app es? ¿qué perfil te tocó? ¿qué puede salir mal?</li><li>Comparar la versión actual con la propuesta en las mismas pantallas, sin decir cuál es cuál.</li></ul></div>
+  </div>
+</section>
+
+<!-- ================= 11. CIERRE ================= -->
+<section aria-labelledby="s-dec">
+  <div class="sec-head">
+    <p class="eyebrow">11 · Alcance de este análisis</p>
+    <h2 id="s-dec">Qué revisé, qué no y qué decidís vos</h2>
+  </div>
+  <div class="cols">
+    <div class="panel"><h4>Inspeccionado</h4><ul><li><code>app/globals.css</code>, <code>app/layout.tsx</code>, <code>public/finup.logo.1.png</code>.</li><li><code>components/plataforma/</code>: dashboard, onboarding, opcion, grafico-proyeccion, shell, form-auth, aprender, comparador/*, instrumentos/* (ficha, listado, insignias, ver-ejemplos).</li><li><code>components/finbot/finbot-chat.tsx</code>, <code>components/ui/</code> (button, tabs, input, skeleton, badge).</li><li><code>lib/plataforma/cartera.ts</code>, <code>proyeccion.ts</code>, <code>plan.ts</code>.</li><li>La app en ejecución (modo sin cuenta) en escritorio y celular, durante esta etapa y las anteriores.</li></ul></div>
+    <div class="panel"><h4>No verificado</h4><ul><li>La landing (otro repositorio).</li><li>Las pantallas con login real de Supabase y las respuestas reales de FinBot (no hay clave de Gemini en este modo).</li><li>Dispositivos reales, tablets y lectores de pantalla.</li><li>Las referencias por dentro de sus productos (solo sus páginas públicas).</li><li>El prototipo es HTML aislado: no prueba el rendimiento ni el comportamiento dentro de Next.js.</li></ul></div>
+    <div class="panel"><h4>Decisiones para vos</h4>
+      <div class="decision"><b>1. Dirección “Facetas”</b><span class="small muted">¿Aprobás la dirección general y los seis rasgos?</span></div>
+      <div class="decision"><b>2. Corte de gema</b><span class="small muted">Es el gesto más audaz. ¿Solo en superficies protagonistas, como propongo, o también en botones?</span></div>
+      <div class="decision"><b>3. Tercera tipografía</b><span class="small muted">JetBrains Mono para rótulos y tickers. Suma una fuente a la carga.</span></div>
+      <div class="decision"><b>4. Escala de riesgo</b><span class="small muted">Celeste, ámbar y naranja <code>#ff8904</code> con barras, y categoría en gris.</span></div>
+      <div class="decision"><b>5. Navegación inferior en celular</b><span class="small muted">Cambia cómo se llega a las secciones en el teléfono.</span></div>
+      <div class="decision"><b>6. Fuentes visibles en FinBot</b><span class="small muted">Requiere un cambio menor en cómo el chat muestra las respuestas.</span></div>
+    </div>
+  </div>
+</section>
+
+<footer class="fin">Propuesta de diseño para FinUp. Ningún archivo del proyecto fue modificado para preparar esta página. Los datos del prototipo son el ejemplo que genera la app en modo sin cuenta.</footer>
+</div>
+
+<!-- Motivo de la gema, redibujado a partir del logo para usarlo como forma del sistema -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="gema">
+      <polygon points="377,300 578,238 492,410" fill="#0739a3"/>
+      <polygon points="578,238 650,418 492,410" fill="#74dcff"/>
+      <polygon points="492,410 650,418 516,474" fill="#16b4ff"/>
+      <polygon points="516,474 650,418 566,603" fill="#0a97f5"/>
+      <polygon points="377,300 492,410 448,497 361,533" fill="#1673e0"/>
+      <polygon points="190,603 377,300 361,533" fill="#3d9cff"/>
+      <polygon points="190,603 361,533 349,697" fill="#063f97"/>
+      <polygon points="361,533 448,497 432,530 349,697" fill="#0753c6"/>
+      <polygon points="492,410 516,474 566,603 432,530 448,497" fill="#0b4fd6"/>
+      <polygon points="432,530 566,603 349,697" fill="#0436c4"/>
+    </g>
+  </defs>
+</svg>
+
+<script>
+(function () {
+  const bench = document.getElementById('bench');
+  const stage = document.getElementById('stage');
+  const press = (group, btn) => group.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+  bench.querySelectorAll('[data-screen]').forEach(btn => btn.addEventListener('click', () => {
+    press(btn.parentElement, btn);
+    document.querySelectorAll('[data-pantalla]').forEach(p => { p.hidden = p.dataset.pantalla !== btn.dataset.screen; });
+  }));
+  bench.querySelectorAll('[data-mode]').forEach(btn => btn.addEventListener('click', () => { press(btn.parentElement, btn); bench.dataset.mode = btn.dataset.mode; }));
+  bench.querySelectorAll('[data-device]').forEach(btn => btn.addEventListener('click', () => { press(btn.parentElement, btn); stage.dataset.device = btn.dataset.device; }));
+
+  // Proyección con la misma fórmula que lib/plataforma/proyeccion.ts
+  const proyectar = (i, a, anios, t) => { const m = Math.round(anios * 12), r = Math.pow(1 + t / 100, 1 / 12) - 1, f = Math.pow(1 + r, m); return i * f + a * ((f - 1) / r); };
+  const serie = []; for (let y = 1; y <= 7; y++) serie.push({ y, ap: 1000 + 100 * 12 * y, bajo: proyectar(1000, 100, y, 3.3), alto: proyectar(1000, 100, y, 8.05) });
+  const fmt = n => n >= 1000 ? (n / 1000).toLocaleString('es-AR', { maximumFractionDigits: 1 }) + ' mil' : String(Math.round(n));
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent.appendChild(e); return e; };
+
+  function dibujar(svg, { W, H, propuesta }) {
+    const L = 52, R = propuesta ? 74 : 12, T = 14, B = 28, maxY = 14000;
+    const x = y => L + (y - 1) / 6 * (W - L - R);
+    const yv = v => T + (1 - v / maxY) * (H - T - B);
+    for (let v = 0; v <= maxY; v += 3500) {
+      el('line', { x1: L, x2: W - R, y1: yv(v), y2: yv(v), stroke: '#2a3d7a', 'stroke-opacity': propuesta ? .55 : .25 }, svg);
+      const t = el('text', { x: L - 8, y: yv(v) + 4, 'text-anchor': 'end', fill: '#a8bcd9', 'font-size': 11, 'font-family': 'Inter, sans-serif' }, svg); t.textContent = fmt(v);
+    }
+    [1, 3, 5, 7].forEach(y => { const t = el('text', { x: x(y), y: H - 8, 'text-anchor': 'middle', fill: '#a8bcd9', 'font-size': 11, 'font-family': 'Inter, sans-serif' }, svg); t.textContent = 'Año ' + y; });
+    const path = k => serie.map((p, i) => (i ? 'L' : 'M') + x(p.y).toFixed(1) + ',' + yv(p[k]).toFixed(1)).join(' ');
+    if (propuesta) {
+      const defs = el('defs', {}, svg);
+      const g = el('linearGradient', { id: 'banda', x1: 0, y1: 0, x2: 0, y2: 1 }, defs);
+      el('stop', { offset: '0%', 'stop-color': '#74dcff', 'stop-opacity': .32 }, g);
+      el('stop', { offset: '100%', 'stop-color': '#3d9cff', 'stop-opacity': .08 }, g);
+      const band = serie.map((p, i) => (i ? 'L' : 'M') + x(p.y).toFixed(1) + ',' + yv(p.alto).toFixed(1)).join(' ') + ' ' + serie.slice().reverse().map(p => 'L' + x(p.y).toFixed(1) + ',' + yv(p.bajo).toFixed(1)).join(' ') + ' Z';
+      el('path', { d: band, fill: 'url(#banda)' }, svg);
+      el('path', { d: path('ap'), fill: 'none', stroke: '#a8bcd9', 'stroke-width': 2, 'stroke-dasharray': '5 4' }, svg);
+      el('path', { d: path('bajo'), fill: 'none', stroke: '#3d9cff', 'stroke-width': 2.5 }, svg);
+      el('path', { d: path('alto'), fill: 'none', stroke: '#74dcff', 'stroke-width': 2.5 }, svg);
+      const fin = serie[serie.length - 1];
+      [['alto', '#74dcff'], ['bajo', '#3d9cff']].forEach(([k, c], i) => {
+        el('circle', { cx: x(7), cy: yv(fin[k]), r: 4, fill: '#08142e', stroke: c, 'stroke-width': 2 }, svg);
+        const t = el('text', { x: x(7) + 9, y: yv(fin[k]) + (i ? 12 : -2), fill: c, 'font-size': 12, 'font-weight': 700, 'font-family': '"Plus Jakarta Sans", sans-serif' }, svg);
+        t.textContent = 'USD ' + Math.round(fin[k]).toLocaleString('es-AR');
+      });
+    } else {
+      el('path', { d: path('ap'), fill: 'none', stroke: '#94a3b8', 'stroke-width': 2, 'stroke-dasharray': '5 5' }, svg);
+      el('path', { d: path('bajo'), fill: 'none', stroke: '#3b82f6', 'stroke-width': 2.5 }, svg);
+      el('path', { d: path('alto'), fill: 'none', stroke: '#22d3ee', 'stroke-width': 2.5 }, svg);
+    }
+  }
+  dibujar(document.getElementById('chart-act'), { W: 600, H: 200, propuesta: false });
+  dibujar(document.getElementById('chart-prop'), { W: 600, H: 220, propuesta: true });
+})();
+</script>
+
+<script>
+/* Prototipo del recorrido guiado: estado solo en memoria, sin guardar nada. */
+(function () {
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const bench = $('#g-bench'), stage = $('#g-stage');
+  const ars = n => '$ ' + Math.round(n).toLocaleString('es-AR');
+  const barras = n => `<span class="bars" aria-hidden="true">${[1, 2, 3].map(i => `<i${i > n ? ' class="off"' : ''}></i>`).join('')}</span>`;
+  const NIVEL = { bajo: 1, medio: 2, alto: 3 };
+  const chipRiesgo = r => `<span class="chip r-${r}">${barras(NIVEL[r])}Riesgo ${r}</span>`;
+
+  const PASOS = [
+    { id: 'perfil', t: 'Armá tu perfil', sec: 'plan' },
+    { id: 'cartera', t: 'Entendé tu cartera', sec: 'plan', por: 'Abrí tu parte más grande y mirá qué puede salir mal.', cta: 'Abrir mi parte más grande' },
+    { id: 'base', t: 'Ordená tu base', sec: 'pesos', por: 'Antes de invertir en algo que sube y baja, conviene tener un colchón para imprevistos. Mirá dónde dejarlo y que rinda algo mientras tanto.', cta: 'Ver dónde dejar ese colchón' },
+    { id: 'adentro', t: 'Mirá qué hay adentro', sec: 'ejemplos', por: 'Cómo es de verdad un instrumento de tu parte más grande, explicado en una ficha.', cta: 'Ver empresas de ejemplo' },
+    { id: 'pesos', t: 'Dónde dejar tus pesos', sec: 'pesos', por: 'Compará cuánto rendiría tu parte de liquidez si la vas a necesitar en 90 días.', cta: 'Comparar a 90 días' },
+    { id: 'humo', t: 'Aprendé a detectar el humo', sec: 'aprender', por: 'Las señales de una estafa o de un falso gurú, en 2 minutos.', cta: 'Leer la lección' },
+  ];
+  const st = { hechos: new Set(['perfil']), pantalla: 'plan', cerrado: false, parte: 'variable', ej: 'SPY', plazo: 30, lec: 'riesgo-retorno', leidas: new Set() };
+  const siguiente = () => PASOS.find(p => !st.hechos.has(p.id)) || null;
+
+  function glifo() {
+    const c = 20, r = 17, pts = [...Array(6)].map((_, k) => { const a = (-90 + 60 * k) * Math.PI / 180; return [c + r * Math.cos(a), c + r * Math.sin(a)]; });
+    const cols = ['#1673e0', '#3d9cff', '#16b4ff', '#74dcff', '#3d9cff', '#1673e0'];
+    const n = st.hechos.size;
+    $('#g-glifo').innerHTML = pts.map((p, k) => { const q = pts[(k + 1) % 6]; const on = k < n; return `<polygon points="${c},${c} ${p[0].toFixed(1)},${p[1].toFixed(1)} ${q[0].toFixed(1)},${q[1].toFixed(1)}" fill="${on ? cols[k] : 'transparent'}" stroke="${on ? '#0a1752' : '#2a3d7a'}" stroke-width="1.2"/>`; }).join('');
+  }
+
+  function recorrido() {
+    const rec = $('#g-rec');
+    if (st.cerrado) { rec.innerHTML = '<button type="button" class="linkbtn" id="g-abrir">Mostrar tu recorrido</button>'; $('#g-abrir').onclick = () => { st.cerrado = false; rec.outerHTML = recHTML; enlazarRec(); pintar(); }; return; }
+    glifo();
+    const sig = siguiente();
+    $('#g-cuenta').textContent = `${st.hechos.size} de ${PASOS.length}`;
+    $('#g-sug').innerHTML = sig
+      ? `<span class="k">Siguiente paso</span><b>${sig.t}</b><p>${sig.por}</p><button type="button" class="p-btn" id="g-cta" style="margin-top:4px">${sig.cta} →</button>`
+      : `<span class="k">Llegaste al final</span><b>Ya sabés lo básico para decidir</b><p>No hace falta que inviertas hoy: decidir con calma también es decidir bien. Si cambia algo en tu vida, rehacé tu perfil.</p>`;
+    $('#g-pasos').innerHTML = PASOS.map(p => {
+      const hecho = st.hechos.has(p.id), ahora = sig && sig.id === p.id;
+      return `<li class="${hecho ? 'hecho' : ahora ? 'ahora' : ''}"><span class="ic" aria-hidden="true"></span><span>${p.t}</span><em>${hecho ? 'Hecho' : ahora ? 'Ahora' : ''}</em></li>`;
+    }).join('');
+    const cta = $('#g-cta'); if (cta) cta.onclick = () => hacer(sig.id, true);
+  }
+  const recHTML = $('#g-rec').outerHTML;
+  function enlazarRec() {
+    $('#g-cerrar').onclick = () => { st.cerrado = true; recorrido(); puntos(); };
+    $('#g-vertodo').onclick = () => { $('#g-rec').classList.toggle('abierto'); $('#g-vertodo').textContent = $('#g-rec').classList.contains('abierto') ? 'Ocultar tu recorrido' : 'Ver tu recorrido'; };
+  }
+
+  function hacer(id, irAlli) {
+    if (st.hechos.has(id)) return;
+    st.hechos.add(id);
+    const p = PASOS.find(x => x.id === id), sig = siguiente();
+    if (irAlli) {
+      if (id === 'cartera') { abrirParte('variable'); }
+      if (id === 'base') { ir('pesos'); }
+      if (id === 'adentro') { st.parte = 'variable'; st.ej = 'SPY'; ir('ejemplos'); }
+      if (id === 'pesos') { st.plazo = 90; ir('pesos'); }
+      if (id === 'humo') { st.lec = 'anti-humo'; ir('aprender'); }
+    }
+    const t = $('#g-toast'); if (t) t.textContent = sig ? `Listo: «${p.t}». Siguiente: «${sig.t}».` : 'Listo. Terminaste el recorrido.';
+    pintar();
+  }
+
+  function puntos() {
+    const sig = !st.cerrado && siguiente();
+    $$('.g-nav, .g-tab').forEach(b => {
+      b.querySelector('.dot')?.remove();
+      if (b.dataset.go === st.pantalla && !b.dataset.bot) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+      if (sig && b.dataset.go === sig.sec && !b.dataset.bot && sig.sec !== st.pantalla) { const d = document.createElement('i'); d.className = 'dot'; d.setAttribute('aria-hidden', 'true'); b.appendChild(d); }
+    });
+  }
+
+  function ir(p) {
+    st.pantalla = p;
+    $$('[data-gs]').forEach(s => { s.hidden = s.dataset.gs !== p; });
+    $$('[data-g]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.g === p)));
+    pintar();
+    stage.scrollIntoView({ block: 'nearest' });
+  }
+
+  // ---------- Mi plan: partes ----------
+  function abrirParte(id) {
+    $$('#g-partes .parte').forEach(el => { const on = el.dataset.parte === id ? !el.classList.contains('open') || true : false; el.classList.toggle('open', on); el.querySelector('button').setAttribute('aria-expanded', String(on)); });
+  }
+  $$('#g-partes .parte > button').forEach(b => b.addEventListener('click', () => {
+    const el = b.parentElement, on = !el.classList.contains('open');
+    el.classList.toggle('open', on); b.setAttribute('aria-expanded', String(on));
+    if (on && el.dataset.parte === 'variable') hacer('cartera', false);
+  }));
+
+  // ---------- Tus pesos ----------
+  const MONTO = 384250, INFL = 0.019;
+  const OPCIONES = [
+    { nm: 'Plazo fijo', qe: 'Dejás la plata fija hasta la fecha y te pagan un interés pactado.', liq: 'Al vencimiento', r: 'bajo', g: d => MONTO * 0.31 * d / 365 },
+    { nm: 'Billetera con rendimiento', qe: 'Una cuenta en una app que rinde todos los días.', liq: 'La sacás cuando quieras', r: 'medio', g: d => MONTO * (Math.pow(1 + 0.275 / 365, d) - 1) },
+    { nm: 'Fondo money market', qe: 'Un fondo que invierte en lo más líquido del mercado en pesos.', liq: 'Rescate en el día', r: 'bajo', g: d => MONTO * (Math.pow(1 + 0.26 / 365, d) - 1) },
+    { nm: 'Fondo de renta fija', qe: 'Un fondo que presta a empresas y al Estado. Puede rendir más, pero varía.', liq: 'Rescate en 24-48 h', r: 'medio', g: d => MONTO * (Math.pow(1 + 0.33 / 365, d) - 1) },
+    { nm: 'Plazo fijo UVA', qe: 'Se ajusta por inflación y suma un poco más.', liq: 'Al vencimiento', r: 'bajo', min: 90, g: d => MONTO * (Math.pow(1 + INFL, d / 30) * (1 + 0.01 * d / 365) - 1) },
+  ];
+  function pesos() {
+    const d = st.plazo, infl = MONTO * (Math.pow(1 + INFL, d / 30) - 1);
+    $$('#g-plazo button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.d === d)));
+    const filas = OPCIONES.map(o => ({ ...o, ok: !o.min || d >= o.min, gan: !o.min || d >= o.min ? o.g(d) : 0 })).sort((a, b) => (b.ok - a.ok) || (b.gan - a.gan));
+    $('#g-opc').innerHTML = filas.map((o, i) => o.ok
+      ? `<div class="op${i === 0 ? ' top' : ''}"><div><div class="nm">${o.nm}</div><div class="qe">${o.qe}</div></div><div class="gan"><b>${ars(o.gan)}</b><span>en ${d} días</span></div><div class="tags">${o.gan > infl ? `<span class="chip tag-ok">↑ Le gana a la inflación</span>` : `<span class="chip tag-no">− No le gana a la inflación</span>`}<span class="chip tag-neu">${o.liq}</span>${chipRiesgo(o.r)}</div></div>`
+      : `<div class="op off"><div><div class="nm">${o.nm}</div><div class="qe">${o.qe}</div></div><div class="gan"><span>Desde ${o.min} días</span></div><div class="tags">${chipRiesgo(o.r)}</div></div>`
+    ).join('') + `<p class="note">Con 1,9% de inflación mensual, en ${d} días los precios subirían el equivalente a ${ars(infl)} sobre tu monto.</p>`;
+  }
+  $$('#g-plazo button').forEach(b => b.addEventListener('click', () => { st.plazo = +b.dataset.d; pesos(); if (st.plazo === 90) hacer('pesos', false); }));
+
+  // ---------- Ejemplos ----------
+  const INST = {
+    SPY: { nm: 'SPDR S&P 500 ETF', tipo: 'CEDEAR de ETF', r: 'medio', ds: 'Un fondo que replica el S&P 500: las 500 empresas más grandes de EE.UU. Con un solo instrumento tenés una parte chiquita de todas ellas.', mal: ['Si cae la bolsa de EE.UU., cae con ella: en años malos bajó más de 30%.', 'Cotiza en pesos siguiendo al dólar CCL, así que también se mueve por el tipo de cambio.'] },
+    KO: { nm: 'Coca-Cola', tipo: 'CEDEAR de acción', r: 'medio', ds: 'Fabricante de bebidas presente en casi todo el mundo. Reparte dividendos hace décadas.', mal: ['Crece poco: en años de euforia suele subir menos que el mercado.'] },
+    QQQ: { nm: 'Invesco QQQ (Nasdaq 100)', tipo: 'CEDEAR de ETF', r: 'alto', ds: 'Replica el Nasdaq 100: las 100 empresas no financieras más grandes de esa bolsa, con mucho peso de tecnología.', mal: ['Está concentrado en pocas empresas tecnológicas: si al sector le va mal, cae más que el mercado.'] },
+    AAPL: { nm: 'Apple', tipo: 'CEDEAR de acción', r: 'alto', ds: 'Fabricante del iPhone, las Mac y servicios como la App Store. Una de las empresas más grandes del mundo.', mal: ['Es una sola empresa: si a Apple le va mal, no hay otras que compensen.'] },
+    AL30: { nm: 'Bonar 2030', tipo: 'Bono del Estado argentino', r: 'medio', ds: 'Un préstamo en dólares al Estado argentino que vence en 2030. Paga intereses y devuelve el capital en cuotas cada seis meses.', mal: ['Argentina dejó de pagar su deuda varias veces (default): podés perder parte de lo invertido.'] },
+    GD35: { nm: 'Global 2035', tipo: 'Bono del Estado argentino', r: 'alto', ds: 'Bono en dólares del Estado argentino que vence en 2035. Al ser más largo, su precio se mueve más.', mal: ['Riesgo de default, igual que el resto de los bonos argentinos.'] },
+    JNJ: { nm: 'Johnson & Johnson', tipo: 'CEDEAR de acción', r: 'medio', ds: 'Empresa de salud: medicamentos y dispositivos médicos. Paga dividendos crecientes hace décadas.', mal: ['Enfrenta juicios millonarios por algunos de sus productos.'] },
+  };
+  const PARTES = { variable: { nm: 'Empresas', pc: '45%', ej: ['SPY', 'KO', 'QQQ', 'AAPL'] }, fija: { nm: 'Préstamos', pc: '25%', ej: ['AL30', 'GD35'] }, dividendos: { nm: 'Dividendos', pc: '15%', ej: ['KO', 'JNJ'] } };
+  function ejemplos() {
+    const P = PARTES[st.parte];
+    if (!P.ej.includes(st.ej)) st.ej = P.ej[0];
+    $$('#g-chips button[data-p]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.p === st.parte)));
+    $('#g-ejlist').innerHTML = P.ej.map(t => { const i = INST[t]; return `<button type="button" class="ej" data-t="${t}" aria-pressed="${t === st.ej}"><span class="tk">${t}</span><span class="nm">${i.nm}<small>${i.tipo}</small></span>${chipRiesgo(i.r)}</button>`; }).join('');
+    $$('#g-ejlist .ej').forEach(b => b.onclick = () => { st.ej = b.dataset.t; ejemplos(); hacer('adentro', false); });
+    const i = INST[st.ej];
+    $('#g-ficha').innerHTML = `<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><span class="tk" style="font:800 12.5px/1 var(--f-display);letter-spacing:.06em;color:#8ec5ff">${st.ej}</span><span class="chip cat">${i.tipo}</span>${chipRiesgo(i.r)}</div>
+      <h4>${i.nm}</h4>
+      <div class="dos"><div class="blk"><h5>Qué es</h5><p>${i.ds}</p></div><div class="blk mal"><h5>Qué puede salir mal</h5><ul>${i.mal.map(m => `<li>${m}</li>`).join('')}</ul></div></div>
+      <div class="blk tuyo"><h5>Dónde aparece en tu plan</h5><p>Es un ejemplo de tu parte de ${P.nm.toLowerCase()} (${P.pc}). Sirve para entender la categoría, no es una indicación de lo que tenés que tener.</p></div>
+      <div class="datos"><div><small>Precio</small><b>No disponible</b><small>Todavía no mostramos cotizaciones.</small></div><div><small>Riesgo dentro de esta lista</small><b>${NIVEL[i.r]} de 3</b></div><div><small>Ficha revisada</small><b>10/10/2026</b></div></div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap"><button type="button" class="ask-bot"><svg viewBox="180 228 480 480" aria-hidden="true"><use href="#gema"/></svg>Preguntale a FinBot sobre ${i.nm}</button></div>`;
+  }
+  $$('#g-chips button[data-p]').forEach(b => b.addEventListener('click', () => { st.parte = b.dataset.p; ejemplos(); }));
+
+  // ---------- Aprender ----------
+  const LECC = [
+    { id: 'riesgo-retorno', t: 'Más retorno posible, más riesgo', r: 'No existe una inversión que prometa mucho rendimiento y no tenga riesgo.', p: ['El riesgo no es solo perder: es que el camino sea inestable, con subas y bajas fuertes.', 'Por eso importa cuándo vas a necesitar la plata: a más plazo, más caídas podés esperar a que se recuperen.', 'Tu perfil de riesgo mide cuánta caída podés aguantar sin vender por pánico.'], en: 'Tu nivel de riesgo: Medio, 2 de 3.' },
+    { id: 'inflacion', t: 'La inflación: el rival silencioso', r: 'Que tu plata crezca en números no significa que alcance para comprar más.', p: ['Si tu inversión rinde menos que la suba de precios, perdés poder de compra aunque el saldo aumente.', 'Por eso conviene comparar siempre un rendimiento contra la inflación, no solo contra cero.', 'Guardar todo en efectivo y sin rendimiento es, a la larga, una forma segura de perder valor.'], en: 'Tu parte de liquidez (15%) y Dónde dejar tus pesos.' },
+    { id: 'diversificar', t: 'No pongas todos los huevos en la misma canasta', r: 'Repartir tu plata entre distintos activos es la herramienta más simple para cuidarla.', p: ['Si una inversión cae, las otras amortiguan el golpe en tu cartera.', 'Un ETF ya diversifica: con una sola compra tenés participación en muchas empresas.', 'Diversificar no elimina el riesgo: en una crisis fuerte casi todo baja a la vez, aunque la caída suele ser menor.'], en: 'Tus 4 partes y los ETFs de tu parte de empresas.' },
+    { id: 'interes-compuesto', t: 'El interés compuesto: ganar sobre lo ya ganado', r: 'Los intereses que cobrás se suman al capital y empiezan a generar más intereses.', p: ['USD 100 al 8% anual se convierten en unos USD 216 en 10 años si reinvertís todo.', 'Cuanto antes empezás, más trabaja el tiempo a tu favor, incluso con montos chicos.', 'Funciona para los dos lados: una deuda con tasa alta también se multiplica.'], en: 'Tu proyección a 7 años.' },
+    { id: 'anti-humo', t: 'Cómo detectar el humo', r: 'Las estafas y los falsos gurús comparten señales. Si ves varias juntas, desconfiá.', p: ['Prometen ganancias garantizadas o rendimientos muy por encima del mercado. Nadie puede garantizarlo.', 'Te apuran: “quedan pocos lugares”, “entrá hoy o te lo perdés”.', 'Te piden transferir a una cuenta personal o que “les dejes manejar” tu plata, en vez de operar vos en un broker registrado en la CNV.', 'Solo muestran las ganancias y nunca explican qué puede salir mal.', 'Te piden sumar gente para ganar más: eso es el esquema de una pirámide.'], en: 'Todo FinUp: por eso cada parte te dice qué puede salir mal.' },
+  ];
+  function aprender() {
+    const prox = LECC.find(l => !st.leidas.has(l.id));
+    const L = LECC.find(l => l.id === st.lec) || LECC[0];
+    $('#g-lec').innerHTML = `<svg class="gem-bg" viewBox="180 228 480 480" aria-hidden="true"><use href="#gema"/></svg><span class="p-eyebrow">${st.leidas.has(L.id) ? 'Lección leída' : 'Tu próxima lección'}</span><div class="p-h1" style="font-size:24px">${L.t}</div><p class="p-sub">${L.r}</p><ul>${L.p.map(x => `<li>${x}</li>`).join('')}</ul><p class="enCartera"><b>En tu plan:</b> ${L.en}</p><div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center">${st.leidas.has(L.id) ? '<span class="chip tag-ok">Leída</span>' : '<button type="button" class="p-btn" id="g-leida">Marcar como leída</button>'}${prox && prox.id !== L.id ? `<button type="button" class="linkbtn" id="g-sigl">Siguiente: ${prox.t}</button>` : ''}</div>`;
+    $('#g-ruta').innerHTML = LECC.map((l, i) => `<li class="${st.leidas.has(l.id) ? 'leida' : prox && prox.id === l.id ? 'prox' : ''}"><span class="n">${st.leidas.has(l.id) ? '✓' : i + 1}</span><button type="button" class="linkbtn" data-l="${l.id}" style="text-decoration:none;text-align:left;color:inherit"><b>${l.t}${prox && prox.id === l.id ? '<em>Siguiente</em>' : ''}</b><span>${l.r}</span></button></li>`).join('');
+    const b = $('#g-leida'); if (b) b.onclick = () => { st.leidas.add(L.id); if (L.id === 'anti-humo') hacer('humo', false); const n = LECC.find(l => !st.leidas.has(l.id)); if (n) st.lec = n.id; aprender(); };
+    const s = $('#g-sigl'); if (s) s.onclick = () => { st.lec = prox.id; aprender(); };
+    $$('#g-ruta [data-l]').forEach(x => x.onclick = () => { st.lec = x.dataset.l; aprender(); });
+  }
+
+  function pintar() { recorrido(); puntos(); pesos(); ejemplos(); aprender(); }
+
+  // Navegación del prototipo
+  bench.addEventListener('click', e => {
+    const g = e.target.closest('[data-go]');
+    if (g && bench.contains(g)) {
+      if (g.dataset.parteGo) st.parte = g.dataset.parteGo;
+      ir(g.dataset.go);
+      if (g.dataset.go === 'pesos' && st.hechos.has('cartera')) hacer('base', false);
+    }
+  });
+  $$('[data-g]').forEach(b => b.addEventListener('click', () => ir(b.dataset.g)));
+  $$('[data-gdev]').forEach(b => b.addEventListener('click', () => { $$('[data-gdev]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); stage.dataset.device = b.dataset.gdev; }));
+  $('#g-reset').addEventListener('click', () => {
+    st.hechos = new Set(['perfil']); st.leidas = new Set(); st.cerrado = false; st.plazo = 30; st.lec = 'riesgo-retorno'; st.parte = 'variable'; st.ej = 'SPY';
+    if (!$('#g-sug')) { $('#g-rec').outerHTML = recHTML; }
+    enlazarRec(); $$('#g-partes .parte').forEach(el => { el.classList.remove('open'); el.querySelector('button').setAttribute('aria-expanded', 'false'); });
+    const t = $('#g-toast'); if (t) t.textContent = ''; ir('plan');
+  });
+
+  // En pantallas angostas el prototipo arranca en modo celular.
+  if (window.innerWidth < 720) { stage.dataset.device = 'movil'; $$('[data-gdev]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.gdev === 'movil'))); }
+  enlazarRec();
+  pintar();
+})();
+</script>
+</body>
+</html>
