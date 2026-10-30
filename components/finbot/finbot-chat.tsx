@@ -18,11 +18,12 @@ const SUGERENCIAS_BASE = [
 function sugerencias(ctx: ContextoEstrategia | null) {
   if (!ctx) return SUGERENCIAS_BASE;
   const principal = ctx.distribucion[0]?.activo;
+  // Preguntas para entender, no para pedir qué comprar.
   return [
-    "¿Por qué esta estrategia encaja con mi perfil?",
-    principal ? `¿Con qué activos puedo armar "${principal}"?` : "¿En qué activos puedo invertir?",
-    "¿Cómo están hoy el Merval y el S&P 500?",
-    "¿Qué es un CEDEAR?",
+    "¿Por qué este plan encaja con mi perfil?",
+    principal ? `¿Qué tipo de instrumentos hay dentro de "${principal}"?` : "¿Qué tipos de instrumentos existen?",
+    "¿Cómo se movió hoy el mercado?",
+    "¿Qué puede salir mal con mi plan?",
   ];
 }
 
@@ -137,7 +138,7 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
               <div className="space-y-3">
                 <p className="text-muted-foreground leading-relaxed">
                   ¡Hola! Soy <span className="text-foreground font-medium">FinBot</span>. Preguntame qué es un bono o un CEDEAR,
-                  cómo está el mercado hoy, o con qué activos podrías armar tu estrategia.
+                  cómo está el mercado hoy, o qué puede salir mal con tu plan.
                 </p>
                 <div className="flex flex-col gap-2">
                   {sugerencias(contexto).map((s) => (

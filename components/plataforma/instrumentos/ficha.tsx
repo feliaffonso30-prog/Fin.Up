@@ -15,11 +15,11 @@ import { NOMBRE_CRITERIO, NOMBRE_HORIZONTE, type Instrumento } from "@/lib/plata
 const NOMBRE_MONEDA = { ARS: "Pesos (ARS)", USD: "Dólares (USD MEP)" } as const;
 
 const PARTE_CARTERA: Record<Instrumento["categoriasCartera"][number], string> = {
-  fija: "Renta fija",
-  variable: "Acciones y ETFs",
-  dividendos: "Acciones y ETFs de dividendos",
-  liquidez: "Liquidez",
-  alternativo: "Alternativos",
+  fija: "Préstamos a gobiernos y empresas (renta fija)",
+  variable: "Partes de empresas (acciones)",
+  dividendos: "Empresas que reparten ganancias (dividendos)",
+  liquidez: "Plata disponible al instante (liquidez)",
+  alternativo: "Cripto y oro (alternativos)",
 };
 
 const QUE_SIGNIFICA_RIESGO: Record<Instrumento["riesgo"], string> = {

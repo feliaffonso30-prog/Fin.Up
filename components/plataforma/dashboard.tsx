@@ -1,20 +1,34 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { AlertTriangle, Scale, Sparkles } from "lucide-react";
+import { AlertTriangle, ArrowDown, ArrowRight, Bot, ChevronDown, RefreshCw, Scale, Sparkles } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { GraficoProyeccion } from "@/components/plataforma/grafico-proyeccion";
-import { Aviso, COLOR_CATEGORIA, Dato, EncabezadoPagina, QuePuedeSalirMal, Rombo, TextoLegal } from "@/components/plataforma/primitivas";
+import {
+  Aviso,
+  COLOR_CATEGORIA,
+  Dato,
+  EncabezadoPagina,
+  Filo,
+  QuePuedeSalirMal,
+  Rombo,
+  Sobretitulo,
+  TextoLegal,
+} from "@/components/plataforma/primitivas";
 import { VerEjemplos } from "@/components/plataforma/instrumentos/ver-ejemplos";
+import { abrirFinBot } from "@/lib/finbot/abrir";
 import { CATEGORIAS_CON_EJEMPLOS } from "@/lib/plataforma/instrumentos/catalogo";
 import { DESCRIPCION_PERFIL } from "@/lib/plataforma/perfil";
 import { DESCARGO } from "@/lib/plataforma/cartera";
-import { pct, usd } from "@/lib/plataforma/formato";
+import { fecha, pct, usd } from "@/lib/plataforma/formato";
+import { siguientePaso, type SiguientePaso } from "@/lib/plataforma/siguiente-paso";
 import { usePlan } from "@/lib/plataforma/store";
 import { hrefComparador } from "@/lib/plataforma/comparador/desde-cartera";
+import { AUTH_CONFIGURADA } from "@/lib/supabase/config";
 import type { Plan, Posicion } from "@/lib/plataforma/tipos";
 
 export function Dashboard() {
@@ -22,7 +36,7 @@ export function Dashboard() {
 
   if (cargando) {
     return (
-      <div className="space-y-4" aria-busy="true" aria-label="Cargando tu cartera">
+      <div className="space-y-4" aria-busy="true" aria-label="Cargando tu plan">
         <Skeleton className="h-10 w-2/3" />
         <Skeleton className="h-24 w-full" />
         <Skeleton className="h-64 w-full" />
@@ -34,7 +48,7 @@ export function Dashboard() {
     return (
       <div className="mx-auto flex min-h-[50vh] max-w-md flex-col items-center justify-center text-center">
         <AlertTriangle className="mb-3 h-8 w-8 text-atencion" aria-hidden />
-        <h1 className="text-xl font-bold">No pudimos cargar tu cartera</h1>
+        <h1 className="text-xl font-bold">No pudimos cargar tu plan</h1>
         <p className="mt-2 text-sm text-muted-foreground">{error}</p>
         <Button onClick={recargar} variant="outline" className="mt-5">
           Reintentar
@@ -54,7 +68,7 @@ function SinPlan() {
       </div>
       <h1 className="text-2xl font-bold">Todavía no armaste tu perfil</h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Respondé unas pocas preguntas y te mostramos una cartera simple, explicando el porqué de cada parte y qué puede salir mal.
+        Respondé unas pocas preguntas y te mostramos un plan simple, explicando el porqué de cada parte y qué puede salir mal.
       </p>
       <Button asChild className="mt-6 font-semibold">
         <Link href="/onboarding">Armar mi perfil</Link>
@@ -63,21 +77,60 @@ function SinPlan() {
   );
 }
 
+// Cuánto sube y baja cada parte, en palabras y no con "volatilidad".
+const CUANTO_SE_MUEVE: Record<Posicion["volatilidad"], string> = {
+  "Muy baja": "casi nada",
+  Baja: "poco",
+  Media: "bastante",
+  Alta: "mucho",
+  "Muy alta": "muchísimo",
+};
+
 function Cartera({ plan }: { plan: Plan }) {
   const { analisis, perfil, respuestas, posiciones, avisos } = plan;
   const ultimo = plan.proyeccion.at(-1);
   const capital = respuestas.capitalInicial;
   const sinMontos = capital === 0 && respuestas.aporteMensual === 0;
+  const paso = siguientePaso(plan);
+  // El aviso que el siguiente paso ya cubre no se repite en "Antes de empezar".
+  const antesDeEmpezar = avisos.filter((a) => a.titulo !== paso.aviso);
+  const [abiertas, setAbiertas] = useState<string[]>([]);
+
+  // "Ver esa parte": la abre, la lleva a la vista y le pasa el foco.
+  function abrirParte(categoria: string) {
+    setAbiertas((prev) => (prev.includes(categoria) ? prev : [...prev, categoria]));
+    requestAnimationFrame(() => {
+      const el = document.getElementById(`parte-${categoria}`);
+      const reducir = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      el?.scrollIntoView({ behavior: reducir ? "auto" : "smooth", block: "start" });
+      el?.querySelector<HTMLButtonElement>("button")?.focus({ preventScroll: true });
+    });
+  }
 
   return (
     <div className="space-y-8">
       <EncabezadoPagina sobretitulo="Mi plan" titulo={`Perfil ${perfil.perfil.toLowerCase()}`}>
-        {DESCRIPCION_PERFIL[perfil.perfil]}
+        <p>{DESCRIPCION_PERFIL[perfil.perfil]}</p>
+        <p className="mt-2 text-legal text-muted-foreground/80">
+          Plan armado el {fecha(plan.generadoEn)}
+          {AUTH_CONFIGURADA ? "" : " · Guardado solo en este navegador"}
+        </p>
       </EncabezadoPagina>
 
-      {avisos.length > 0 && (
-        <section aria-label="Avisos importantes" className="space-y-3">
-          {avisos.map((a) => (
+      <TuSiguientePaso paso={paso} onVerParte={abrirParte} />
+
+      {(antesDeEmpezar.length > 0 || perfil.ajustes.length > 0) && (
+        <section aria-labelledby="antes-de-empezar" className="space-y-3">
+          <h2 id="antes-de-empezar" className="text-lg font-bold">
+            Antes de empezar
+          </h2>
+          {perfil.ajustes.length > 0 && (
+            <Aviso nivel="atencion" titulo="Ajustamos tu perfil por seguridad">
+              Por tus respuestas te habría salido {perfil.perfilPorPuntaje.toLowerCase()}, pero lo dejamos en {perfil.perfil.toLowerCase()}:{" "}
+              {perfil.ajustes.join(" ")}
+            </Aviso>
+          )}
+          {antesDeEmpezar.map((a) => (
             <Aviso key={a.titulo} nivel={a.nivel} titulo={a.titulo}>
               {a.texto}
             </Aviso>
@@ -86,15 +139,19 @@ function Cartera({ plan }: { plan: Plan }) {
       )}
 
       <section aria-label="Resumen de riesgo y retorno" className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <Dato titulo="Retorno anual estimado" valor={`${pct(analisis.retornoMin)} a ${pct(analisis.retornoMax)}`} nota="Supuesto ilustrativo, no es una promesa." />
+        <Dato
+          titulo="En un año normal"
+          valor={`${pct(analisis.retornoMin)} a ${pct(analisis.retornoMax)}`}
+          nota="Supuesto ilustrativo, no es una promesa."
+        />
         <Dato
           titulo="En un mal año"
           valor={pct(analisis.caida, 0)}
           valorClase="text-atencion"
           malEscenario
-          nota={capital > 0 ? `Con ${usd(capital)} invertidos, quedarías cerca de ${usd(capital * (1 + analisis.caida / 100))}.` : "Así de fuerte podría caer tu cartera."}
+          nota={capital > 0 ? `Con ${usd(capital)} invertidos, quedarías cerca de ${usd(capital * (1 + analisis.caida / 100))}.` : "Así de fuerte podría caer tu plan."}
         />
-        <Dato titulo="Nivel de riesgo" valor={analisis.nivelRiesgo} nota="Según cuánto podría caer la cartera en un mal año." />
+        <Dato titulo="Nivel de riesgo" valor={analisis.nivelRiesgo} nota="Según cuánto podría caer el plan en un mal año." />
       </section>
 
       <Card className="border-border bg-card">
@@ -102,7 +159,7 @@ function Cartera({ plan }: { plan: Plan }) {
           <CardTitle className="text-xl">
             <h2>Cómo se reparte tu plata</h2>
           </CardTitle>
-          <CardDescription>Tocá cada parte para ver qué es, por qué está en tu cartera y qué puede salir mal.</CardDescription>
+          <CardDescription>Tocá cada parte para ver qué es, por qué está en tu plan y qué puede salir mal.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-5">
           <div className="flex h-4 w-full overflow-hidden rounded-full border border-border/50 bg-background" role="img" aria-label={posiciones.map((p) => `${p.nombre} ${p.porcentaje}%`).join(", ")}>
@@ -111,9 +168,9 @@ function Cartera({ plan }: { plan: Plan }) {
             ))}
           </div>
 
-          <Accordion type="multiple" className="space-y-2">
+          <Accordion type="multiple" value={abiertas} onValueChange={setAbiertas} className="space-y-2">
             {posiciones.map((p) => (
-              <AccordionItem key={p.categoria} value={p.categoria} className="rounded-lg border-0 bg-secondary/60 px-4">
+              <AccordionItem key={p.categoria} id={`parte-${p.categoria}`} value={p.categoria} className="scroll-mt-20 rounded-lg border-0 bg-secondary/60 px-4">
                 <AccordionTrigger className="cursor-pointer py-3 hover:no-underline">
                   <span className="flex min-w-0 flex-1 items-center gap-3 pr-2">
                     <Rombo className={`h-2.5 w-2.5 ${COLOR_CATEGORIA[p.categoria]}`} />
@@ -125,10 +182,10 @@ function Cartera({ plan }: { plan: Plan }) {
                   </span>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-4 pb-4 text-sm">
-                  <p className="leading-relaxed text-muted-foreground">{p.queEs}</p>
-                  <Bloque titulo="Por qué está en tu cartera">{p.porQueEnTuCartera}</Bloque>
+                  <Bloque titulo="Qué es">{p.queEs}</Bloque>
+                  <Bloque titulo="Por qué está en tu plan">{p.porQueEnTuCartera}</Bloque>
                   <Bloque titulo="Su ventaja">{p.ventaja}</Bloque>
-                  <QuePuedeSalirMal pie={`Volatilidad: ${p.volatilidad.toLowerCase()}`}>{p.queSalePuedeMal}</QuePuedeSalirMal>
+                  <QuePuedeSalirMal pie={`Cuánto sube y baja: ${CUANTO_SE_MUEVE[p.volatilidad]}`}>{p.queSalePuedeMal}</QuePuedeSalirMal>
                   <VerDondeConviene posicion={p} />
                   {CATEGORIAS_CON_EJEMPLOS.includes(p.categoria) ? (
                     <VerEjemplos categoria={p.categoria} perfil={perfil.perfil} />
@@ -153,55 +210,90 @@ function Cartera({ plan }: { plan: Plan }) {
         </CardContent>
       </Card>
 
-      <Card className="border-border bg-card">
-        <CardHeader>
-          <CardTitle className="text-xl">
-            <h2>
-              Proyección a {plan.anios} {plan.anios === 1 ? "año" : "años"}
-            </h2>
-          </CardTitle>
-          <CardDescription>
-            {sinMontos || !ultimo
-              ? "Cargá un capital inicial o un aporte mensual al rehacer tu perfil para ver la proyección."
-              : `Aportarías ${usd(ultimo.aportado)} y podrías tener entre ${usd(ultimo.bajo)} y ${usd(ultimo.alto)}.`}
-          </CardDescription>
-        </CardHeader>
-        {!sinMontos && (
-          <CardContent className="space-y-3">
-            <GraficoProyeccion datos={plan.proyeccion} />
-            <p className="text-xs leading-relaxed text-muted-foreground">
-              Montos en dólares (USD), con supuestos ilustrativos. No descuentan inflación en dólares, impuestos ni comisiones del broker, y en un mal año el resultado puede quedar por debajo del escenario bajo.
+      <Plegable titulo={`Cómo podría crecer en ${plan.anios} ${plan.anios === 1 ? "año" : "años"}`}>
+        {sinMontos || !ultimo ? (
+          <p className="text-sm text-muted-foreground">Cargá un capital inicial o un aporte mensual al rehacer tu perfil para ver la proyección.</p>
+        ) : (
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Aportarías {usd(ultimo.aportado)} y podrías tener entre {usd(ultimo.bajo)} y {usd(ultimo.alto)}.
             </p>
-          </CardContent>
+            <GraficoProyeccion datos={plan.proyeccion} />
+            <TextoLegal>
+              Montos en dólares (USD), con supuestos ilustrativos. No descuentan inflación en dólares, impuestos ni comisiones del broker, y en un mal año
+              el resultado puede quedar por debajo de la zona rayada.
+            </TextoLegal>
+          </div>
         )}
-      </Card>
+      </Plegable>
 
-      <Card className="border-border bg-card">
-        <CardHeader>
-          <CardTitle className="text-xl">
-            <h2>Por qué te salió este perfil</h2>
-          </CardTitle>
-          <CardDescription>Puntaje de {perfil.puntaje} sobre 100 según tus respuestas.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <ul className="list-disc space-y-1.5 pl-5 text-sm text-muted-foreground">
+      <Plegable titulo="Por qué te salió este perfil">
+        <div className="space-y-4">
+          <ul className="space-y-2 text-sm text-muted-foreground">
             {perfil.motivos.map((m) => (
-              <li key={m}>{m}</li>
+              <li key={m} className="flex gap-3">
+                <Rombo className="mt-1.5 bg-enlace" />
+                {m}
+              </li>
             ))}
           </ul>
-          {perfil.ajustes.length > 0 && (
-            <TextoLegal tono="atencion">
-              Ajustamos el perfil de {perfil.perfilPorPuntaje.toLowerCase()} a {perfil.perfil.toLowerCase()} por seguridad: {perfil.ajustes.join(" ")}
-            </TextoLegal>
-          )}
-          <Button asChild variant="outline" size="sm" className="mt-1">
-            <Link href="/onboarding">Rehacer mi perfil</Link>
+          <p className="text-sm text-muted-foreground">¿Cambió algo en tu vida? Rehacé tus respuestas y armamos el plan de nuevo.</p>
+          <Button asChild variant="outline" size="sm">
+            <Link href="/onboarding">
+              <RefreshCw className="h-4 w-4" aria-hidden />
+              Rehacer mi perfil
+            </Link>
           </Button>
-        </CardContent>
-      </Card>
+        </div>
+      </Plegable>
 
       <TextoLegal className="text-center">{DESCARGO}</TextoLegal>
     </div>
+  );
+}
+
+function TuSiguientePaso({ paso, onVerParte }: { paso: SiguientePaso; onVerParte: (categoria: string) => void }) {
+  const { accion } = paso;
+  return (
+    <section aria-labelledby="siguiente-paso" className="relative overflow-hidden rounded-xl border border-enlace/40 bg-card p-5 md:p-6">
+      <Filo className="absolute inset-x-0 top-0" />
+      <Sobretitulo>Tu siguiente paso</Sobretitulo>
+      <h2 id="siguiente-paso" className="mt-2 text-xl font-bold md:text-2xl">
+        {paso.titulo}
+      </h2>
+      <p className="mt-2 max-w-2xl text-sm leading-relaxed text-foreground/85">{paso.texto}</p>
+      <div className="mt-4">
+        {accion.tipo === "enlace" ? (
+          <Button asChild>
+            <Link href={accion.href}>
+              {accion.etiqueta} <ArrowRight className="h-4 w-4" aria-hidden />
+            </Link>
+          </Button>
+        ) : accion.tipo === "finbot" ? (
+          <Button type="button" onClick={() => abrirFinBot(accion.pregunta)}>
+            <Bot className="h-4 w-4" aria-hidden />
+            {accion.etiqueta}
+          </Button>
+        ) : (
+          <Button type="button" onClick={() => onVerParte(accion.categoria)}>
+            {accion.etiqueta} <ArrowDown className="h-4 w-4" aria-hidden />
+          </Button>
+        )}
+      </div>
+    </section>
+  );
+}
+
+/** Bloque secundario plegado: lo importante queda arriba, lo demás a un toque. */
+function Plegable({ titulo, children }: { titulo: string; children: React.ReactNode }) {
+  return (
+    <details className="group rounded-xl border border-border bg-card">
+      <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 font-display text-base font-bold [&::-webkit-details-marker]:hidden">
+        {titulo}
+        <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden />
+      </summary>
+      <div className="px-5 pb-5">{children}</div>
+    </details>
   );
 }
 

@@ -14,8 +14,8 @@ import type { PuntoProyeccion } from "@/lib/plataforma/tipos";
 
 const config = {
   aportado: { label: "Lo que aportás", color: "var(--chart-4)" },
-  bajo: { label: "Escenario bajo", color: "var(--chart-1)" },
-  alto: { label: "Escenario alto", color: "var(--chart-2)" },
+  bajo: { label: "Si va mal", color: "var(--chart-1)" },
+  alto: { label: "Si va bien", color: "var(--chart-2)" },
 } satisfies ChartConfig;
 
 // 18000 -> "18 mil" (cabe en una línea; la unidad, USD, se aclara en el texto de la tarjeta)

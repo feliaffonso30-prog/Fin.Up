@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { aContextoEstrategia, actualizarPlan, generarPlan } from "./plan";
+import { siguientePaso } from "./siguiente-paso";
 import { calcularPuntaje, clasificarPorPuntaje, definirPerfil, validarRespuestas } from "./perfil";
 import { proyectar, serieProyeccion } from "./proyeccion";
 import type {
@@ -285,6 +286,38 @@ describe("planes guardados", () => {
     const actual = generarPlan(audaz, FECHA);
     const roto = { ...actual, respuestas: { ...actual.respuestas, edad: 5 } };
     expect(actualizarPlan(roto)).toBe(roto);
+  });
+});
+
+describe("tu siguiente paso", () => {
+  it("con deudas caras, lo primero son las deudas, aunque falte el fondo", () => {
+    const paso = siguientePaso(generarPlan({ ...audaz, deudasCaras: true, fondoEmergencia: "no" }, FECHA));
+    expect(paso.titulo).toMatch(/deudas/);
+    expect(paso.accion.tipo).toBe("finbot");
+  });
+
+  it("sin fondo de emergencia, lleva a comparar dónde dejar los pesos de la liquidez", () => {
+    const plan = generarPlan({ ...audaz, fondoEmergencia: "parcial" }, FECHA);
+    const paso = siguientePaso(plan);
+    expect(paso.accion.tipo).toBe("enlace");
+    if (paso.accion.tipo === "enlace") expect(paso.accion.href).toContain("tab=billeteras");
+    expect(plan.avisos.map((a) => a.titulo)).toContain(paso.aviso);
+  });
+
+  it("con la base cubierta, apunta a la parte más grande del plan", () => {
+    const plan = generarPlan(audaz, FECHA);
+    const paso = siguientePaso(plan);
+    const mayor = Math.max(...plan.posiciones.map((p) => p.porcentaje));
+    expect(paso.accion.tipo).toBe("parte");
+    const { accion } = paso;
+    if (accion.tipo === "parte") expect(plan.posiciones.find((p) => p.categoria === accion.categoria)?.porcentaje).toBe(mayor);
+  });
+
+  it("nunca dice qué comprar, en ninguna combinación", () => {
+    for (const r of todasLasCombinaciones()) {
+      const p = siguientePaso(generarPlan(r, FECHA));
+      expect(`${p.titulo} ${p.texto} ${p.accion.etiqueta}`).not.toMatch(/compr[aá]|te recomendamos/i);
+    }
   });
 });
 
