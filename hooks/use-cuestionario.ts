@@ -17,7 +17,7 @@ export const PASOS: { titulo: string; ayuda: string; campos: Clave[] }[] = [
   { titulo: "Contanos un poco de vos", ayuda: "Tu edad nos ayuda a estimar cuánto tiempo tenés por delante.", campos: ["edad"] },
   { titulo: "¿Para qué querés invertir?", ayuda: "Elegí el objetivo que más se parezca al tuyo.", campos: ["objetivo"] },
   { titulo: "¿Cuándo vas a necesitar esta plata?", ayuda: "Es lo más importante: cuanto más tiempo, más caídas podés esperar a que se recuperen.", campos: ["horizonte"] },
-  { titulo: "¿Con cuánto arrancás?", ayuda: "Son montos en dólares. Si pensás en pesos, usá un valor aproximado (por ejemplo, al dólar MEP).", campos: ["capitalInicial", "aporteMensual"] },
+  { titulo: "¿Con cuánto arrancás?", ayuda: "Escribilo en dólares. Si lo tenés en pesos, dividilo por el valor del dólar de hoy: no hace falta que sea exacto.", campos: ["capitalInicial", "aporteMensual"] },
   { titulo: "Tu base financiera", ayuda: "Antes de invertir conviene tener las bases cubiertas. No juzgamos: solo ajustamos la cartera.", campos: ["fondoEmergencia", "deudasCaras"] },
   { titulo: "¿Cómo reaccionás ante el riesgo?", ayuda: "No hay respuestas buenas o malas. Conocerte bien evita decisiones por pánico.", campos: ["reaccionCaida", "prioridad"] },
   { titulo: "¿Cuánto sabés de inversiones?", ayuda: "Sirve para explicarte las cosas al nivel justo.", campos: ["conocimiento"] },
@@ -29,6 +29,8 @@ export function useCuestionario() {
   const router = useRouter();
   const { plan: planGuardado, cargando, guardar } = usePlan();
 
+  // Antes de la primera pregunta hay una bienvenida: qué vas a recibir y cuánto tarda.
+  const [enBienvenida, setEnBienvenida] = useState(true);
   const [paso, setPaso] = useState(0);
   const [guardando, setGuardando] = useState(false);
   const [errorGuardado, setErrorGuardado] = useState(false);
@@ -79,8 +81,11 @@ export function useCuestionario() {
 
   function volver() {
     setIntento(false);
-    setPaso((p) => Math.max(0, p - 1));
+    if (paso === 0) setEnBienvenida(true);
+    else setPaso((p) => p - 1);
   }
+
+  const empezar = () => setEnBienvenida(false);
 
   async function verCartera() {
     if (!plan || guardando) return;
@@ -96,6 +101,10 @@ export function useCuestionario() {
   }
 
   return {
+    enBienvenida,
+    empezar,
+    /** Ya tenía un plan: sus respuestas anteriores están precargadas. */
+    respuestasPrevias: !!planGuardado,
     paso,
     def,
     enResultado,

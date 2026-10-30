@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { GrupoOpciones, Opcion } from "@/components/plataforma/opcion";
-import { Sobretitulo } from "@/components/plataforma/primitivas";
+import { Rombo, Sobretitulo } from "@/components/plataforma/primitivas";
 import { PASOS, useCuestionario } from "@/hooks/use-cuestionario";
 import { DESCRIPCION_PERFIL } from "@/lib/plataforma/perfil";
 import { URL_LANDING } from "@/lib/config";
@@ -23,6 +23,9 @@ const CLASES_PREGUNTA = "flex items-center gap-2 text-sm leading-none font-mediu
 
 export function Onboarding() {
   const {
+    enBienvenida,
+    empezar,
+    respuestasPrevias,
     paso,
     def,
     enResultado,
@@ -48,6 +51,12 @@ export function Onboarding() {
   // tampoco con el doble efecto de StrictMode.
   const tituloRef = useRef<HTMLHeadingElement>(null);
   const pasoPrevio = useRef(paso);
+  // Si vuelve desde la primera pregunta a la bienvenida, el foco va al título de la bienvenida.
+  const volvioABienvenida = useRef(false);
+  const alVolver = () => {
+    if (paso === 0) volvioABienvenida.current = true;
+    volver();
+  };
   useEffect(() => {
     if (pasoPrevio.current === paso) return;
     pasoPrevio.current = paso;
@@ -62,20 +71,21 @@ export function Onboarding() {
           <Link href="/dashboard">
             <img src="/finup.logo.1.png" alt="FinUp" className="h-14 w-auto" />
           </Link>
-          <a href={URL_LANDING} className="text-xs text-muted-foreground hover:text-foreground">
+          <a href={URL_LANDING} className="flex min-h-10 items-center px-2 text-sm text-muted-foreground hover:text-foreground">
             Salir
           </a>
         </div>
 
-        {!enResultado ? (
+        {enBienvenida ? (
+          <Bienvenida onEmpezar={empezar} respuestasPrevias={respuestasPrevias} enfocar={volvioABienvenida.current} />
+        ) : !enResultado ? (
           <Card className="border-border bg-card">
             <CardHeader className="space-y-4">
               <div className="space-y-1.5">
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>Paso {paso + 1} de {PASOS.length}</span>
-                  <span>{Math.round((paso / PASOS.length) * 100)}%</span>
-                </div>
-                <Progress value={(paso / PASOS.length) * 100} aria-label="Avance del cuestionario" />
+                <p className="font-mono text-xs uppercase tracking-[0.08em] text-muted-foreground">
+                  Pregunta {paso + 1} de {PASOS.length}
+                </p>
+                <Progress value={((paso + 1) / PASOS.length) * 100} aria-label={`Pregunta ${paso + 1} de ${PASOS.length}`} />
               </div>
               <div>
                 <CardTitle className="text-2xl font-bold">
@@ -200,7 +210,7 @@ export function Onboarding() {
                 )}
 
                 <div className="flex items-center justify-between gap-3 pt-2">
-                  <Button type="button" variant="ghost" onClick={volver} disabled={paso === 0} className="cursor-pointer text-muted-foreground">
+                  <Button type="button" variant="ghost" onClick={alVolver} className="cursor-pointer text-muted-foreground">
                     <ArrowLeft className="mr-1 h-4 w-4" /> Atrás
                   </Button>
                   <Button type="submit" className="cursor-pointer font-semibold">
@@ -221,6 +231,57 @@ export function Onboarding() {
         </p>
       </main>
     </div>
+  );
+}
+
+function Bienvenida({
+  onEmpezar,
+  respuestasPrevias,
+  enfocar,
+}: {
+  onEmpezar: () => void;
+  respuestasPrevias: boolean;
+  enfocar: boolean;
+}) {
+  const tituloRef = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    if (enfocar) tituloRef.current?.focus();
+  }, [enfocar]);
+  return (
+    <Card className="animate-in fade-in border-border bg-card duration-500 motion-reduce:animate-none">
+      <CardHeader className="space-y-3">
+        <Sobretitulo>Tu perfil de inversor</Sobretitulo>
+        <CardTitle className="text-3xl font-extrabold">
+          <h1 ref={tituloRef} tabIndex={-1} className="outline-none">
+            {respuestasPrevias ? "Revisemos tus respuestas" : "Antes de invertir, conocete"}
+          </h1>
+        </CardTitle>
+        <CardDescription className="text-sm leading-relaxed text-muted-foreground">
+          {respuestasPrevias
+            ? "Tus respuestas anteriores ya están cargadas: cambiá solo lo que haya cambiado en tu vida."
+            : "Con unas preguntas simples armamos un plan pensado para vos, explicado parte por parte."}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <ul className="space-y-3 text-sm leading-relaxed text-foreground/90">
+          {[
+            "7 preguntas cortas, unos 3 minutos.",
+            "Te mostramos un plan con el porqué de cada parte y qué puede salir mal.",
+            "No movemos tu plata ni te pedimos datos bancarios: FinUp no opera ni vende inversiones.",
+          ].map((t) => (
+            <li key={t} className="flex gap-3">
+              <Rombo className="mt-1.5 bg-enlace" />
+              {t}
+            </li>
+          ))}
+        </ul>
+        <div className="flex justify-end">
+          <Button type="button" onClick={onEmpezar} className="cursor-pointer">
+            {respuestasPrevias ? "Revisar mis respuestas" : "Empezar"} <ArrowRight className="ml-1 h-4 w-4" />
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
