@@ -12,9 +12,9 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <div className="space-y-8">
-      <EncabezadoPagina sobretitulo="Ejemplos" titulo="Instrumentos reales, explicados">
-        Fichas de CEDEARs, acciones y bonos que se negocian en Argentina, para entender qué hay detrás de cada parte de una cartera: qué son, por
-        qué están en esta lista y qué puede salir mal.
+      <EncabezadoPagina sobretitulo="Ejemplos" titulo="Ejemplos reales, explicados">
+        Fichas de acciones, fondos y bonos que se negocian en Argentina, para entender qué hay dentro de cada parte de tu plan: qué son, por qué
+        están en esta lista y qué puede salir mal.
       </EncabezadoPagina>
       <DisclaimerInstrumentos />
       <ListadoInstrumentos instrumentos={CATALOGO_INSTRUMENTOS} />

@@ -41,8 +41,8 @@ export function ListadoInstrumentos({ instrumentos }: { instrumentos: readonly I
             type="search"
             value={f.texto}
             onChange={(e) => setF({ ...f, texto: e.target.value })}
-            placeholder="Buscá por ticker o nombre…"
-            aria-label="Buscar instrumento por ticker o nombre"
+            placeholder="Buscá por nombre o sigla (ej. SPY, Apple)…"
+            aria-label="Buscar por nombre o sigla"
             className="pl-9"
           />
         </div>
@@ -74,7 +74,7 @@ export function ListadoInstrumentos({ instrumentos }: { instrumentos: readonly I
             </SelectContent>
           </Select>
           <Select value={f.moneda} onValueChange={(v) => setF({ ...f, moneda: v as typeof f.moneda })}>
-            <SelectTrigger className="w-full" aria-label="Filtrar por moneda de cotización">
+            <SelectTrigger className="w-full" aria-label="Filtrar por moneda en la que se opera">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
