@@ -16,6 +16,7 @@ import { usePlan } from "@/lib/plataforma/store";
 import { Disclaimer } from "./avisos";
 import { TabCompararTodo } from "./comparar-todo";
 import { TabBilleteras, TabFci, TabPlazoFijo, TabUva, type Fuente } from "./pestanas";
+import { EncabezadoPagina } from "@/components/plataforma/primitivas";
 
 export const PLAZOS = [30, 60, 90, 180] as const;
 const MONTO_EJEMPLO = 1_000_000;
@@ -82,19 +83,13 @@ export function Comparador({ datos, fci, montoUrl, usdUrl, tabUrl }: Props) {
 
   return (
     <div className="space-y-6">
-      <header className="space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-widest text-enlace">Comparador</p>
-        <h1 className="text-3xl font-extrabold text-foreground md:text-4xl">
-          Alternativas en pesos
-        </h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          Ranking de plazos fijos, billeteras y fondos según cuánto ganarías con tu monto y plazo, comparado contra la inflación.
-        </p>
-      </header>
+      <EncabezadoPagina sobretitulo="Comparador" titulo="Alternativas en pesos">
+        Ranking de plazos fijos, billeteras y fondos según cuánto ganarías con tu monto y plazo, comparado contra la inflación.
+      </EncabezadoPagina>
 
       <Disclaimer />
 
-      <Card className="border-border bg-card/70">
+      <Card className="border-border bg-card">
         <CardContent className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="space-y-1.5">

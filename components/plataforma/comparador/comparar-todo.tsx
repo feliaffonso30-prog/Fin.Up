@@ -128,7 +128,7 @@ function Grafico({ filas, perdidaPorInflacion, dias }: { filas: Fila[]; perdidaP
   const maximo = Math.max(...datos.map((d) => d.ganancia), perdidaPorInflacion ?? 0);
 
   return (
-    <figure className="space-y-2 rounded-xl border border-border bg-card/70 p-4">
+    <figure className="space-y-2 rounded-xl border border-border bg-card p-4">
       <figcaption className="space-y-0.5">
         <p className="text-sm font-semibold">Ganancia estimada en {dias} días</p>
         {perdidaPorInflacion !== null && (
@@ -255,7 +255,7 @@ function Resumen({ filas, dias }: { filas: Fila[]; dias: number }) {
 
       <ul className="space-y-3 lg:hidden">
         {filas.map((f) => (
-          <li key={f.tipo} className="space-y-2 rounded-xl border border-border bg-card/70 p-4">
+          <li key={f.tipo} className="space-y-2 rounded-xl border border-border bg-card p-4">
             <p className="text-xs font-semibold uppercase tracking-wide text-enlace">{NOMBRE_CORTO[f.tipo]}</p>
             <Opcion f={f} />
             {f.mejor && (

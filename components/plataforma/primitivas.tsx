@@ -6,9 +6,44 @@ import { cn } from "@/lib/utils";
 // Piezas visuales que se repiten en toda la plataforma. Usan solo tokens de app/globals.css,
 // así el tema se cambia en un lugar.
 
-/** Etiqueta chica en mayúsculas arriba de un título o de un bloque. */
+/** Etiqueta chica en mayúsculas arriba de un título, con el rombo de la marca. */
 export function Sobretitulo({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <p className={cn("text-xs font-semibold uppercase tracking-widest text-enlace", className)}>{children}</p>;
+  return (
+    <p className={cn("flex items-center gap-2 font-mono text-xs font-medium uppercase tracking-[0.14em] text-enlace", className)}>
+      <Rombo className="bg-enlace" />
+      {children}
+    </p>
+  );
+}
+
+/** El rombo: marcador de la marca para leyendas, muestras de color y sobretítulos. */
+export function Rombo({ className }: { className?: string }) {
+  return <span aria-hidden className={cn("inline-block h-2 w-2 shrink-0 rotate-45 rounded-[1px]", className)} />;
+}
+
+/** El filo: la línea degradada de 1px que firma FinUp. Solo en encabezados, FinBot y el menú. */
+export function Filo({ className }: { className?: string }) {
+  return <div aria-hidden className={cn("filo h-px w-full", className)} />;
+}
+
+/** Encabezado de cada pantalla: sobretítulo, título, bajada y el filo debajo. */
+export function EncabezadoPagina({
+  sobretitulo,
+  titulo,
+  children,
+}: {
+  sobretitulo: string;
+  titulo: React.ReactNode;
+  children?: React.ReactNode;
+}) {
+  return (
+    <header className="space-y-3">
+      <Sobretitulo>{sobretitulo}</Sobretitulo>
+      <h1 className="text-3xl font-extrabold text-foreground md:text-4xl">{titulo}</h1>
+      {children && <div className="max-w-2xl text-sm leading-relaxed text-muted-foreground">{children}</div>}
+      <Filo className="mt-5 max-w-xl" />
+    </header>
+  );
 }
 
 // ---------- Avisos ----------
@@ -60,7 +95,7 @@ export function QuePuedeSalirMal({
   className?: string;
 }) {
   return (
-    <div className={cn("rounded-lg border border-atencion/20 bg-atencion/10 p-3", className)}>
+    <div className={cn("trama-atencion rounded-lg border border-atencion/25 bg-atencion/5 p-3", className)}>
       <p className="mb-1 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-atencion">{titulo}</p>
       <div className="text-sm leading-relaxed text-atencion-texto/90">{children}</div>
       {pie && <p className="mt-2 text-xs text-atencion-texto/75">{pie}</p>}
@@ -100,12 +135,25 @@ export function InsigniaRiesgo({ nivel, etiqueta, className }: { nivel: NivelRie
 // ---------- Cifras y textos ----------
 
 /** Una cifra con su título y una nota corta debajo. */
-export function Dato({ titulo, valor, nota, valorClase }: { titulo: string; valor: string; nota: string; valorClase?: string }) {
+export function Dato({
+  titulo,
+  valor,
+  nota,
+  valorClase,
+  malEscenario,
+}: {
+  titulo: string;
+  valor: string;
+  nota: string;
+  valorClase?: string;
+  /** Marca la cifra del escenario malo con la trama de atención. */
+  malEscenario?: boolean;
+}) {
   return (
-    <div className="rounded-xl border border-border bg-secondary/40 p-4">
-      <p className="text-xs text-muted-foreground">{titulo}</p>
-      <p className={cn("mt-1 font-display text-xl font-semibold", valorClase)}>{valor}</p>
-      <p className="mt-1 text-legal text-muted-foreground/80">{nota}</p>
+    <div className={cn("rounded-lg border p-4", malEscenario ? "trama-atencion border-atencion/25 bg-atencion/5" : "border-border bg-card")}>
+      <p className="font-mono text-xs uppercase tracking-[0.08em] text-muted-foreground">{titulo}</p>
+      <p className={cn("mt-1.5 font-display text-2xl font-extrabold tabular-nums tracking-tight", valorClase)}>{valor}</p>
+      <p className="mt-1 text-legal text-muted-foreground">{nota}</p>
     </div>
   );
 }

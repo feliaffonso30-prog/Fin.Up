@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { GraficoProyeccion } from "@/components/plataforma/grafico-proyeccion";
-import { Aviso, COLOR_CATEGORIA, Dato, QuePuedeSalirMal, Sobretitulo, TextoLegal } from "@/components/plataforma/primitivas";
+import { Aviso, COLOR_CATEGORIA, Dato, EncabezadoPagina, QuePuedeSalirMal, Rombo, TextoLegal } from "@/components/plataforma/primitivas";
 import { VerEjemplos } from "@/components/plataforma/instrumentos/ver-ejemplos";
 import { CATEGORIAS_CON_EJEMPLOS } from "@/lib/plataforma/instrumentos/catalogo";
 import { DESCRIPCION_PERFIL } from "@/lib/plataforma/perfil";
@@ -71,13 +71,9 @@ function Cartera({ plan }: { plan: Plan }) {
 
   return (
     <div className="space-y-8">
-      <header className="space-y-2">
-        <Sobretitulo>Tu cartera sugerida</Sobretitulo>
-        <h1 className="text-3xl font-extrabold text-foreground md:text-4xl">
-          Perfil {perfil.perfil.toLowerCase()}
-        </h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">{DESCRIPCION_PERFIL[perfil.perfil]}</p>
-      </header>
+      <EncabezadoPagina sobretitulo="Tu cartera sugerida" titulo={`Perfil ${perfil.perfil.toLowerCase()}`}>
+        {DESCRIPCION_PERFIL[perfil.perfil]}
+      </EncabezadoPagina>
 
       {avisos.length > 0 && (
         <section aria-label="Avisos importantes" className="space-y-3">
@@ -95,12 +91,13 @@ function Cartera({ plan }: { plan: Plan }) {
           titulo="En un mal año"
           valor={pct(analisis.caida, 0)}
           valorClase="text-atencion"
+          malEscenario
           nota={capital > 0 ? `Con ${usd(capital)} invertidos, quedarías cerca de ${usd(capital * (1 + analisis.caida / 100))}.` : "Así de fuerte podría caer tu cartera."}
         />
         <Dato titulo="Nivel de riesgo" valor={analisis.nivelRiesgo} nota="Según cuánto podría caer la cartera en un mal año." />
       </section>
 
-      <Card className="border-border bg-card/70">
+      <Card className="border-border bg-card">
         <CardHeader>
           <CardTitle className="text-xl">
             <h2>Cómo se reparte tu plata</h2>
@@ -116,15 +113,15 @@ function Cartera({ plan }: { plan: Plan }) {
 
           <Accordion type="multiple" className="space-y-2">
             {posiciones.map((p) => (
-              <AccordionItem key={p.categoria} value={p.categoria} className="rounded-xl border border-border bg-secondary/30 px-4 last:border-b">
+              <AccordionItem key={p.categoria} value={p.categoria} className="rounded-lg border-0 bg-secondary/60 px-4">
                 <AccordionTrigger className="cursor-pointer py-3 hover:no-underline">
                   <span className="flex min-w-0 flex-1 items-center gap-3 pr-2">
-                    <span className={`h-3 w-3 shrink-0 rounded-full ${COLOR_CATEGORIA[p.categoria]}`} aria-hidden />
+                    <Rombo className={`h-2.5 w-2.5 ${COLOR_CATEGORIA[p.categoria]}`} />
                     <span className="min-w-0 text-left text-sm font-medium leading-snug">{p.nombre}</span>
                   </span>
                   <span className="mr-2 flex shrink-0 items-center gap-2">
                     {capital > 0 && <span className="hidden text-xs text-muted-foreground sm:inline">{usd(p.montoInicial)}</span>}
-                    <span className="rounded border border-border bg-background px-2.5 py-0.5 font-mono text-sm font-semibold">{p.porcentaje}%</span>
+                    <span className="font-display text-base font-extrabold tabular-nums">{p.porcentaje}%</span>
                   </span>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-4 pb-4 text-sm">
@@ -156,7 +153,7 @@ function Cartera({ plan }: { plan: Plan }) {
         </CardContent>
       </Card>
 
-      <Card className="border-border bg-card/70">
+      <Card className="border-border bg-card">
         <CardHeader>
           <CardTitle className="text-xl">
             <h2>
@@ -179,7 +176,7 @@ function Cartera({ plan }: { plan: Plan }) {
         )}
       </Card>
 
-      <Card className="border-border bg-card/70">
+      <Card className="border-border bg-card">
         <CardHeader>
           <CardTitle className="text-xl">
             <h2>Por qué te salió este perfil</h2>

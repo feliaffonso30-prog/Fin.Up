@@ -44,8 +44,10 @@ export function Shell({ children }: { children: React.ReactNode }) {
         href={href}
         aria-current={activo ? "page" : undefined}
         className={cn(
-          "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors",
-          activo ? "bg-secondary font-semibold text-enlace" : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground",
+          "relative flex min-h-10 items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors",
+          activo
+            ? "bg-secondary font-semibold text-foreground before:filo-vertical before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-full"
+            : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground",
         )}
       >
         <Icono className="h-4 w-4 shrink-0" aria-hidden />

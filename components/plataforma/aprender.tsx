@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { GLOSARIO } from "@/lib/finbot/knowledge";
 import { LECCIONES } from "@/lib/plataforma/lecciones";
+import { EncabezadoPagina } from "@/components/plataforma/primitivas";
 
 const normalizar = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
 
@@ -20,19 +21,15 @@ export function Aprender() {
 
   return (
     <div className="space-y-10">
-      <header className="space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-widest text-enlace">Aprender</p>
-        <h1 className="text-3xl font-extrabold md:text-4xl">Finanzas sin humo</h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          Lo esencial, explicado simple. Si algo no queda claro, preguntale a FinBot con el botón de abajo a la derecha.
-        </p>
-      </header>
+      <EncabezadoPagina sobretitulo="Aprender" titulo="Finanzas sin humo">
+        Lo esencial, explicado simple. Si algo no queda claro, preguntale a FinBot con el botón de abajo a la derecha.
+      </EncabezadoPagina>
 
       <section aria-labelledby="lecciones" className="space-y-4">
         <h2 id="lecciones" className="text-xl font-semibold">Empezá por acá</h2>
         <div className="grid gap-4 md:grid-cols-2">
           {LECCIONES.map((l) => (
-            <Card key={l.id} className="border-border bg-card/70">
+            <Card key={l.id} className="border-border bg-card">
               <CardHeader>
                 <CardTitle className="text-base leading-snug">{l.titulo}</CardTitle>
                 <CardDescription className="text-xs leading-relaxed">{l.resumen}</CardDescription>

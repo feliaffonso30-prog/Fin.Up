@@ -149,7 +149,7 @@ function Celular({ cotizaciones, dias, conProducto }: { cotizaciones: Cotizacion
   return (
     <ol className="grid gap-3 md:grid-cols-2 xl:hidden">
       {cotizaciones.map((c, i) => (
-        <li key={c.alternativa.id} className="space-y-3 rounded-xl border border-border bg-card/70 p-4">
+        <li key={c.alternativa.id} className="space-y-3 rounded-xl border border-border bg-card p-4">
           <div className="flex gap-3">
             <span className="font-mono text-sm text-muted-foreground">{i + 1}</span>
             <Nombre c={c} conProducto={conProducto} />

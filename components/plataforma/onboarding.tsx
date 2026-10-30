@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { GrupoOpciones, Opcion } from "@/components/plataforma/opcion";
+import { Sobretitulo } from "@/components/plataforma/primitivas";
 import { PASOS, useCuestionario } from "@/hooks/use-cuestionario";
 import { DESCRIPCION_PERFIL } from "@/lib/plataforma/perfil";
 import { URL_LANDING } from "@/lib/config";
@@ -56,8 +57,6 @@ export function Onboarding() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
-      <div className="pointer-events-none absolute left-1/2 top-0 -z-10 h-[500px] w-full max-w-7xl -translate-x-1/2 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.10),transparent_65%)] blur-3xl" />
-
       <main className="mx-auto flex max-w-xl flex-col px-4 py-8">
         <div className="mb-6 flex items-center justify-between">
           <Link href="/dashboard">
@@ -69,7 +68,7 @@ export function Onboarding() {
         </div>
 
         {!enResultado ? (
-          <Card className="border-border bg-card shadow-2xl shadow-black/40">
+          <Card className="border-border bg-card">
             <CardHeader className="space-y-4">
               <div className="space-y-1.5">
                 <div className="flex justify-between text-xs text-muted-foreground">
@@ -245,9 +244,9 @@ function Resultado({
     tituloRef.current?.focus();
   }, []);
   return (
-    <Card className="animate-in fade-in border-border bg-card shadow-2xl shadow-black/40 duration-500">
+    <Card className="animate-in fade-in border-border bg-card duration-500 motion-reduce:animate-none">
       <CardHeader className="space-y-3">
-        <p className="text-xs font-semibold uppercase tracking-widest text-enlace">Tu perfil de inversor</p>
+        <Sobretitulo>Tu perfil de inversor</Sobretitulo>
         <CardTitle className="text-4xl font-extrabold text-enlace">
           <h1 ref={tituloRef} tabIndex={-1} className="outline-none">
             {perfil.perfil}

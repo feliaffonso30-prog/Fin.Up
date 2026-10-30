@@ -135,7 +135,7 @@ function TarjetaInstrumento({ instrumento: i }: { instrumento: Instrumento }) {
   return (
     <Link
       href={`/instrumentos/${i.ticker}`}
-      className="group flex h-full flex-col gap-2 rounded-xl border border-border bg-card/70 p-4 transition-colors hover:border-enlace/40 hover:bg-secondary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="group flex h-full flex-col gap-2 rounded-xl border border-border bg-card p-4 transition-colors hover:border-enlace/40 hover:bg-secondary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">

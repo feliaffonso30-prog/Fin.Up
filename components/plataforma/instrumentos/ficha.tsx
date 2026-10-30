@@ -142,7 +142,7 @@ export function FichaInstrumento({ instrumento: i }: { instrumento: Instrumento 
         </TabsContent>
 
         <TabsContent value="datos">
-          <Card className="border-border bg-card/70">
+          <Card className="border-border bg-card">
             <CardContent className="pt-6">
               <dl className="grid gap-x-6 gap-y-4 text-sm sm:grid-cols-2">
                 <Fila etiqueta={<Termino clave="ticker" />}>{i.ticker}</Fila>
@@ -170,7 +170,7 @@ export function FichaInstrumento({ instrumento: i }: { instrumento: Instrumento 
         <PreguntarFinBot pregunta={preguntaFinBot(i)} />
       </div>
 
-      <Card className="border-border bg-card/70">
+      <Card className="border-border bg-card">
         <CardHeader>
           <CardTitle className="text-base">Glosario de esta ficha</CardTitle>
         </CardHeader>
