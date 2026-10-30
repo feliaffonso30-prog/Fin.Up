@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useSyncExternalStore } from "react";
 import { AUTH_CONFIGURADA } from "@/lib/supabase/config";
+import { actualizarPlan } from "./plan";
 import { archivarPlanRemoto, guardarPlanRemoto, leerPlanVigente } from "./remoto";
 import type { Plan } from "./tipos";
 import { esPlan } from "./validar-plan";
@@ -27,7 +28,7 @@ function parsear(crudo: string | null | undefined): Plan | null {
   if (!crudo) return null;
   try {
     const x = JSON.parse(crudo);
-    return esPlan(x) ? x : null;
+    return esPlan(x) ? actualizarPlan(x) : null;
   } catch {
     return null;
   }
@@ -101,7 +102,8 @@ async function cargarRemoto() {
   if (cargaEnCurso) return;
   cargaEnCurso = true;
   try {
-    let plan = await leerPlanVigente();
+    const guardado = await leerPlanVigente();
+    let plan = guardado ? actualizarPlan(guardado) : null;
     if (!plan) {
       // Primera vez con cuenta: si armó un plan antes de registrarse, lo pasamos a su cuenta.
       const local = parsear(leerCrudo());

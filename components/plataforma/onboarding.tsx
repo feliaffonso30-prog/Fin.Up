@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, CheckCircle2, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,71 +9,38 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { GrupoOpciones, Opcion } from "@/components/plataforma/opcion";
-import { DESCRIPCION_PERFIL, validarRespuestas } from "@/lib/plataforma/perfil";
-import { generarPlan } from "@/lib/plataforma/plan";
+import { PASOS, useCuestionario } from "@/hooks/use-cuestionario";
+import { DESCRIPCION_PERFIL } from "@/lib/plataforma/perfil";
 import { URL_LANDING } from "@/lib/config";
 import { AUTH_CONFIGURADA } from "@/lib/supabase/config";
-import { usePlan } from "@/lib/plataforma/store";
-import type { Plan, Respuestas } from "@/lib/plataforma/tipos";
-
-type Clave = keyof Respuestas;
-
-const PASOS: { titulo: string; ayuda: string; campos: Clave[] }[] = [
-  { titulo: "Contanos un poco de vos", ayuda: "Tu edad nos ayuda a estimar cuánto tiempo tenés por delante.", campos: ["edad"] },
-  { titulo: "¿Para qué querés invertir?", ayuda: "Elegí el objetivo que más se parezca al tuyo.", campos: ["objetivo"] },
-  { titulo: "¿Cuándo vas a necesitar esta plata?", ayuda: "Es lo más importante: cuanto más tiempo, más caídas podés esperar a que se recuperen.", campos: ["horizonte"] },
-  { titulo: "¿Con cuánto arrancás?", ayuda: "Son montos en dólares. Si pensás en pesos, usá un valor aproximado (por ejemplo, al dólar MEP).", campos: ["capitalInicial", "aporteMensual"] },
-  { titulo: "Tu base financiera", ayuda: "Antes de invertir conviene tener las bases cubiertas. No juzgamos: solo ajustamos la cartera.", campos: ["fondoEmergencia", "deudasCaras"] },
-  { titulo: "¿Cómo reaccionás ante el riesgo?", ayuda: "No hay respuestas buenas o malas. Conocerte bien evita decisiones por pánico.", campos: ["reaccionCaida", "prioridad"] },
-  { titulo: "¿Cuánto sabés de inversiones?", ayuda: "Sirve para explicarte las cosas al nivel justo.", campos: ["conocimiento"] },
-];
+import type { Plan } from "@/lib/plataforma/tipos";
 
 // Pasos cuyo input recibe el foco con autoFocus: ahí no se mueve el foco al título.
 const PASOS_CON_AUTOFOCUS = [0, 3];
 // Clases visuales de components/ui/label.tsx, para preguntas que no son un <label>.
 const CLASES_PREGUNTA = "flex items-center gap-2 text-sm leading-none font-medium select-none";
 
-const numero = (s: string) => (s.trim() === "" ? Number.NaN : Number(s));
-
 export function Onboarding() {
-  const router = useRouter();
-  const { plan: planGuardado, cargando, guardar } = usePlan();
-
-  const [paso, setPaso] = useState(0);
-  const [guardando, setGuardando] = useState(false);
-  const [errorGuardado, setErrorGuardado] = useState(false);
-  const [edad, setEdad] = useState("");
-  const [capital, setCapital] = useState("");
-  const [aporte, setAporte] = useState("");
-  const [resp, setResp] = useState<Partial<Respuestas>>({});
-  const [intento, setIntento] = useState(false);
-  const [plan, setPlan] = useState<Plan | null>(null);
-
-  // Si ya hizo el cuestionario, arranca con sus respuestas anteriores.
-  const precargado = useRef(false);
-  useEffect(() => {
-    if (cargando || precargado.current || !planGuardado) return;
-    precargado.current = true;
-    const r = planGuardado.respuestas;
-    setEdad(String(r.edad));
-    setCapital(String(r.capitalInicial));
-    setAporte(String(r.aporteMensual));
-    setResp(r);
-  }, [cargando, planGuardado]);
-
-  const set = <K extends Clave>(k: K, v: Respuestas[K]) => setResp((prev) => ({ ...prev, [k]: v }));
-
-  const actuales = (): Partial<Respuestas> => ({
-    ...resp,
-    edad: numero(edad),
-    capitalInicial: numero(capital),
-    aporteMensual: numero(aporte),
-  });
-
-  const errores = validarRespuestas(actuales());
-  const enResultado = paso === PASOS.length;
-  const def = PASOS[Math.min(paso, PASOS.length - 1)];
-  const err = (c: Clave) => (intento ? errores[c] : undefined);
+  const {
+    paso,
+    def,
+    enResultado,
+    resp,
+    set,
+    err,
+    edad,
+    setEdad,
+    capital,
+    setCapital,
+    aporte,
+    setAporte,
+    siguiente,
+    volver,
+    plan,
+    verCartera,
+    guardando,
+    errorGuardado,
+  } = useCuestionario();
 
   // Al cambiar de paso, el foco va al título para que el lector de pantalla anuncie la pregunta nueva.
   // Se compara con el paso anterior (no con un flag de "primer render") para no disparar en el montaje,
@@ -87,34 +53,6 @@ export function Onboarding() {
     if (paso >= PASOS.length || PASOS_CON_AUTOFOCUS.includes(paso)) return;
     tituloRef.current?.focus();
   }, [paso]);
-
-  function siguiente() {
-    if (def.campos.some((c) => errores[c])) {
-      setIntento(true);
-      return;
-    }
-    setIntento(false);
-    if (paso === PASOS.length - 1) setPlan(generarPlan(actuales() as Respuestas));
-    setPaso((p) => p + 1);
-  }
-
-  function volver() {
-    setIntento(false);
-    setPaso((p) => Math.max(0, p - 1));
-  }
-
-  async function verCartera() {
-    if (!plan || guardando) return;
-    setGuardando(true);
-    setErrorGuardado(false);
-    const ok = await guardar(plan);
-    if (!ok) {
-      setGuardando(false);
-      setErrorGuardado(true);
-      return;
-    }
-    router.push("/dashboard");
-  }
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background text-foreground">

@@ -156,3 +156,35 @@ export function mejorPorTipo(cotizaciones: Cotizacion[]): Partial<Record<TipoAlt
   }
   return mejores;
 }
+
+// ---------- Comparar todo: la mejor opción de cada tipo ----------
+
+export const ORDEN_TIPOS: TipoAlternativa[] = ["plazo-fijo", "uva", "billetera", "fci-mm", "fci-rf"];
+
+export interface FilaComparacion {
+  tipo: TipoAlternativa;
+  mejor?: Cotizacion;
+  motivo?: string; // por qué no hay opción para este tipo
+  cargando?: boolean; // los fondos todavía no llegaron
+}
+
+/** Una fila por tipo, en orden fijo. Con `fondosCargando`, los FCI quedan como "cargando". */
+export function compararTodo(
+  alternativas: Alternativa[],
+  c: Consulta,
+  inflacion: Inflacion | null,
+  fondosCargando = false,
+): FilaComparacion[] {
+  const cotizaciones = cotizarTodas(alternativas, c, inflacion);
+  const mejores = mejorPorTipo(cotizaciones);
+  return ORDEN_TIPOS.map((tipo) => {
+    if (fondosCargando && (tipo === "fci-mm" || tipo === "fci-rf")) return { tipo, cargando: true };
+    const mejor = mejores[tipo];
+    if (mejor) return { tipo, mejor };
+    // El motivo de la opción más accesible (ej. el plazo mínimo más corto).
+    const delTipo = cotizaciones
+      .filter((x) => x.alternativa.tipo === tipo)
+      .sort((a, b) => (a.alternativa.plazoMinDias ?? 0) - (b.alternativa.plazoMinDias ?? 0));
+    return { tipo, motivo: delTipo[0]?.motivoNoDisponible ?? "Sin datos en este momento." };
+  });
+}

@@ -7,13 +7,11 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { inflacionDelPeriodo } from "@/lib/plataforma/finanzas";
 import { ars } from "@/lib/plataforma/formato";
-import { cotizarTodas, mejorPorTipo } from "@/lib/plataforma/comparador/cotizar";
+import { compararTodo, ORDEN_TIPOS as ORDEN, type FilaComparacion as Fila } from "@/lib/plataforma/comparador/cotizar";
 import { EDUCATIVO } from "@/lib/plataforma/comparador/textos";
 import type { Alternativa, Consulta, Cotizacion, Inflacion, TipoAlternativa } from "@/lib/plataforma/comparador/tipos";
 import { BadgeLiquidez, BadgeRiesgo, BadgeTasaReal, BotonEntidad, tasa } from "./insignias";
 import type { Fuente } from "./pestanas";
-
-const ORDEN: TipoAlternativa[] = ["plazo-fijo", "uva", "billetera", "fci-mm", "fci-rf"];
 
 const NOMBRE_CORTO: Record<TipoAlternativa, string> = {
   "plazo-fijo": "Plazo fijo",
@@ -22,13 +20,6 @@ const NOMBRE_CORTO: Record<TipoAlternativa, string> = {
   "fci-mm": "FCI money market",
   "fci-rf": "FCI renta fija",
 };
-
-interface Fila {
-  tipo: TipoAlternativa;
-  mejor?: Cotizacion;
-  motivo?: string; // por qué no hay opción para este tipo
-  cargando?: boolean;
-}
 
 interface Props {
   consulta: Consulta | null;
@@ -71,18 +62,7 @@ function Vista({
   const filas = useMemo<Fila[]>(() => {
     if (!consulta) return [];
     const todas = [...plazoFijo.datos, ...uva.datos, ...billeteras.datos, ...(fondos ?? [])];
-    const cotizaciones = cotizarTodas(todas, consulta, inflacion);
-    const mejores = mejorPorTipo(cotizaciones);
-    return ORDEN.map((tipo) => {
-      if (fondos === null && (tipo === "fci-mm" || tipo === "fci-rf")) return { tipo, cargando: true };
-      const mejor = mejores[tipo];
-      if (mejor) return { tipo, mejor };
-      // El motivo de la opción más accesible (ej. el plazo mínimo más corto).
-      const delTipo = cotizaciones
-        .filter((c) => c.alternativa.tipo === tipo)
-        .sort((a, b) => (a.alternativa.plazoMinDias ?? 0) - (b.alternativa.plazoMinDias ?? 0));
-      return { tipo, motivo: delTipo[0]?.motivoNoDisponible ?? "Sin datos en este momento." };
-    });
+    return compararTodo(todas, consulta, inflacion, fondos === null);
   }, [consulta, inflacion, plazoFijo.datos, uva.datos, billeteras.datos, fondos]);
 
   if (!consulta) return null;

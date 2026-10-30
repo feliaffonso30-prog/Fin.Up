@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { aContextoEstrategia, generarPlan } from "./plan";
+import { aContextoEstrategia, actualizarPlan, generarPlan } from "./plan";
 import { calcularPuntaje, clasificarPorPuntaje, definirPerfil, validarRespuestas } from "./perfil";
 import { proyectar, serieProyeccion } from "./proyeccion";
 import type {
@@ -259,6 +259,32 @@ describe("análisis y proyección", () => {
   it("el plan trae la proyección con los años del horizonte elegido", () => {
     expect(generarPlan({ ...audaz, horizonte: "5-10" }, FECHA).proyeccion).toHaveLength(7);
     expect(generarPlan({ ...audaz, horizonte: "menos-2" }, FECHA).proyeccion).toHaveLength(1);
+  });
+});
+
+describe("planes guardados", () => {
+  it("al actualizar un plan guardado se obtiene la misma cartera, en todas las combinaciones", () => {
+    for (const r of todasLasCombinaciones()) {
+      const guardado = generarPlan(r, FECHA);
+      expect(actualizarPlan(guardado)).toEqual(guardado);
+    }
+  });
+
+  it("reemplaza los textos viejos por los actuales y conserva la fecha", () => {
+    const actual = generarPlan(audaz, FECHA);
+    const viejo = {
+      ...actual,
+      posiciones: actual.posiciones.map((p) => ({ ...p, nombre: "Texto viejo", queSalePuedeMal: "Texto viejo", color: "bg-blue-600" })),
+    };
+    const actualizado = actualizarPlan(viejo);
+    expect(actualizado).toEqual(actual);
+    expect(actualizado.generadoEn).toBe(FECHA);
+  });
+
+  it("si las respuestas guardadas no son válidas, deja el plan como estaba", () => {
+    const actual = generarPlan(audaz, FECHA);
+    const roto = { ...actual, respuestas: { ...actual.respuestas, edad: 5 } };
+    expect(actualizarPlan(roto)).toBe(roto);
   });
 });
 

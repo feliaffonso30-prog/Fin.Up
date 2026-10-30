@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Bot, Send, X, Sparkles, Loader2 } from "lucide-react";
 import { EVENTO_ABRIR_FINBOT, type DetalleAbrirFinBot } from "@/lib/finbot/abrir";
-import type { ContextoEstrategia, EventoChat, MensajeChat } from "@/lib/finbot/types";
+import type { ContextoEstrategia } from "@/lib/finbot/types";
+import { useFinBot } from "@/hooks/use-finbot";
+import { Formato } from "./formato";
 
 const SUGERENCIAS_BASE = [
   "¿Qué es un CEDEAR?",
@@ -23,49 +25,14 @@ function sugerencias(ctx: ContextoEstrategia | null) {
   ];
 }
 
-// Markdown mínimo: **negrita**, listas con "- " y párrafos.
-function Formato({ texto }: { texto: string }) {
-  const negrita = (linea: string) =>
-    linea.split(/(\*\*[^*]+\*\*)/g).map((p, i) =>
-      p.startsWith("**") && p.endsWith("**") ? <strong key={i}>{p.slice(2, -2)}</strong> : p,
-    );
-  return (
-    <>
-      {texto.split(/\n{2,}/).map((bloque, i) => {
-        const lineas = bloque.split("\n").filter(Boolean);
-        if (lineas.length && lineas.every((l) => /^\s*[-•*]\s/.test(l))) {
-          return (
-            <ul key={i} className="list-disc pl-4 space-y-1 my-1.5">
-              {lineas.map((l, j) => <li key={j}>{negrita(l.replace(/^\s*[-•*]\s/, ""))}</li>)}
-            </ul>
-          );
-        }
-        return (
-          <p key={i} className="my-1.5 first:mt-0 last:mb-0">
-            {lineas.map((l, j) => (
-              <React.Fragment key={j}>{j > 0 && <br />}{negrita(l)}</React.Fragment>
-            ))}
-          </p>
-        );
-      })}
-    </>
-  );
-}
-
 export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }) {
   const [abierto, setAbierto] = useState(false);
-  const [mensajes, setMensajes] = useState<MensajeChat[]>([]);
-  const [input, setInput] = useState("");
-  const [cargando, setCargando] = useState(false);
-  const [estado, setEstado] = useState<string | null>(null);
+  const { mensajes, input, setInput, cargando, estado, anuncio, enviar } = useFinBot(contexto);
   const finRef = useRef<HTMLDivElement>(null);
-  const abortRef = useRef<AbortController | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const botonRef = useRef<HTMLButtonElement>(null);
   // Solo devolvemos el foco al botón flotante cuando el usuario cerró el panel (no en el primer render).
   const devolverFocoRef = useRef(false);
-  // Texto completo de la última respuesta, para lectores de pantalla (no se anuncia token por token).
-  const [anuncio, setAnuncio] = useState("");
 
   useEffect(() => {
     const reducir = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -100,8 +67,6 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
     return () => window.removeEventListener("keydown", alTeclear);
   }, [abierto]);
 
-  useEffect(() => () => abortRef.current?.abort(), []);
-
   // Otras pantallas pueden abrir el chat con una pregunta precargada (ver lib/finbot/abrir.ts).
   useEffect(() => {
     const alAbrir = (e: Event) => {
@@ -113,76 +78,6 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
     window.addEventListener(EVENTO_ABRIR_FINBOT, alAbrir);
     return () => window.removeEventListener(EVENTO_ABRIR_FINBOT, alAbrir);
   }, []);
-
-  async function enviar(texto: string) {
-    const pregunta = texto.trim();
-    if (!pregunta || cargando) return;
-
-    const historial: MensajeChat[] = [...mensajes, { role: "user", content: pregunta }];
-    setMensajes([...historial, { role: "assistant", content: "" }]);
-    setInput("");
-    setCargando(true);
-    setEstado("Pensando…");
-    setAnuncio("");
-
-    let respuesta = "";
-    let abortado = false;
-    const agregar = (t: string) => {
-      respuesta += t;
-      setMensajes((prev) => {
-        const copia = [...prev];
-        const ultimo = copia[copia.length - 1];
-        copia[copia.length - 1] = { ...ultimo, content: ultimo.content + t };
-        return copia;
-      });
-    };
-
-    abortRef.current = new AbortController();
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: historial, contexto }),
-        signal: abortRef.current.signal,
-      });
-      if (res.status === 429) {
-        const { error } = await res.json().catch(() => ({ error: null }));
-        agregar(error ?? "Llegaste al máximo de preguntas de la demo por ahora. Probá más tarde.");
-        return;
-      }
-      if (!res.ok || !res.body) throw new Error();
-
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = "";
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-        const lineas = buffer.split("\n");
-        buffer = lineas.pop() ?? "";
-        for (const linea of lineas) {
-          if (!linea) continue;
-          const ev = JSON.parse(linea) as EventoChat;
-          if (ev.type === "text") {
-            setEstado(null);
-            agregar(ev.text);
-          } else if (ev.type === "status") setEstado(ev.label);
-          else if (ev.type === "error") agregar(ev.message);
-        }
-      }
-    } catch (e) {
-      if ((e as Error).name === "AbortError") abortado = true;
-      else agregar("No pude conectarme. Revisá tu conexión y probá de nuevo.");
-    } finally {
-      setCargando(false);
-      setEstado(null);
-      // Un solo anuncio con la respuesta completa (o el mensaje de error) cuando termina el stream.
-      if (!abortado && respuesta) setAnuncio(respuesta);
-      // Si el asistente no llegó a responder, sacamos la burbuja vacía.
-      setMensajes((prev) => (prev.at(-1)?.content ? prev : prev.slice(0, -1)));
-    }
-  }
 
   return (
     <>

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { interesSimple } from "../finanzas";
-import { cotizar, cotizarTodas, mejorPorTipo, ranking, tnaPlazoFijo } from "./cotizar";
+import { compararTodo, cotizar, cotizarTodas, mejorPorTipo, ORDEN_TIPOS, ranking, tnaPlazoFijo } from "./cotizar";
 import { hrefComparador, PESTANA_POR_CATEGORIA } from "./desde-cartera";
 import { buscarEnlace, claveEntidad } from "./enlaces";
 import {
@@ -238,6 +238,26 @@ describe("ranking", () => {
     expect(mejores.billetera?.alternativa.entidad).toBe("Let'sBit");
     expect(mejores.uva).toBeUndefined(); // ninguno acepta 30 días
     expect(mejores["fci-mm"]?.alternativa.producto).toBe("1810 Ahorro");
+  });
+
+  it("comparar todo: una fila por tipo, en orden, con motivo cuando no hay opción", () => {
+    const filas = compararTodo([...pf, ...uva, ...billeteras, ...fci], consulta({ dias: 30 }), inflacion);
+    expect(filas.map((f) => f.tipo)).toEqual(ORDEN_TIPOS);
+    expect(filas.find((f) => f.tipo === "plazo-fijo")?.mejor?.alternativa.entidad).toBe("Ualá");
+    const filaUva = filas.find((f) => f.tipo === "uva");
+    expect(filaUva?.mejor).toBeUndefined();
+    expect(filaUva?.motivo).toBeTruthy();
+  });
+
+  it("comparar todo: mientras cargan los fondos, los FCI quedan como cargando", () => {
+    const filas = compararTodo([...pf, ...billeteras], consulta(), inflacion, true);
+    expect(filas.filter((f) => f.cargando).map((f) => f.tipo)).toEqual(["fci-mm", "fci-rf"]);
+    expect(filas.find((f) => f.tipo === "billetera")?.mejor).toBeDefined();
+  });
+
+  it("comparar todo: sin datos de un tipo, lo dice", () => {
+    const filas = compararTodo(pf, consulta(), inflacion);
+    expect(filas.find((f) => f.tipo === "billetera")?.motivo).toBe("Sin datos en este momento.");
   });
 });
 
