@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { aContextoEstrategia, generarPlan } from "./plan";
+import { aContextoEstrategia, actualizarPlan, generarPlan } from "./plan";
+import { armarRecorrido, cantidadHechos, pasoActual, type PasoRecorrido } from "./recorrido";
 import { calcularPuntaje, clasificarPorPuntaje, definirPerfil, validarRespuestas } from "./perfil";
 import { proyectar, serieProyeccion } from "./proyeccion";
 import type {
@@ -262,6 +263,87 @@ describe("análisis y proyección", () => {
   });
 });
 
+describe("planes guardados", () => {
+  it("al actualizar un plan guardado se obtiene la misma cartera, en todas las combinaciones", () => {
+    for (const r of todasLasCombinaciones()) {
+      const guardado = generarPlan(r, FECHA);
+      expect(actualizarPlan(guardado)).toEqual(guardado);
+    }
+  });
+
+  it("reemplaza los textos viejos por los actuales y conserva la fecha", () => {
+    const actual = generarPlan(audaz, FECHA);
+    const viejo = {
+      ...actual,
+      posiciones: actual.posiciones.map((p) => ({ ...p, nombre: "Texto viejo", queSalePuedeMal: "Texto viejo", color: "bg-blue-600" })),
+    };
+    const actualizado = actualizarPlan(viejo);
+    expect(actualizado).toEqual(actual);
+    expect(actualizado.generadoEn).toBe(FECHA);
+  });
+
+  it("si las respuestas guardadas no son válidas, deja el plan como estaba", () => {
+    const actual = generarPlan(audaz, FECHA);
+    const roto = { ...actual, respuestas: { ...actual.respuestas, edad: 5 } };
+    expect(actualizarPlan(roto)).toBe(roto);
+  });
+});
+
+describe("recorrido guiado", () => {
+  const ids = (pasos: PasoRecorrido[]) => pasos.map((p) => p.id);
+
+  it("con deudas caras, lo primero son las deudas, aunque falte el fondo", () => {
+    const pasos = armarRecorrido(generarPlan({ ...audaz, deudasCaras: true, fondoEmergencia: "no" }, FECHA));
+    expect(ids(pasos).slice(0, 3)).toEqual(["perfil", "deudas", "colchon"]);
+    expect(pasoActual(pasos, [])?.accion?.tipo).toBe("finbot");
+  });
+
+  it("sin fondo de emergencia, el colchón lleva al comparador con la liquidez y cubre su aviso", () => {
+    const plan = generarPlan({ ...audaz, fondoEmergencia: "parcial" }, FECHA);
+    const colchon = armarRecorrido(plan).find((p) => p.id === "colchon");
+    expect(colchon?.accion?.tipo === "enlace" && colchon.accion.href).toContain("tab=billeteras");
+    expect(plan.avisos.map((a) => a.titulo)).toContain(colchon?.aviso);
+  });
+
+  it("con la base cubierta, empieza por la parte más grande y deja comparar tasas para el final", () => {
+    const plan = generarPlan(audaz, FECHA);
+    const pasos = armarRecorrido(plan);
+    expect(ids(pasos)).toEqual(["perfil", "cartera", "ejemplos", "humo", "pesos"]);
+    const accion = pasoActual(pasos, [])?.accion;
+    const mayor = Math.max(...plan.posiciones.map((p) => p.porcentaje));
+    expect(accion?.tipo).toBe("parte");
+    if (accion?.tipo === "parte") expect(plan.posiciones.find((p) => p.categoria === accion.categoria)?.porcentaje).toBe(mayor);
+  });
+
+  it("la lección anti-humo siempre va antes de comparar tasas", () => {
+    for (const r of todasLasCombinaciones()) {
+      const orden = ids(armarRecorrido(generarPlan(r, FECHA)));
+      const humo = orden.indexOf("humo");
+      expect(humo).toBeGreaterThan(-1);
+      if (orden.includes("pesos")) expect(orden.indexOf("pesos")).toBeGreaterThan(humo);
+      expect(orden.length).toBeGreaterThanOrEqual(5);
+      expect(orden.length).toBeLessThanOrEqual(6);
+    }
+  });
+
+  it("avanza con lo hecho y termina en null", () => {
+    const pasos = armarRecorrido(generarPlan(audaz, FECHA));
+    expect(pasoActual(pasos, ["cartera"])?.id).toBe("ejemplos");
+    expect(cantidadHechos(pasos, ["cartera"])).toBe(2);
+    const todos = pasos.map((p) => p.id);
+    expect(pasoActual(pasos, todos)).toBeNull();
+    expect(cantidadHechos(pasos, todos)).toBe(pasos.length);
+  });
+
+  it("nunca dice qué comprar, en ninguna combinación", () => {
+    for (const r of todasLasCombinaciones()) {
+      for (const p of armarRecorrido(generarPlan(r, FECHA))) {
+        expect(`${p.titulo} ${p.texto} ${p.accion?.etiqueta ?? ""}`).not.toMatch(/compr[aá]|te recomendamos/i);
+      }
+    }
+  });
+});
+
 describe("contexto para FinBot", () => {
   it("traduce el plan al formato que usa el chat", () => {
     const plan = generarPlan(audaz, FECHA);
@@ -302,5 +384,21 @@ describe("validación de respuestas", () => {
     expect(Object.keys(errores)).toEqual(
       expect.arrayContaining(["objetivo", "horizonte", "fondoEmergencia", "reaccionCaida", "prioridad", "conocimiento", "deudasCaras"]),
     );
+  });
+});
+
+describe("ejemplos de la biblioteca en la cartera", () => {
+  it("toda parte con 'Ver ejemplos' tiene entre 3 y 5, y el conservador nunca ve riesgo alto", async () => {
+    const { CATEGORIAS_CON_EJEMPLOS, ejemplosPara } = await import("./instrumentos/catalogo");
+    for (const r of todasLasCombinaciones()) {
+      const plan = generarPlan(r, FECHA);
+      for (const p of plan.posiciones) {
+        if (!CATEGORIAS_CON_EJEMPLOS.includes(p.categoria)) continue;
+        const ej = ejemplosPara(p.categoria, plan.perfil.perfil);
+        expect(ej.length).toBeGreaterThanOrEqual(3);
+        expect(ej.length).toBeLessThanOrEqual(5);
+        if (plan.perfil.perfil === "Conservador") expect(ej.some((i) => i.riesgo === "alto")).toBe(false);
+      }
+    }
   });
 });

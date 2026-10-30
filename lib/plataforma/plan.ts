@@ -1,6 +1,6 @@
 import type { ContextoEstrategia } from "@/lib/finbot/types";
 import { analizar, armarPosiciones, calcularDistribucion, generarAvisos } from "./cartera";
-import { definirPerfil } from "./perfil";
+import { definirPerfil, validarRespuestas } from "./perfil";
 import { ANIOS_POR_HORIZONTE, serieProyeccion } from "./proyeccion";
 import type { Plan, Respuestas } from "./tipos";
 
@@ -31,6 +31,18 @@ export function generarPlan(respuestas: Respuestas, generadoEn: string = new Dat
       analisis.retornoMax,
     ),
   };
+}
+
+// Un plan guardado lleva sus textos adentro (nombres, "qué puede salir mal"...). Al leerlo se
+// vuelve a generar desde sus respuestas: como el motor es determinístico, da la misma cartera
+// con los textos actuales. Si las respuestas no son válidas, se deja el plan como estaba.
+export function actualizarPlan(plan: Plan): Plan {
+  if (Object.keys(validarRespuestas(plan.respuestas)).length > 0) return plan;
+  try {
+    return generarPlan(plan.respuestas, plan.generadoEn);
+  } catch {
+    return plan;
+  }
 }
 
 // Lo que FinBot necesita saber de la cartera del usuario (mismo formato que la demo).

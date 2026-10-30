@@ -1,0 +1,231 @@
+[
+  {
+    "entidad": "BANCO DE LA NACION ARGENTINA",
+    "tnaClientes": 0.1925,
+    "tnaNoClientes": 0,
+    "enlace": null,
+    "tasas": [
+      {
+        "montoMinimo": null,
+        "montoMaximo": null,
+        "plazoMinDias": 60,
+        "plazoMaxDias": 60,
+        "tna": 0.1975
+      },
+      {
+        "montoMinimo": null,
+        "montoMaximo": null,
+        "plazoMinDias": 90,
+        "plazoMaxDias": 90,
+        "tna": 0.2
+      },
+      {
+        "montoMinimo": null,
+        "montoMaximo": null,
+        "plazoMinDias": 365,
+        "plazoMaxDias": 365,
+        "tna": 0.23
+      }
+    ]
+  },
+  {
+    "entidad": "BANCO DE LA PROVINCIA DE BUENOS AIRES",
+    "tnaClientes": 0.21,
+    "tnaNoClientes": 0.22,
+    "enlace": "https://www.bancoprovincia.com.ar/PlazoFijoWeb/login ",
+    "tasas": [
+      {
+        "montoMinimo": null,
+        "montoMaximo": null,
+        "plazoMinDias": 60,
+        "plazoMaxDias": 60,
+        "tna": 0.2175
+      },
+      {
+        "montoMinimo": null,
+        "montoMaximo": null,
+        "plazoMinDias": 90,
+        "plazoMaxDias": 90,
+        "tna": 0.22
+      },
+      {
+        "montoMinimo": null,
+        "montoMaximo": null,
+        "plazoMinDias": 365,
+        "plazoMaxDias": 365,
+        "tna": 0.2325
+      }
+    ]
+  },
+  {
+    "entidad": "BANCO MACRO S.A.",
+    "tnaClientes": 0.195,
+    "tnaNoClientes": 0,
+    "enlace": "https://www.macro.com.ar/personas/inversiones/plazo-fijo",
+    "tasas": [
+      {
+        "montoMinimo": 1,
+        "montoMaximo": 4999999.99,
+        "plazoMinDias": 30,
+        "plazoMaxDias": 35,
+        "tna": 0.195
+      },
+      {
+        "montoMinimo": 5000000,
+        "montoMaximo": null,
+        "plazoMinDias": 30,
+        "plazoMaxDias": 35,
+        "tna": 0.2
+      },
+      {
+        "montoMinimo": 1,
+        "montoMaximo": 4999999.99,
+        "plazoMinDias": 36,
+        "plazoMaxDias": 44,
+        "tna": 0.195
+      },
+      {
+        "montoMinimo": 5000000,
+        "montoMaximo": null,
+        "plazoMinDias": 36,
+        "plazoMaxDias": 44,
+        "tna": 0.2
+      },
+      {
+        "montoMinimo": 1,
+        "montoMaximo": 4999999.99,
+        "plazoMinDias": 45,
+        "plazoMaxDias": 59,
+        "tna": 0.195
+      },
+      {
+        "montoMinimo": 5000000,
+        "montoMaximo": null,
+        "plazoMinDias": 45,
+        "plazoMaxDias": 59,
+        "tna": 0.2
+      },
+      {
+        "montoMinimo": 1,
+        "montoMaximo": 4999999.99,
+        "plazoMinDias": 60,
+        "plazoMaxDias": 89,
+        "tna": 0.2
+      },
+      {
+        "montoMinimo": 5000000,
+        "montoMaximo": null,
+        "plazoMinDias": 60,
+        "plazoMaxDias": 89,
+        "tna": 0.205
+      },
+      {
+        "montoMinimo": 1,
+        "montoMaximo": 4999999.99,
+        "plazoMinDias": 90,
+        "plazoMaxDias": 119,
+        "tna": 0.2
+      },
+      {
+        "montoMinimo": 5000000,
+        "montoMaximo": null,
+        "plazoMinDias": 90,
+        "plazoMaxDias": 119,
+        "tna": 0.205
+      },
+      {
+        "montoMinimo": 1,
+        "montoMaximo": 4999999.99,
+        "plazoMinDias": 120,
+        "plazoMaxDias": 179,
+        "tna": 0.21
+      },
+      {
+        "montoMinimo": 5000000,
+        "montoMaximo": null,
+        "plazoMinDias": 120,
+        "plazoMaxDias": 179,
+        "tna": 0.215
+      },
+      {
+        "montoMinimo": 1,
+        "montoMaximo": 4999999.99,
+        "plazoMinDias": 180,
+        "plazoMaxDias": 270,
+        "tna": 0.21
+      },
+      {
+        "montoMinimo": 5000000,
+        "montoMaximo": null,
+        "plazoMinDias": 180,
+        "plazoMaxDias": 270,
+        "tna": 0.215
+      },
+      {
+        "montoMinimo": 1,
+        "montoMaximo": 4999999.99,
+        "plazoMinDias": 271,
+        "plazoMaxDias": 365,
+        "tna": 0.215
+      },
+      {
+        "montoMinimo": 5000000,
+        "montoMaximo": null,
+        "plazoMinDias": 271,
+        "plazoMaxDias": 365,
+        "tna": 0.22
+      }
+    ],
+    "condicionesCorto": "App / Banca Internet"
+  },
+  {
+    "entidad": "UALA",
+    "tnaClientes": 0.22,
+    "tnaNoClientes": 0.22,
+    "enlace": "https://www.uala.com.ar/inversiones/plazo-fijo",
+    "tasas": [
+      {
+        "montoMinimo": null,
+        "montoMaximo": null,
+        "plazoMinDias": 30,
+        "plazoMaxDias": 30,
+        "tna": 0.22
+      },
+      {
+        "montoMinimo": null,
+        "montoMaximo": null,
+        "plazoMinDias": 60,
+        "plazoMaxDias": 60,
+        "tna": 0.22
+      },
+      {
+        "montoMinimo": null,
+        "montoMaximo": null,
+        "plazoMinDias": 90,
+        "plazoMaxDias": 90,
+        "tna": 0.23
+      },
+      {
+        "montoMinimo": null,
+        "montoMaximo": null,
+        "plazoMinDias": 180,
+        "plazoMaxDias": 180,
+        "tna": 0.25
+      },
+      {
+        "montoMinimo": null,
+        "montoMaximo": null,
+        "plazoMinDias": 270,
+        "plazoMaxDias": 270,
+        "tna": 0.27
+      },
+      {
+        "montoMinimo": null,
+        "montoMaximo": null,
+        "plazoMinDias": 365,
+        "plazoMaxDias": 365,
+        "tna": 0.28
+      }
+    ]
+  }
+]

@@ -12,6 +12,7 @@ import { destinoSeguro, mensajeDeError, validarEmail, validarPassword } from "@/
 import { AUTH_CONFIGURADA } from "@/lib/supabase/config";
 import { crearClienteNavegador } from "@/lib/supabase/client";
 import { reiniciarPlanRemoto } from "@/lib/plataforma/store";
+import { Filo } from "@/components/plataforma/primitivas";
 
 type Props = { modo: "login" | "registro"; siguiente?: string; errorEnlace?: boolean };
 
@@ -28,9 +29,9 @@ export function FormAuth({ modo, siguiente, errorEnlace }: Props) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Cuentas no configuradas</CardTitle>
+          <CardTitle>Por ahora podés usar FinUp sin cuenta</CardTitle>
           <CardDescription>
-            Faltan las variables de Supabase en este entorno. Mientras tanto podés usar la plataforma sin cuenta: tu plan se guarda solo en este navegador.
+            Tu plan se guarda solo en este navegador: si borrás los datos o cambiás de dispositivo, se pierde.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -46,10 +47,11 @@ export function FormAuth({ modo, siguiente, errorEnlace }: Props) {
     return (
       <Card>
         <CardHeader>
-          <MailCheck className="mb-1 h-8 w-8 text-blue-400" aria-hidden />
+          <MailCheck className="mb-1 h-8 w-8 text-enlace" aria-hidden />
           <CardTitle>Revisá tu email</CardTitle>
           <CardDescription>
-            Si el email es válido, te enviamos un enlace para confirmar tu cuenta. Si no lo ves, mirá en spam.
+            Te mandamos un mail a <span className="font-medium text-foreground">{email}</span>. Abrilo y tocá el enlace para seguir con tus
+            preguntas. Si no llega en unos minutos, mirá en spam o probá ingresar: puede que ya tengas cuenta.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -108,11 +110,14 @@ export function FormAuth({ modo, siguiente, errorEnlace }: Props) {
   }
 
   return (
-    <Card>
+    <Card className="relative overflow-hidden">
+      <Filo className="absolute inset-x-0 top-0" />
       <CardHeader>
         <CardTitle>{esLogin ? "Ingresá a FinUp" : "Creá tu cuenta"}</CardTitle>
         <CardDescription>
-          {esLogin ? "Retomá tu cartera donde la dejaste." : "Guardá tu perfil y tu cartera para entrar desde cualquier dispositivo."}
+          {esLogin
+            ? "Retomá tu plan donde lo dejaste."
+            : "Respondé 7 preguntas y armamos tu plan, explicado parte por parte. Tu cuenta lo guarda para verlo desde cualquier dispositivo."}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -134,7 +139,7 @@ export function FormAuth({ modo, siguiente, errorEnlace }: Props) {
           </div>
 
           {error && (
-            <p role="alert" className="flex items-start gap-2 rounded-md border border-red-500/40 bg-red-500/10 p-2.5 text-sm text-red-300">
+            <p role="alert" className="flex items-start gap-2 rounded-md border border-error/40 bg-error/10 p-2.5 text-sm text-error">
               <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
               {error}
             </p>
@@ -149,14 +154,14 @@ export function FormAuth({ modo, siguiente, errorEnlace }: Props) {
           {esLogin ? (
             <>
               ¿No tenés cuenta?{" "}
-              <Link href="/registro" className="font-medium text-blue-400 hover:underline">
+              <Link href="/registro" className="font-medium text-enlace hover:underline">
                 Creala acá
               </Link>
             </>
           ) : (
             <>
               ¿Ya tenés cuenta?{" "}
-              <Link href="/login" className="font-medium text-blue-400 hover:underline">
+              <Link href="/login" className="font-medium text-enlace hover:underline">
                 Ingresá
               </Link>
             </>

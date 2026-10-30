@@ -1,93 +1,109 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
+/* La plataforma tiene un solo tema (oscuro) y nunca pone la clase .dark.
+   La variante queda atada a .dark para que los dark: de components/ui no se activen
+   con la preferencia del sistema. */
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Fondo grafito ultra oscuro premium (casi negro, muy elegante) */
-  --background: #0a1752; 
-  --foreground: #f9fcfe; /* Blanco titanio / slate-50 */
-  
-  /* Tarjetas con un tono gris azulado oscuro para que resalten del fondo */
-  --card: #08142e; 
-  --card-foreground: #f8fafc;
-  
-  --popover: #131a2c;
-  --popover-foreground: #f8fafc;
-  
-  /* Color Principal: Azul Eléctrico Vibrante (para botones activos y perfiles) */
-  --primary: #3b82f6; /* blue-500 */
-  --primary-foreground: #ffffff;
-  
-  /* Color Secundario: Azul noche profundo para elementos inactivos o fondos sutiles */
-  --secondary: #1e293b; /* slate-800 */
-  --secondary-foreground: #60a5fa; /* blue-400 */
-  
-  --muted: #1e293b;
-  --muted-foreground: #bae6fd; /* slate-500 para textos secundarios menos importantes */
-  
-  /* Color de Acento: Cyan brillante (perfecto para destacar los porcentajes de la estrategia o bordes activos) */
-  --accent: #06b6d4; /* cyan-500 */
-  --accent-foreground: #0b0f19;
-  
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  
-  /* Bordes y líneas divisorias sutiles */
-  --border: #1e293b; 
-  --input: #0b0f19;
-  --ring: rgba(59, 130, 246, 0.4); /* Brillo azul eléctrico para cuando hacés foco */
-  
-  --radius: 1rem; /* Bordes redondeados de 16px, muy suaves */
+  /* Fondo azul profundo de la marca */
+  --background: #0a1752;
+  --foreground: #f9fcfe;
 
-  /* Gráficos y Sidebar con la paleta azul/cyan */
-  --chart-1: #3b82f6;
-  --chart-2: #06b6d4;
+  /* Superficies: cada capa es un poco más clara que la de abajo (fondo → tarjeta → fila) */
+  --card: #0f1f5c;
+  --card-foreground: #f8fafc;
+
+  --popover: #0f1f5c;
+  --popover-foreground: #f8fafc;
+
+  /* Color Principal: relleno de las acciones principales. #2563eb deja el texto blanco en 5,17:1 (AA).
+     El azul de marca #3b82f6 sigue en --chart-1 y en los acentos. */
+  --primary: #2563eb; /* blue-600 */
+  --primary-foreground: #ffffff;
+  --primary-hover: #3069ee; /* un poco más claro: 4,79:1 con texto blanco */
+  --primary-active: #1d4ed8; /* blue-700: 6,7:1 con texto blanco */
+
+  /* Elementos inactivos, filas dentro de tarjetas y fondos sutiles */
+  --secondary: #142a70;
+  --secondary-foreground: #60a5fa;
+
+  --muted: #142a70;
+  --muted-foreground: #a8bcd9; /* texto secundario: 8,6:1 sobre el fondo, 8:1 sobre tarjetas, 7:1 sobre filas */
+
+  /* Acento cyan: porcentajes y bordes activos */
+  --accent: #06b6d4;
+  --accent-foreground: #0b0f19;
+
+  /* Errores: #f87171 se lee a 6:1 sobre el fondo (#ef4444 quedaba en 4,44:1) */
+  --destructive: #f87171;
+  --destructive-foreground: #ffffff;
+
+  /* Bordes y líneas divisorias: separan tarjetas y bloques del fondo sin recargar (1,63:1) */
+  --border: #2a3d7a;
+  /* Borde de campos, selects y switch apagado: 3,3:1 sobre las tarjetas (WCAG 1.4.11) */
+  --input: #5f75a5;
+  /* Foco del teclado: sólido, 6,6:1 sobre el fondo */
+  --ring: #60a5fa;
+
+  --radius: 1rem;
+
+  /* Escala "gema" de la marca y el "filo": la línea degradada de 1px que firma FinUp.
+     Va solo en el encabezado de cada pantalla, en FinBot y en la sección activa del menú. */
+  --gema-900: #0739a3;
+  --gema-700: #1673e0;
+  --gema-500: #3d9cff;
+  --gema-400: #16b4ff;
+  --gema-200: #74dcff;
+  --filo: linear-gradient(90deg, transparent 0%, var(--gema-500) 22%, var(--gema-200) 50%, var(--gema-500) 78%, transparent 100%);
+  --filo-vertical: linear-gradient(180deg, var(--gema-500), var(--gema-200));
+
+  /* ---------- Tokens semánticos de FinUp ----------
+     Se usan con opacidad desde Tailwind: border-atencion/25 bg-atencion/10 text-atencion. */
+  --enlace: #51a2ff; /* sobretítulos, links y sección activa */
+  --info: #8ec5ff;
+  --atencion: #ffd230; /* "qué puede salir mal" y avisos de cuidado */
+  --atencion-texto: #fef3c6; /* texto largo dentro de un aviso de atención */
+  --error: #ffa2a2;
+  --exito: #5ee9b5;
+  --cifra: #a2f4fd; /* cifras destacadas, como la ganancia estimada */
+
+  /* Riesgo: siempre acompañado de barras 1/2/3, nunca solo por color */
+  --riesgo-bajo: #b8e6fe;
+  --riesgo-medio: #fee685;
+  --riesgo-alto: #ff8904;
+
+  /* Partes de la cartera: barra de distribución y puntos */
+  --cat-fija: #1673e0;
+  --cat-variable: #06b6d4;
+  --cat-dividendos: #74dcff;
+  --cat-liquidez: #a8bcd9;
+  --cat-alternativo: #8b9cff;
+
+  /* Gráficos */
+  --chart-1: #3d9cff; /* serie principal; en la proyección, "si va mal" */
+  --chart-2: #74dcff; /* en la proyección, "si va bien" */
   --chart-3: #60a5fa;
-  --chart-4: #1e293b;
-  --chart-5: #38bdf8;
-  --sidebar: #131a2c;
+  --chart-4: #a8bcd9; /* series de referencia: lo aportado, la inflación */
+  --chart-5: #16b4ff;
+  --sidebar: #0f1f5c;
   --sidebar-foreground: #f8fafc;
   --sidebar-primary: #3b82f6;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #1e293b;
+  --sidebar-accent: #142a70;
   --sidebar-accent-foreground: #60a5fa;
-  --sidebar-border: #1e293b;
+  --sidebar-border: #2a3d7a;
   --sidebar-ring: rgba(59, 130, 246, 0.4);
-}
-
-/* Forzamos a que el modo oscuro mantenga la misma estética premium de gráficos y fuentes */
-.dark {
-  --background: #0b0f19;
-  --foreground: #f8fafc;
-  --card: #131a2c;
-  --card-foreground: #f8fafc;
-  --popover: #131a2c;
-  --popover-foreground: #f8fafc;
-  --primary: #3b82f6;
-  --primary-foreground: #ffffff;
-  --secondary: #1e293b;
-  --secondary-foreground: #60a5fa;
-  --muted: #1e293b;
-  --muted-foreground: #64748b;
-  --accent: #06b6d4;
-  --accent-foreground: #0b0f19;
-  --destructive: #f43c3c;
-  --destructive-foreground: #ffffff;
-  --border: #1e293b;
-  --input: #0b0f19;
-  --ring: rgba(59, 130, 246, 0.4);
-  --chart-1: #3b82f6;
-  --chart-2: #06b6d4;
-  --chart-3: #60a5fa;
-  --chart-4: #1e293b;
-  --chart-5: #38bdf8;
 }
 
 @theme inline {
   --font-sans: var(--font-inter), 'Inter', system-ui, sans-serif;
-  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+  --font-mono: var(--font-jetbrains), 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Menlo, Consolas, monospace;
   --font-display: var(--font-jakarta), 'Plus Jakarta Sans', system-ui, sans-serif;
+  /* Letra de avisos legales y notas al pie: nunca menos de 12px */
+  --text-legal: 0.75rem;
+  --text-legal--line-height: 1.45;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -96,27 +112,45 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-active: var(--primary-active);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  --color-accent-secondary: var(--accent-secondary);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-enlace: var(--enlace);
+  --color-info: var(--info);
+  --color-atencion: var(--atencion);
+  --color-atencion-texto: var(--atencion-texto);
+  --color-error: var(--error);
+  --color-exito: var(--exito);
+  --color-cifra: var(--cifra);
+  --color-riesgo-bajo: var(--riesgo-bajo);
+  --color-riesgo-medio: var(--riesgo-medio);
+  --color-riesgo-alto: var(--riesgo-alto);
+  --color-cat-fija: var(--cat-fija);
+  --color-cat-variable: var(--cat-variable);
+  --color-cat-dividendos: var(--cat-dividendos);
+  --color-cat-liquidez: var(--cat-liquidez);
+  --color-cat-alternativo: var(--cat-alternativo);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  /* Radios: 8 chips internos · 12 botones y campos · 16 bloques · 20 tarjetas · 24 diálogos */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -127,11 +161,45 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+/* ---------- Rasgos de identidad ---------- */
+
+/* El filo: usar en un div de 1px de alto (h-px) */
+@utility filo {
+  background-image: var(--filo);
+}
+@utility filo-vertical {
+  background-image: var(--filo-vertical);
+}
+
+/* Trama de "lo que puede salir mal": rayado ámbar que marca siempre el escenario malo */
+@utility trama-atencion {
+  background-image: repeating-linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--atencion) 9%, transparent) 0 6px,
+    transparent 6px 12px
+  );
+}
+
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring;
+  }
+  /* Foco visible y coherente para controles propios (opciones, navegación, FinBot).
+     Los componentes de ui/ usan su propio anillo con outline-none, que tiene prioridad. */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
   }
   body {
     @apply bg-background text-foreground;
+  }
+  /* Títulos en la tipografía de marca */
+  h1,
+  h2,
+  h3,
+  [data-slot='card-title'] {
+    /* @apply y no var(): con @theme inline, --font-display no existe como variable en :root */
+    @apply font-display;
+    letter-spacing: -0.015em;
   }
 }

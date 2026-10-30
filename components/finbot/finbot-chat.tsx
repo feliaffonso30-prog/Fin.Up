@@ -1,8 +1,12 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Bot, Send, X, Sparkles, Loader2 } from "lucide-react";
-import type { ContextoEstrategia, EventoChat, MensajeChat } from "@/lib/finbot/types";
+import { EVENTO_ABRIR_FINBOT, type DetalleAbrirFinBot } from "@/lib/finbot/abrir";
+import type { ContextoEstrategia } from "@/lib/finbot/types";
+import { useFinBot } from "@/hooks/use-finbot";
+import { Formato } from "./formato";
+import { Filo } from "@/components/plataforma/primitivas";
 
 const SUGERENCIAS_BASE = [
   "¿Qué es un CEDEAR?",
@@ -14,126 +18,87 @@ const SUGERENCIAS_BASE = [
 function sugerencias(ctx: ContextoEstrategia | null) {
   if (!ctx) return SUGERENCIAS_BASE;
   const principal = ctx.distribucion[0]?.activo;
+  // Preguntas para entender, no para pedir qué comprar.
   return [
-    "¿Por qué esta estrategia encaja con mi perfil?",
-    principal ? `¿Con qué activos puedo armar "${principal}"?` : "¿En qué activos puedo invertir?",
-    "¿Cómo están hoy el Merval y el S&P 500?",
-    "¿Qué es un CEDEAR?",
+    "¿Por qué este plan encaja con mi perfil?",
+    principal ? `¿Qué tipo de instrumentos hay dentro de "${principal}"?` : "¿Qué tipos de instrumentos existen?",
+    "¿Cómo se movió hoy el mercado?",
+    "¿Qué puede salir mal con mi plan?",
   ];
-}
-
-// Markdown mínimo: **negrita**, listas con "- " y párrafos.
-function Formato({ texto }: { texto: string }) {
-  const negrita = (linea: string) =>
-    linea.split(/(\*\*[^*]+\*\*)/g).map((p, i) =>
-      p.startsWith("**") && p.endsWith("**") ? <strong key={i}>{p.slice(2, -2)}</strong> : p,
-    );
-  return (
-    <>
-      {texto.split(/\n{2,}/).map((bloque, i) => {
-        const lineas = bloque.split("\n").filter(Boolean);
-        if (lineas.length && lineas.every((l) => /^\s*[-•*]\s/.test(l))) {
-          return (
-            <ul key={i} className="list-disc pl-4 space-y-1 my-1.5">
-              {lineas.map((l, j) => <li key={j}>{negrita(l.replace(/^\s*[-•*]\s/, ""))}</li>)}
-            </ul>
-          );
-        }
-        return (
-          <p key={i} className="my-1.5 first:mt-0 last:mb-0">
-            {lineas.map((l, j) => (
-              <React.Fragment key={j}>{j > 0 && <br />}{negrita(l)}</React.Fragment>
-            ))}
-          </p>
-        );
-      })}
-    </>
-  );
 }
 
 export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }) {
   const [abierto, setAbierto] = useState(false);
-  const [mensajes, setMensajes] = useState<MensajeChat[]>([]);
-  const [input, setInput] = useState("");
-  const [cargando, setCargando] = useState(false);
-  const [estado, setEstado] = useState<string | null>(null);
+  const { mensajes, input, setInput, cargando, estado, anuncio, enviar } = useFinBot(contexto);
   const finRef = useRef<HTMLDivElement>(null);
-  const abortRef = useRef<AbortController | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const botonRef = useRef<HTMLButtonElement>(null);
+  // Solo devolvemos el foco cuando el usuario cerró el panel (no en el primer render).
+  const devolverFocoRef = useRef(false);
+  // Quién abrió el panel: el botón flotante, la barra inferior del celular o un botón de una ficha.
+  const origenRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    finRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    const reducir = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    finRef.current?.scrollIntoView({ behavior: reducir ? "auto" : "smooth", block: "end" });
   }, [mensajes, estado]);
 
-  useEffect(() => () => abortRef.current?.abort(), []);
-
-  async function enviar(texto: string) {
-    const pregunta = texto.trim();
-    if (!pregunta || cargando) return;
-
-    const historial: MensajeChat[] = [...mensajes, { role: "user", content: pregunta }];
-    setMensajes([...historial, { role: "assistant", content: "" }]);
-    setInput("");
-    setCargando(true);
-    setEstado("Pensando…");
-
-    const agregar = (t: string) =>
-      setMensajes((prev) => {
-        const copia = [...prev];
-        const ultimo = copia[copia.length - 1];
-        copia[copia.length - 1] = { ...ultimo, content: ultimo.content + t };
-        return copia;
-      });
-
-    abortRef.current = new AbortController();
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: historial, contexto }),
-        signal: abortRef.current.signal,
-      });
-      if (res.status === 429) {
-        const { error } = await res.json().catch(() => ({ error: null }));
-        agregar(error ?? "Llegaste al máximo de preguntas de la demo por ahora. Probá más tarde.");
-        return;
-      }
-      if (!res.ok || !res.body) throw new Error();
-
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = "";
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-        const lineas = buffer.split("\n");
-        buffer = lineas.pop() ?? "";
-        for (const linea of lineas) {
-          if (!linea) continue;
-          const ev = JSON.parse(linea) as EventoChat;
-          if (ev.type === "text") {
-            setEstado(null);
-            agregar(ev.text);
-          } else if (ev.type === "status") setEstado(ev.label);
-          else if (ev.type === "error") agregar(ev.message);
-        }
-      }
-    } catch (e) {
-      if ((e as Error).name !== "AbortError") agregar("No pude conectarme. Revisá tu conexión y probá de nuevo.");
-    } finally {
-      setCargando(false);
-      setEstado(null);
-      // Si el asistente no llegó a responder, sacamos la burbuja vacía.
-      setMensajes((prev) => (prev.at(-1)?.content ? prev : prev.slice(0, -1)));
-    }
+  function abrir() {
+    origenRef.current = document.activeElement as HTMLElement | null;
+    setAbierto(true);
+    requestAnimationFrame(() => inputRef.current?.focus());
   }
+
+  function cerrar() {
+    devolverFocoRef.current = true;
+    setAbierto(false);
+  }
+
+  // Al cerrar, el botón flotante se vuelve a montar: le devolvemos el foco después del render.
+  useEffect(() => {
+    if (!abierto && devolverFocoRef.current) {
+      devolverFocoRef.current = false;
+      // Vuelve a quien lo abrió si sigue visible; si no, al botón flotante.
+      const origen = origenRef.current;
+      if (origen?.isConnected && origen.offsetParent !== null) origen.focus();
+      else botonRef.current?.focus();
+    }
+  }, [abierto]);
+
+  // Esc cierra el panel; el listener existe solo mientras está abierto.
+  useEffect(() => {
+    if (!abierto) return;
+    const alTeclear = (e: KeyboardEvent) => {
+      if (e.key === "Escape") cerrar();
+    };
+    window.addEventListener("keydown", alTeclear);
+    return () => window.removeEventListener("keydown", alTeclear);
+  }, [abierto]);
+
+  // Otras pantallas pueden abrir el chat con una pregunta precargada (ver lib/finbot/abrir.ts).
+  useEffect(() => {
+    const alAbrir = (e: Event) => {
+      const { pregunta } = (e as CustomEvent<DetalleAbrirFinBot>).detail ?? {};
+      origenRef.current = document.activeElement as HTMLElement | null;
+      setAbierto(true);
+      if (pregunta) setInput(pregunta);
+      requestAnimationFrame(() => inputRef.current?.focus());
+    };
+    window.addEventListener(EVENTO_ABRIR_FINBOT, alAbrir);
+    return () => window.removeEventListener(EVENTO_ABRIR_FINBOT, alAbrir);
+  }, []);
 
   return (
     <>
+      <div aria-live="polite" className="sr-only">
+        {anuncio}
+      </div>
+
       {!abierto && (
         <button
-          onClick={() => setAbierto(true)}
-          className="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 px-4 py-3 text-sm font-semibold text-white shadow-xl shadow-blue-500/20 transition-transform hover:scale-105 cursor-pointer"
+          ref={botonRef}
+          onClick={abrir}
+          className="fixed bottom-5 right-5 z-50 hidden items-center md:flex gap-2 rounded-full bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary-hover active:bg-primary-active font-display shadow-[0_24px_48px_-12px_rgba(2,6,23,0.6),inset_0_1px_0_rgba(255,255,255,0.18)] transition-colors cursor-pointer"
         >
           <Bot className="h-5 w-5" />
           Preguntale a FinBot
@@ -141,22 +106,31 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
       )}
 
       {abierto && (
-        <div className="fixed inset-x-3 bottom-3 z-50 flex h-[min(620px,calc(100dvh-1.5rem))] flex-col overflow-hidden rounded-2xl border border-border bg-card/95 shadow-2xl shadow-black/50 backdrop-blur-md sm:inset-x-auto sm:right-5 sm:bottom-5 sm:w-[400px] animate-in fade-in slide-in-from-bottom-4 duration-300">
-          <header className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
+        <div
+          role="dialog"
+          aria-labelledby="finbot-titulo"
+          className="fixed inset-x-3 bottom-3 z-50 flex h-[min(620px,calc(100dvh-1.5rem))] flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-[0_24px_48px_-12px_rgba(2,6,23,0.6)] sm:inset-x-auto sm:right-5 sm:bottom-5 sm:w-[400px] animate-in fade-in slide-in-from-bottom-4 duration-300"
+        >
+          <header className="relative flex items-center justify-between gap-3 px-4 py-3">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 text-white">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground">
                 <Bot className="h-4 w-4" />
               </div>
               <div className="min-w-0">
-                <p className="text-sm font-semibold leading-tight">FinBot</p>
-                <p className="text-[11px] text-muted-foreground leading-tight truncate">
-                  {contexto ? `Conoce tu estrategia ${contexto.perfil.toLowerCase()}` : "Mercado en vivo y conceptos simples"}
+                <p id="finbot-titulo" className="font-display text-sm font-bold leading-tight">FinBot</p>
+                <p className="text-legal text-muted-foreground leading-tight truncate">
+                  {contexto ? `Conoce tu perfil ${contexto.perfil.toLowerCase()}` : "Mercado en vivo y conceptos simples"}
                 </p>
               </div>
             </div>
-            <button onClick={() => setAbierto(false)} aria-label="Cerrar chat" className="rounded-md p-1 text-muted-foreground hover:text-foreground cursor-pointer">
+            <button
+              onClick={cerrar}
+              aria-label="Cerrar chat"
+              className="flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground cursor-pointer"
+            >
               <X className="h-4 w-4" />
             </button>
+            <Filo className="absolute inset-x-0 bottom-0" />
           </header>
 
           <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4 text-sm">
@@ -164,16 +138,16 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
               <div className="space-y-3">
                 <p className="text-muted-foreground leading-relaxed">
                   ¡Hola! Soy <span className="text-foreground font-medium">FinBot</span>. Preguntame qué es un bono o un CEDEAR,
-                  cómo está el mercado hoy, o con qué activos podrías armar tu estrategia.
+                  cómo está el mercado hoy, o qué puede salir mal con tu plan.
                 </p>
                 <div className="flex flex-col gap-2">
                   {sugerencias(contexto).map((s) => (
                     <button
                       key={s}
                       onClick={() => enviar(s)}
-                      className="flex items-center gap-2 rounded-lg border border-border bg-secondary/40 px-3 py-2 text-left text-xs text-foreground/90 transition-colors hover:border-blue-400 cursor-pointer"
+                      className="flex min-h-10 items-center gap-2 rounded-md border border-border bg-secondary/50 px-3 py-2 text-left text-xs text-foreground/90 transition-colors hover:border-enlace cursor-pointer"
                     >
-                      <Sparkles className="h-3.5 w-3.5 shrink-0 text-cyan-400" />
+                      <Sparkles className="h-3.5 w-3.5 shrink-0 text-accent" />
                       {s}
                     </button>
                   ))}
@@ -183,23 +157,27 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
 
             {mensajes.map((m, i) =>
               m.role === "user" ? (
-                <div key={i} className="ml-auto max-w-[85%] w-fit rounded-2xl rounded-br-sm bg-gradient-to-r from-blue-600 to-cyan-600 px-3.5 py-2 text-white break-words">
+                <div key={i} className="ml-auto max-w-[85%] w-fit rounded-lg rounded-br-sm bg-secondary px-3.5 py-2 text-foreground break-words">
                   {m.content}
                 </div>
               ) : m.content ? (
-                <div key={i} className="max-w-[90%] rounded-2xl rounded-bl-sm border border-border bg-secondary/40 px-3.5 py-2.5 leading-relaxed text-foreground/90 break-words">
+                <div key={i} className="max-w-[95%] border-l-2 border-enlace/60 py-0.5 pl-3 leading-relaxed text-foreground/90 break-words">
                   <Formato texto={m.content} />
                 </div>
               ) : null,
             )}
 
-            {estado && (
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Loader2 className="h-3.5 w-3.5 animate-spin text-cyan-400" />
-                {estado}
-              </div>
-            )}
-            <div ref={finRef} />
+            {/* Siempre en el DOM para que el lector de pantalla detecte los cambios. Incluye el ancla
+                de scroll y su propio space-y-3 para que el espaciado quede igual que antes. */}
+            <div role="status" aria-live="polite" className="space-y-3">
+              {estado && (
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin text-accent" />
+                  {estado}
+                </div>
+              )}
+              <div ref={finRef} />
+            </div>
           </div>
 
           <form
@@ -211,22 +189,24 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
           >
             <div className="flex items-center gap-2">
               <input
+                ref={inputRef}
+                aria-label="Escribí tu pregunta para FinBot"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 maxLength={2000}
                 placeholder="Escribí tu pregunta…"
-                className="min-w-0 flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none placeholder:text-muted-foreground/50 focus-visible:ring-2 focus-visible:ring-primary/50"
+                className="min-w-0 flex-1 rounded-md border border-input bg-background px-3 py-2.5 text-sm outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
               />
               <button
                 type="submit"
                 disabled={cargando || !input.trim()}
                 aria-label="Enviar"
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-cyan-500 text-white disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary-hover active:bg-primary-active disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
               >
                 <Send className="h-4 w-4" />
               </button>
             </div>
-            <p className="mt-2 text-[10px] leading-snug text-muted-foreground/70">
+            <p className="mt-2 text-legal leading-snug text-muted-foreground/70">
               Contenido educativo, no es asesoramiento financiero. Los precios pueden tener demora.
             </p>
           </form>

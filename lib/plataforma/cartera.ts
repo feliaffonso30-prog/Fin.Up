@@ -71,7 +71,6 @@ export function calcularDistribucion(perfil: PerfilRiesgo, r: Respuestas): Distr
 
 interface Contenido {
   nombre: string;
-  color: string;
   queEs: string;
   ventaja: string;
   queSalePuedeMal: string;
@@ -80,8 +79,7 @@ interface Contenido {
 
 const CONTENIDO: Record<Categoria, Contenido> = {
   fija: {
-    nombre: "Renta fija (bonos, Lecaps y ONs)",
-    color: "bg-blue-600",
+    nombre: "Préstamos a gobiernos y empresas (renta fija)",
     queEs: "Préstamos que le hacés al Estado o a empresas: te devuelven tu plata más intereses en fechas pactadas.",
     ventaja: "Ingresos más previsibles y menos sobresaltos que las acciones.",
     queSalePuedeMal:
@@ -89,8 +87,7 @@ const CONTENIDO: Record<Categoria, Contenido> = {
     volatilidad: "Baja",
   },
   variable: {
-    nombre: "Acciones y ETFs (vía CEDEARs)",
-    color: "bg-cyan-500",
+    nombre: "Partes de empresas (acciones)",
     queEs:
       "Partes de empresas, o canastas con muchas empresas. Su valor sube y baja según los resultados de las empresas y el humor del mercado.",
     ventaja: "Históricamente es lo que más crece en plazos largos.",
@@ -99,8 +96,7 @@ const CONTENIDO: Record<Categoria, Contenido> = {
     volatilidad: "Alta",
   },
   dividendos: {
-    nombre: "Acciones y ETFs de dividendos",
-    color: "bg-sky-400",
+    nombre: "Empresas que reparten ganancias (dividendos)",
     queEs: "Empresas maduras que reparten parte de sus ganancias en efectivo, de forma periódica.",
     ventaja: "Te generan ingresos aunque el precio no suba.",
     queSalePuedeMal:
@@ -108,8 +104,7 @@ const CONTENIDO: Record<Categoria, Contenido> = {
     volatilidad: "Media",
   },
   liquidez: {
-    nombre: "Liquidez (FCI money market y cauciones)",
-    color: "bg-slate-400",
+    nombre: "Plata disponible al instante (liquidez)",
     queEs: "Plata disponible casi al instante que rinde algo mientras tanto.",
     ventaja: "Es tu colchón: podés usarla sin vender nada con pérdida.",
     queSalePuedeMal:
@@ -117,8 +112,7 @@ const CONTENIDO: Record<Categoria, Contenido> = {
     volatilidad: "Muy baja",
   },
   alternativo: {
-    nombre: "Alternativos (cripto y oro)",
-    color: "bg-indigo-400",
+    nombre: "Cripto y oro (alternativos)",
     queEs: "Activos que no son ni empresas ni préstamos, como las criptomonedas o el oro.",
     ventaja: "Se mueven distinto al resto, lo que puede ayudar a diversificar.",
     queSalePuedeMal:
@@ -159,7 +153,6 @@ export function armarPosiciones(d: Distribucion, perfil: PerfilRiesgo, r: Respue
         nombre: base.nombre,
         porcentaje: d[c],
         montoInicial: Math.round((r.capitalInicial * d[c]) / 100),
-        color: base.color,
         queEs: base.queEs,
         ventaja: base.ventaja,
         porQueEnTuCartera: porQue(c, d[c], perfil, r),
@@ -202,13 +195,17 @@ export function analizar(d: Distribucion): Analisis {
 export const DESCARGO =
   "FinUp es una herramienta educativa. No es asesoramiento financiero ni garantiza resultados: toda inversión puede perder valor, y los rendimientos pasados no aseguran los futuros.";
 
+// Títulos de avisos que el recorrido guiado (recorrido.ts) convierte en pasos.
+export const AVISO_DEUDAS = "Primero, tus deudas";
+export const AVISO_FONDO = "Armá tu fondo de emergencia";
+
 export function generarAvisos(perfil: PerfilRiesgo, d: Distribucion, r: Respuestas): Aviso[] {
   const avisos: Aviso[] = [];
 
   if (r.deudasCaras) {
     avisos.push({
       nivel: "atencion",
-      titulo: "Primero, tus deudas",
+      titulo: AVISO_DEUDAS,
       texto:
         "Tenés deudas con tasas altas. Cancelarlas suele ser la \"inversión\" más segura que existe: ningún activo te rinde de forma garantizada lo que ahorrás en intereses.",
     });
@@ -216,7 +213,7 @@ export function generarAvisos(perfil: PerfilRiesgo, d: Distribucion, r: Respuest
   if (r.fondoEmergencia !== "si") {
     avisos.push({
       nivel: "atencion",
-      titulo: "Armá tu fondo de emergencia",
+      titulo: AVISO_FONDO,
       texto:
         "Antes de invertir en activos que suben y bajan, conviene tener guardado entre 3 y 6 meses de gastos. Así no te ves obligado a vender con pérdida si surge un imprevisto.",
     });

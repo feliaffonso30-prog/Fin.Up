@@ -1,0 +1,158 @@
+{
+  "fechaActualizacion": "2026-10-08T16:54:25.000Z",
+  "fondos": [
+    {
+      "nombre": "1810 Ahorro",
+      "fecha": "2026-10-07",
+      "administradora": "Proahorro Administradora de Activos S.A.",
+      "tipoRenta": "Mercado de Dinero",
+      "horizonte": "Corto Plazo",
+      "duracion": "Menor o Igual a 0.5 Año",
+      "moneda": "Peso Argentino",
+      "patrimonio": 1555864284235.8,
+      "inversionMinima": 5000,
+      "plazoLiquidacionDias": 0,
+      "rendimientos": {
+        "tnaEstimada": 19.0469,
+        "tnaEstimadaPeriodo": "unMes",
+        "unMes": 1.5655
+      }
+    },
+    {
+      "nombre": "1822 Raices Ahorro Pesos - Clase B",
+      "fecha": "2026-10-07",
+      "administradora": "Provinfondos S.A.S.G.F.C.I.",
+      "tipoRenta": "Mercado de Dinero",
+      "horizonte": "Corto Plazo",
+      "duracion": null,
+      "moneda": "Peso Argentino",
+      "patrimonio": 1453873498000.72,
+      "inversionMinima": 1000,
+      "plazoLiquidacionDias": 0,
+      "rendimientos": {
+        "tnaEstimada": 20.1845,
+        "tnaEstimadaPeriodo": "ultimos7Dias",
+        "unMes": null
+      }
+    },
+    {
+      "nombre": "Adcap Ahorro Dinámico Fondo de Dinero - Clase G",
+      "fecha": "2026-10-07",
+      "administradora": "Adcap Asset Management S.G.F.C.I.S.A.",
+      "tipoRenta": "Mercado de Dinero",
+      "horizonte": "Corto Plazo",
+      "duracion": "Menor o Igual a 0.5 Año",
+      "moneda": "Peso Argentino",
+      "patrimonio": 2695795.4,
+      "inversionMinima": 1,
+      "plazoLiquidacionDias": 0,
+      "rendimientos": {
+        "tnaEstimada": 23.433,
+        "tnaEstimadaPeriodo": "unMes",
+        "unMes": 1.926
+      }
+    },
+    {
+      "nombre": "Adcap Ahorro Pesos Fondo de Dinero - Clase Ley Nº 27.743",
+      "fecha": "2026-09-30",
+      "administradora": "Adcap Asset Management S.G.F.C.I.S.A.",
+      "tipoRenta": "Mercado de Dinero",
+      "horizonte": "Corto Plazo",
+      "duracion": "No Aplicable",
+      "moneda": "Peso Argentino",
+      "patrimonio": 176314.77,
+      "inversionMinima": 1,
+      "plazoLiquidacionDias": 0,
+      "rendimientos": {
+        "tnaEstimada": 20.019,
+        "tnaEstimadaPeriodo": "unMes",
+        "unMes": 1.6454
+      }
+    },
+    {
+      "nombre": "Fima Premium Dólares - Clase A",
+      "fecha": "2026-10-07",
+      "administradora": "Galicia Asset Management S.A.U.",
+      "tipoRenta": "Mercado de Dinero",
+      "horizonte": "Corto Plazo",
+      "duracion": "Menor o Igual a 0.5 Año",
+      "moneda": "Dolar Estadounidense",
+      "patrimonio": 2080086133.8,
+      "inversionMinima": 1,
+      "plazoLiquidacionDias": 0,
+      "rendimientos": {
+        "tnaEstimada": 0.5475,
+        "tnaEstimadaPeriodo": "unMes",
+        "unMes": 0.045
+      }
+    },
+    {
+      "nombre": "1810 Ahorros Activos",
+      "fecha": "2026-10-07",
+      "administradora": "Proahorro Administradora de Activos S.A.",
+      "tipoRenta": "Renta Fija",
+      "horizonte": "Mediano Plazo",
+      "duracion": "Mayor a 1 y Menor Igual 3 Años",
+      "moneda": "Peso Argentino",
+      "patrimonio": 95994881837.01,
+      "inversionMinima": 5000,
+      "plazoLiquidacionDias": 1,
+      "rendimientos": {
+        "tnaEstimada": 32.1334,
+        "tnaEstimadaPeriodo": "unMes",
+        "unMes": 2.6411
+      }
+    },
+    {
+      "nombre": "Alpha Planeamiento Conservador - Clase B",
+      "fecha": "2026-10-07",
+      "administradora": "ICBC Investments Argentina S.A.U.S.G.F.C.I.",
+      "tipoRenta": "Renta Fija",
+      "horizonte": "Largo Plazo",
+      "duracion": "Mayor a 3 Años",
+      "moneda": "Peso Argentino",
+      "patrimonio": 15522378366.04,
+      "inversionMinima": 1,
+      "plazoLiquidacionDias": 1,
+      "rendimientos": {
+        "tnaEstimada": 27.7351,
+        "tnaEstimadaPeriodo": "unMes",
+        "unMes": 2.2796
+      }
+    },
+    {
+      "nombre": "ADBlick Ganaderia FCIC",
+      "fecha": "2026-02-27",
+      "administradora": "Supervielle Asset Management S.A.",
+      "tipoRenta": "Mercado de Dinero",
+      "horizonte": "Mediano Plazo",
+      "duracion": "No Aplicable",
+      "moneda": "Peso Argentino",
+      "patrimonio": 2158731296,
+      "inversionMinima": 1,
+      "plazoLiquidacionDias": 99999,
+      "rendimientos": {
+        "tnaEstimada": null,
+        "tnaEstimadaPeriodo": null,
+        "unMes": null
+      }
+    },
+    {
+      "nombre": "1810 Renta Variable Argentina",
+      "fecha": "2026-10-07",
+      "administradora": "Proahorro Administradora de Activos S.A.",
+      "tipoRenta": "Renta Variable",
+      "horizonte": "Largo Plazo",
+      "duracion": "Mayor a 1 y Menor Igual 3 Años",
+      "moneda": "Peso Argentino",
+      "patrimonio": 30175419112.18,
+      "inversionMinima": 5000,
+      "plazoLiquidacionDias": 1,
+      "rendimientos": {
+        "tnaEstimada": -94.8574,
+        "tnaEstimadaPeriodo": "unMes",
+        "unMes": -7.7965
+      }
+    }
+  ]
+}

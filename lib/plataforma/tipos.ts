@@ -43,7 +43,6 @@ export interface Posicion {
   nombre: string;
   porcentaje: number;
   montoInicial: number; // USD, según el capital inicial
-  color: string; // clase de Tailwind para barras y puntos
   queEs: string;
   ventaja: string;
   porQueEnTuCartera: string;
