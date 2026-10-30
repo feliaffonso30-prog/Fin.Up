@@ -195,7 +195,7 @@ export function analizar(d: Distribucion): Analisis {
 export const DESCARGO =
   "FinUp es una herramienta educativa. No es asesoramiento financiero ni garantiza resultados: toda inversión puede perder valor, y los rendimientos pasados no aseguran los futuros.";
 
-// Títulos de avisos que "Tu siguiente paso" (siguiente-paso.ts) convierte en acción.
+// Títulos de avisos que el recorrido guiado (recorrido.ts) convierte en pasos.
 export const AVISO_DEUDAS = "Primero, tus deudas";
 export const AVISO_FONDO = "Armá tu fondo de emergencia";
 

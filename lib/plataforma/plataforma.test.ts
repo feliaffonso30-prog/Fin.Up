@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { aContextoEstrategia, actualizarPlan, generarPlan } from "./plan";
-import { siguientePaso } from "./siguiente-paso";
+import { armarRecorrido, cantidadHechos, pasoActual, type PasoRecorrido } from "./recorrido";
 import { calcularPuntaje, clasificarPorPuntaje, definirPerfil, validarRespuestas } from "./perfil";
 import { proyectar, serieProyeccion } from "./proyeccion";
 import type {
@@ -289,34 +289,57 @@ describe("planes guardados", () => {
   });
 });
 
-describe("tu siguiente paso", () => {
+describe("recorrido guiado", () => {
+  const ids = (pasos: PasoRecorrido[]) => pasos.map((p) => p.id);
+
   it("con deudas caras, lo primero son las deudas, aunque falte el fondo", () => {
-    const paso = siguientePaso(generarPlan({ ...audaz, deudasCaras: true, fondoEmergencia: "no" }, FECHA));
-    expect(paso.titulo).toMatch(/deudas/);
-    expect(paso.accion.tipo).toBe("finbot");
+    const pasos = armarRecorrido(generarPlan({ ...audaz, deudasCaras: true, fondoEmergencia: "no" }, FECHA));
+    expect(ids(pasos).slice(0, 3)).toEqual(["perfil", "deudas", "colchon"]);
+    expect(pasoActual(pasos, [])?.accion?.tipo).toBe("finbot");
   });
 
-  it("sin fondo de emergencia, lleva a comparar dónde dejar los pesos de la liquidez", () => {
+  it("sin fondo de emergencia, el colchón lleva al comparador con la liquidez y cubre su aviso", () => {
     const plan = generarPlan({ ...audaz, fondoEmergencia: "parcial" }, FECHA);
-    const paso = siguientePaso(plan);
-    expect(paso.accion.tipo).toBe("enlace");
-    if (paso.accion.tipo === "enlace") expect(paso.accion.href).toContain("tab=billeteras");
-    expect(plan.avisos.map((a) => a.titulo)).toContain(paso.aviso);
+    const colchon = armarRecorrido(plan).find((p) => p.id === "colchon");
+    expect(colchon?.accion?.tipo === "enlace" && colchon.accion.href).toContain("tab=billeteras");
+    expect(plan.avisos.map((a) => a.titulo)).toContain(colchon?.aviso);
   });
 
-  it("con la base cubierta, apunta a la parte más grande del plan", () => {
+  it("con la base cubierta, empieza por la parte más grande y deja comparar tasas para el final", () => {
     const plan = generarPlan(audaz, FECHA);
-    const paso = siguientePaso(plan);
+    const pasos = armarRecorrido(plan);
+    expect(ids(pasos)).toEqual(["perfil", "cartera", "ejemplos", "humo", "pesos"]);
+    const accion = pasoActual(pasos, [])?.accion;
     const mayor = Math.max(...plan.posiciones.map((p) => p.porcentaje));
-    expect(paso.accion.tipo).toBe("parte");
-    const { accion } = paso;
-    if (accion.tipo === "parte") expect(plan.posiciones.find((p) => p.categoria === accion.categoria)?.porcentaje).toBe(mayor);
+    expect(accion?.tipo).toBe("parte");
+    if (accion?.tipo === "parte") expect(plan.posiciones.find((p) => p.categoria === accion.categoria)?.porcentaje).toBe(mayor);
+  });
+
+  it("la lección anti-humo siempre va antes de comparar tasas", () => {
+    for (const r of todasLasCombinaciones()) {
+      const orden = ids(armarRecorrido(generarPlan(r, FECHA)));
+      const humo = orden.indexOf("humo");
+      expect(humo).toBeGreaterThan(-1);
+      if (orden.includes("pesos")) expect(orden.indexOf("pesos")).toBeGreaterThan(humo);
+      expect(orden.length).toBeGreaterThanOrEqual(5);
+      expect(orden.length).toBeLessThanOrEqual(6);
+    }
+  });
+
+  it("avanza con lo hecho y termina en null", () => {
+    const pasos = armarRecorrido(generarPlan(audaz, FECHA));
+    expect(pasoActual(pasos, ["cartera"])?.id).toBe("ejemplos");
+    expect(cantidadHechos(pasos, ["cartera"])).toBe(2);
+    const todos = pasos.map((p) => p.id);
+    expect(pasoActual(pasos, todos)).toBeNull();
+    expect(cantidadHechos(pasos, todos)).toBe(pasos.length);
   });
 
   it("nunca dice qué comprar, en ninguna combinación", () => {
     for (const r of todasLasCombinaciones()) {
-      const p = siguientePaso(generarPlan(r, FECHA));
-      expect(`${p.titulo} ${p.texto} ${p.accion.etiqueta}`).not.toMatch(/compr[aá]|te recomendamos/i);
+      for (const p of armarRecorrido(generarPlan(r, FECHA))) {
+        expect(`${p.titulo} ${p.texto} ${p.accion?.etiqueta ?? ""}`).not.toMatch(/compr[aá]|te recomendamos/i);
+      }
     }
   });
 });

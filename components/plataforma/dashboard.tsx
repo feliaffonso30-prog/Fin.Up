@@ -25,7 +25,8 @@ import { CATEGORIAS_CON_EJEMPLOS } from "@/lib/plataforma/instrumentos/catalogo"
 import { DESCRIPCION_PERFIL } from "@/lib/plataforma/perfil";
 import { DESCARGO } from "@/lib/plataforma/cartera";
 import { fecha, pct, usd } from "@/lib/plataforma/formato";
-import { siguientePaso, type SiguientePaso } from "@/lib/plataforma/siguiente-paso";
+import type { IdPaso, PasoRecorrido } from "@/lib/plataforma/recorrido";
+import { useRecorrido } from "@/hooks/use-recorrido";
 import { usePlan } from "@/lib/plataforma/store";
 import { hrefComparador } from "@/lib/plataforma/comparador/desde-cartera";
 import { AUTH_CONFIGURADA } from "@/lib/supabase/config";
@@ -91,10 +92,19 @@ function Cartera({ plan }: { plan: Plan }) {
   const ultimo = plan.proyeccion.at(-1);
   const capital = respuestas.capitalInicial;
   const sinMontos = capital === 0 && respuestas.aporteMensual === 0;
-  const paso = siguientePaso(plan);
-  // El aviso que el siguiente paso ya cubre no se repite en "Antes de empezar".
-  const antesDeEmpezar = avisos.filter((a) => a.titulo !== paso.aviso);
+  const recorrido = useRecorrido(plan);
+  // Los avisos que el recorrido ya convierte en pasos no se repiten en "Antes de empezar"
+  // (salvo que lo haya ocultado).
+  const cubiertos = recorrido.oculto ? [] : recorrido.pasos.map((p) => p.aviso);
+  const antesDeEmpezar = avisos.filter((a) => !cubiertos.includes(a.titulo));
   const [abiertas, setAbiertas] = useState<string[]>([]);
+  const parteMayor = recorrido.pasos.find((p) => p.id === "cartera")?.accion;
+
+  // Abrir a mano la parte más grande también cuenta como hecho ese paso.
+  function cambiarAbiertas(valores: string[]) {
+    setAbiertas(valores);
+    if (parteMayor?.tipo === "parte" && valores.includes(parteMayor.categoria)) recorrido.marcar("cartera");
+  }
 
   // "Ver esa parte": la abre, la lleva a la vista y le pasa el foco.
   function abrirParte(categoria: string) {
@@ -117,7 +127,7 @@ function Cartera({ plan }: { plan: Plan }) {
         </p>
       </EncabezadoPagina>
 
-      <TuSiguientePaso paso={paso} onVerParte={abrirParte} />
+      <TuRecorrido recorrido={recorrido} onVerParte={abrirParte} />
 
       {(antesDeEmpezar.length > 0 || perfil.ajustes.length > 0) && (
         <section aria-labelledby="antes-de-empezar" className="space-y-3">
@@ -168,7 +178,7 @@ function Cartera({ plan }: { plan: Plan }) {
             ))}
           </div>
 
-          <Accordion type="multiple" value={abiertas} onValueChange={setAbiertas} className="space-y-2">
+          <Accordion type="multiple" value={abiertas} onValueChange={cambiarAbiertas} className="space-y-2">
             {posiciones.map((p) => (
               <AccordionItem key={p.categoria} id={`parte-${p.categoria}`} value={p.categoria} className="scroll-mt-20 rounded-lg border-0 bg-secondary/60 px-4">
                 <AccordionTrigger className="cursor-pointer py-3 hover:no-underline">
@@ -252,34 +262,123 @@ function Cartera({ plan }: { plan: Plan }) {
   );
 }
 
-function TuSiguientePaso({ paso, onVerParte }: { paso: SiguientePaso; onVerParte: (categoria: string) => void }) {
-  const { accion } = paso;
-  return (
-    <section aria-labelledby="siguiente-paso" className="relative overflow-hidden rounded-xl border border-enlace/40 bg-card p-5 md:p-6">
-      <Filo className="absolute inset-x-0 top-0" />
-      <Sobretitulo>Tu siguiente paso</Sobretitulo>
-      <h2 id="siguiente-paso" className="mt-2 text-xl font-bold md:text-2xl">
-        {paso.titulo}
-      </h2>
-      <p className="mt-2 max-w-2xl text-sm leading-relaxed text-foreground/85">{paso.texto}</p>
-      <div className="mt-4">
-        {accion.tipo === "enlace" ? (
-          <Button asChild>
-            <Link href={accion.href}>
-              {accion.etiqueta} <ArrowRight className="h-4 w-4" aria-hidden />
-            </Link>
-          </Button>
-        ) : accion.tipo === "finbot" ? (
-          <Button type="button" onClick={() => abrirFinBot(accion.pregunta)}>
-            <Bot className="h-4 w-4" aria-hidden />
-            {accion.etiqueta}
-          </Button>
-        ) : (
-          <Button type="button" onClick={() => onVerParte(accion.categoria)}>
-            {accion.etiqueta} <ArrowDown className="h-4 w-4" aria-hidden />
-          </Button>
-        )}
+type Recorrido = ReturnType<typeof useRecorrido>;
+
+/** El recorrido guiado: el paso que sigue, cuánto falta y la lista completa. Nada se bloquea. */
+function TuRecorrido({ recorrido, onVerParte }: { recorrido: Recorrido; onVerParte: (categoria: string) => void }) {
+  const { pasos, hechos, actual, cantidad, oculto, listo, marcar, setOculto } = recorrido;
+  const [anuncio, setAnuncio] = useState("");
+
+  // Hasta leer el avance guardado, un lugar vacío del mismo tamaño (sin saltos ni pasos equivocados).
+  if (!listo) return <div aria-hidden className="h-56 rounded-xl border border-border bg-card" />;
+
+  if (oculto) {
+    return (
+      <div className="flex justify-end">
+        <Button type="button" variant="ghost" size="sm" onClick={() => setOculto(false)} className="text-muted-foreground">
+          Mostrar tu recorrido
+        </Button>
       </div>
+    );
+  }
+
+  function hacer(paso: PasoRecorrido) {
+    marcar(paso.id);
+    const sigue = pasos.find((p) => p.id !== "perfil" && p.id !== paso.id && !hechos.includes(p.id));
+    setAnuncio(sigue ? `Listo: ${paso.corto}. Sigue: ${sigue.corto}.` : "Listo. Terminaste el recorrido.");
+    if (paso.accion?.tipo === "finbot") abrirFinBot(paso.accion.pregunta);
+    if (paso.accion?.tipo === "parte") onVerParte(paso.accion.categoria);
+  }
+
+  const accion = actual?.accion;
+  const estadoDe = (id: IdPaso) => (id === "perfil" || hechos.includes(id) ? "hecho" : actual?.id === id ? "ahora" : "falta");
+
+  return (
+    <section aria-labelledby="recorrido" className="relative overflow-hidden rounded-xl border border-enlace/40 bg-card p-5 md:p-6">
+      <Filo className="absolute inset-x-0 top-0" />
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+        <Sobretitulo>
+          {actual ? "Tu siguiente paso" : "Tu recorrido"} · {cantidad} de {pasos.length}
+        </Sobretitulo>
+        <button
+          type="button"
+          onClick={() => setOculto(true)}
+          className="min-h-10 text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+        >
+          No necesito el recorrido
+        </button>
+      </div>
+
+      {/* Avance: un segmento por paso */}
+      <div className="mt-3 flex gap-1" aria-hidden>
+        {pasos.map((p) => (
+          <span
+            key={p.id}
+            className={`h-1.5 flex-1 rounded-full ${estadoDe(p.id) === "hecho" ? "bg-enlace" : estadoDe(p.id) === "ahora" ? "bg-enlace/40" : "bg-secondary"}`}
+          />
+        ))}
+      </div>
+
+      {actual ? (
+        <>
+          <h2 id="recorrido" className="mt-4 text-xl font-bold md:text-2xl">
+            {actual.titulo}
+          </h2>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-foreground/85">{actual.texto}</p>
+          <div className="mt-4">
+            {accion?.tipo === "enlace" ? (
+              <Button asChild>
+                <Link href={accion.href} onClick={() => hacer(actual)}>
+                  {accion.etiqueta} <ArrowRight className="h-4 w-4" aria-hidden />
+                </Link>
+              </Button>
+            ) : accion?.tipo === "finbot" ? (
+              <Button type="button" onClick={() => hacer(actual)}>
+                <Bot className="h-4 w-4" aria-hidden />
+                {accion.etiqueta}
+              </Button>
+            ) : accion?.tipo === "parte" ? (
+              <Button type="button" onClick={() => hacer(actual)}>
+                {accion.etiqueta} <ArrowDown className="h-4 w-4" aria-hidden />
+              </Button>
+            ) : null}
+          </div>
+        </>
+      ) : (
+        <>
+          <h2 id="recorrido" className="mt-4 text-xl font-bold md:text-2xl">
+            Ya sabés lo básico para decidir
+          </h2>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-foreground/85">
+            No hace falta que inviertas hoy: decidir con calma también es decidir bien. Si cambia algo en tu vida, rehacé tu perfil.
+          </p>
+        </>
+      )}
+
+      <details className="group mt-4">
+        <summary className="flex min-h-10 cursor-pointer list-none items-center gap-1.5 text-sm text-enlace [&::-webkit-details-marker]:hidden">
+          Ver todos los pasos
+          <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" aria-hidden />
+        </summary>
+        <ol className="mt-2 space-y-1.5">
+          {pasos.map((p) => {
+            const e = estadoDe(p.id);
+            return (
+              <li key={p.id} className="flex items-center gap-3 text-sm">
+                <Rombo className={e === "hecho" ? "bg-enlace" : e === "ahora" ? "bg-enlace/50" : "border border-border bg-transparent"} />
+                <span className={e === "falta" ? "text-muted-foreground" : "text-foreground"}>{p.corto}</span>
+                <span className="ml-auto font-mono text-xs uppercase tracking-[0.08em] text-muted-foreground">
+                  {e === "hecho" ? "Hecho" : e === "ahora" ? "Ahora" : ""}
+                </span>
+              </li>
+            );
+          })}
+        </ol>
+      </details>
+
+      <p role="status" aria-live="polite" className="sr-only">
+        {anuncio}
+      </p>
     </section>
   );
 }

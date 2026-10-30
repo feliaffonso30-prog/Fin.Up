@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Bot, ChevronDown, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +20,15 @@ export function Aprender() {
     return GLOSARIO.filter((c) => [c.termino, ...c.sinonimos, c.simple].some((t) => normalizar(t).includes(q)));
   }, [busqueda]);
 
+  // Si llega con /aprender#<lección> (por ejemplo, desde el recorrido), abre esa lección y la muestra.
+  useEffect(() => {
+    const el = document.getElementById(decodeURIComponent(window.location.hash.slice(1)));
+    if (!(el instanceof HTMLDetailsElement)) return;
+    el.open = true;
+    el.scrollIntoView({ block: "start" });
+    el.querySelector("summary")?.focus({ preventScroll: true });
+  }, []);
+
   return (
     <div className="space-y-10">
       <EncabezadoPagina sobretitulo="Aprender" titulo="Finanzas sin humo">
@@ -34,7 +43,7 @@ export function Aprender() {
         <ol className="relative space-y-3 before:absolute before:inset-y-4 before:left-8 before:w-px before:bg-border">
           {LECCIONES.map((l, n) => (
             <li key={l.id} className="relative">
-              <details open={n === 0} className="group rounded-xl border border-border bg-card open:border-enlace/40">
+              <details id={l.id} open={n === 0} className="group scroll-mt-20 rounded-xl border border-border bg-card open:border-enlace/40">
                 <summary className="flex min-h-14 cursor-pointer list-none items-start gap-4 p-4 [&::-webkit-details-marker]:hidden">
                   <span className="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-secondary font-mono text-sm font-medium text-enlace group-open:border-enlace/60">
                     {n + 1}
