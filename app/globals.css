@@ -1,38 +1,41 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
+/* La plataforma tiene un solo tema (oscuro) y nunca pone la clase .dark.
+   La variante queda atada a .dark para que los dark: de components/ui no se activen
+   con la preferencia del sistema. */
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Fondo grafito ultra oscuro premium (casi negro, muy elegante) */
-  --background: #0a1752; 
-  --foreground: #f9fcfe; /* Blanco titanio / slate-50 */
-  
-  /* Tarjetas con un tono gris azulado oscuro para que resalten del fondo */
-  --card: #08142e; 
+  /* Fondo azul profundo de la marca */
+  --background: #0a1752;
+  --foreground: #f9fcfe;
+
+  /* Tarjetas */
+  --card: #08142e;
   --card-foreground: #f8fafc;
-  
+
   --popover: #131a2c;
   --popover-foreground: #f8fafc;
-  
+
   /* Color Principal: relleno de las acciones principales. #2563eb deja el texto blanco en 5,17:1 (AA).
      El azul de marca #3b82f6 sigue en --chart-1 y en los acentos. */
   --primary: #2563eb; /* blue-600 */
   --primary-foreground: #ffffff;
   --primary-hover: #3069ee; /* un poco más claro: 4,79:1 con texto blanco */
   --primary-active: #1d4ed8; /* blue-700: 6,7:1 con texto blanco */
-  
-  /* Color Secundario: Azul noche profundo para elementos inactivos o fondos sutiles */
-  --secondary: #1e293b; /* slate-800 */
-  --secondary-foreground: #60a5fa; /* blue-400 */
-  
+
+  /* Elementos inactivos o fondos sutiles */
+  --secondary: #1e293b;
+  --secondary-foreground: #60a5fa;
+
   --muted: #1e293b;
   --muted-foreground: #a8bcd9; /* texto secundario: 8,6:1 sobre el fondo y 4,8:1 con /70 en avisos legales */
-  
-  /* Color de Acento: Cyan brillante (perfecto para destacar los porcentajes de la estrategia o bordes activos) */
-  --accent: #06b6d4; /* cyan-500 */
+
+  /* Acento cyan: porcentajes y bordes activos */
+  --accent: #06b6d4;
   --accent-foreground: #0b0f19;
-  
+
   /* Errores: #f87171 se lee a 6:1 sobre el fondo (#ef4444 quedaba en 4,44:1) */
   --destructive: #f87171;
   --destructive-foreground: #ffffff;
@@ -43,14 +46,36 @@
   --input: #566b98;
   /* Foco del teclado: sólido, 6,6:1 sobre el fondo */
   --ring: #60a5fa;
-  
-  --radius: 1rem; /* Bordes redondeados de 16px, muy suaves */
 
-  /* Gráficos y Sidebar con la paleta azul/cyan */
+  --radius: 1rem;
+
+  /* ---------- Tokens semánticos de FinUp ----------
+     Se usan con opacidad desde Tailwind: border-atencion/25 bg-atencion/10 text-atencion. */
+  --enlace: #51a2ff; /* sobretítulos, links y sección activa */
+  --info: #8ec5ff;
+  --atencion: #ffd230; /* "qué puede salir mal" y avisos de cuidado */
+  --atencion-texto: #fef3c6; /* texto largo dentro de un aviso de atención */
+  --error: #ffa2a2;
+  --exito: #5ee9b5;
+  --cifra: #a2f4fd; /* cifras destacadas, como la ganancia estimada */
+
+  /* Riesgo: siempre acompañado de barras 1/2/3, nunca solo por color */
+  --riesgo-bajo: #b8e6fe;
+  --riesgo-medio: #fee685;
+  --riesgo-alto: #ffd6a7;
+
+  /* Partes de la cartera: barra de distribución y puntos */
+  --cat-fija: #155dfc;
+  --cat-variable: #00b8db;
+  --cat-dividendos: #00bcff;
+  --cat-liquidez: #90a1b9;
+  --cat-alternativo: #7c86ff;
+
+  /* Gráficos */
   --chart-1: #3b82f6;
-  --chart-2: #06b6d4;
+  --chart-2: #22d3ee;
   --chart-3: #60a5fa;
-  --chart-4: #1e293b;
+  --chart-4: #94a3b8; /* series de referencia: lo aportado, la inflación */
   --chart-5: #38bdf8;
   --sidebar: #131a2c;
   --sidebar-foreground: #f8fafc;
@@ -62,38 +87,13 @@
   --sidebar-ring: rgba(59, 130, 246, 0.4);
 }
 
-/* Forzamos a que el modo oscuro mantenga la misma estética premium de gráficos y fuentes */
-.dark {
-  --background: #0b0f19;
-  --foreground: #f8fafc;
-  --card: #131a2c;
-  --card-foreground: #f8fafc;
-  --popover: #131a2c;
-  --popover-foreground: #f8fafc;
-  --primary: #3b82f6;
-  --primary-foreground: #ffffff;
-  --secondary: #1e293b;
-  --secondary-foreground: #60a5fa;
-  --muted: #1e293b;
-  --muted-foreground: #64748b;
-  --accent: #06b6d4;
-  --accent-foreground: #0b0f19;
-  --destructive: #f43c3c;
-  --destructive-foreground: #ffffff;
-  --border: #1e293b;
-  --input: #0b0f19;
-  --ring: rgba(59, 130, 246, 0.4);
-  --chart-1: #3b82f6;
-  --chart-2: #06b6d4;
-  --chart-3: #60a5fa;
-  --chart-4: #1e293b;
-  --chart-5: #38bdf8;
-}
-
 @theme inline {
   --font-sans: var(--font-inter), 'Inter', system-ui, sans-serif;
-  --font-mono: 'Geist Mono', 'Geist Mono Fallback', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-mono: var(--font-jetbrains), 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Menlo, Consolas, monospace;
   --font-display: var(--font-jakarta), 'Plus Jakarta Sans', system-ui, sans-serif;
+  /* Letra de avisos legales y notas al pie: nunca menos de 12px */
+  --text-legal: 0.75rem;
+  --text-legal--line-height: 1.45;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -110,12 +110,26 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  --color-accent-secondary: var(--accent-secondary);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-enlace: var(--enlace);
+  --color-info: var(--info);
+  --color-atencion: var(--atencion);
+  --color-atencion-texto: var(--atencion-texto);
+  --color-error: var(--error);
+  --color-exito: var(--exito);
+  --color-cifra: var(--cifra);
+  --color-riesgo-bajo: var(--riesgo-bajo);
+  --color-riesgo-medio: var(--riesgo-medio);
+  --color-riesgo-alto: var(--riesgo-alto);
+  --color-cat-fija: var(--cat-fija);
+  --color-cat-variable: var(--cat-variable);
+  --color-cat-dividendos: var(--cat-dividendos);
+  --color-cat-liquidez: var(--cat-liquidez);
+  --color-cat-alternativo: var(--cat-alternativo);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -147,5 +161,14 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  /* Títulos en la tipografía de marca */
+  h1,
+  h2,
+  h3,
+  [data-slot='card-title'] {
+    /* @apply y no var(): con @theme inline, --font-display no existe como variable en :root */
+    @apply font-display;
+    letter-spacing: -0.015em;
   }
 }

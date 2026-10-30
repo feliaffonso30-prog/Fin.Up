@@ -4,23 +4,16 @@ import { Button } from "@/components/ui/button";
 import { pct } from "@/lib/plataforma/formato";
 import { ETIQUETA_LIQUIDEZ, ETIQUETA_RIESGO } from "@/lib/plataforma/comparador/textos";
 import type { Alternativa, Liquidez, NivelRiesgo } from "@/lib/plataforma/comparador/tipos";
+import { InsigniaRiesgo, type NivelRiesgoVisual } from "@/components/plataforma/primitivas";
 import { cn } from "@/lib/utils";
 
 /** Tasa en decimal → "22,50%". */
 export const tasa = (x: number, decimales = 2) => pct(x * 100, decimales);
 
-const COLOR_RIESGO: Record<NivelRiesgo, string> = {
-  Bajo: "border-sky-500/30 bg-sky-500/10 text-sky-200",
-  Medio: "border-amber-500/30 bg-amber-500/10 text-amber-200",
-  Alto: "border-orange-500/40 bg-orange-500/15 text-orange-200",
-};
+const NIVEL: Record<NivelRiesgo, NivelRiesgoVisual> = { Bajo: "bajo", Medio: "medio", Alto: "alto" };
 
 export function BadgeRiesgo({ riesgo }: { riesgo: NivelRiesgo }) {
-  return (
-    <Badge variant="outline" className={COLOR_RIESGO[riesgo]}>
-      {ETIQUETA_RIESGO[riesgo]}
-    </Badge>
-  );
+  return <InsigniaRiesgo nivel={NIVEL[riesgo]} etiqueta={ETIQUETA_RIESGO[riesgo]} />;
 }
 
 export function BadgeLiquidez({ liquidez }: { liquidez: Liquidez }) {
@@ -28,7 +21,7 @@ export function BadgeLiquidez({ liquidez }: { liquidez: Liquidez }) {
     <Badge
       variant="outline"
       className={cn(
-        liquidez === "inmediata" ? "border-cyan-500/30 bg-cyan-500/10 text-cyan-200" : "border-border bg-secondary/50 text-foreground/80",
+        liquidez === "inmediata" ? "border-accent/30 bg-accent/10 text-cifra" : "border-border bg-secondary/50 text-foreground/80",
       )}
     >
       {ETIQUETA_LIQUIDEZ[liquidez]}
@@ -50,7 +43,7 @@ export function BadgeTasaReal({ real }: { real: number | null }) {
   return (
     <Badge
       variant="outline"
-      className={gana ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300" : "border-red-500/40 bg-red-500/10 text-red-300"}
+      className={gana ? "border-exito/40 bg-exito/10 text-exito" : "border-error/40 bg-error/10 text-error"}
       aria-label={`${texto}: ${gana ? "le gana" : "no le gana"} a la inflación`}
       title={gana ? "Le gana a la última inflación mensual" : "No le gana a la última inflación mensual"}
     >
@@ -76,7 +69,7 @@ export function BotonEntidad({ alternativa, className }: { alternativa: Alternat
           <ExternalLink className="h-3.5 w-3.5" aria-hidden />
         </a>
       </Button>
-      {alternativa.esReferido && <span className="text-[10px] text-muted-foreground">Link de referido</span>}
+      {alternativa.esReferido && <span className="text-legal text-muted-foreground">Link de referido</span>}
     </div>
   );
 }

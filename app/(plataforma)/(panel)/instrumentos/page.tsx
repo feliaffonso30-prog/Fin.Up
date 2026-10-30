@@ -12,7 +12,7 @@ export default function Page() {
   return (
     <div className="space-y-8">
       <header className="space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-widest text-blue-400">Biblioteca de instrumentos</p>
+        <p className="text-xs font-semibold uppercase tracking-widest text-enlace">Biblioteca de instrumentos</p>
         <h1 className="text-3xl font-extrabold md:text-4xl">Instrumentos reales, explicados</h1>
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
           Fichas de CEDEARs, acciones y bonos que se negocian en Argentina, para entender qué hay detrás de cada parte de una cartera: qué son, por

@@ -6,6 +6,7 @@ import { DisclaimerInstrumentos } from "@/components/plataforma/instrumentos/dis
 import { BadgeCategoria, BadgeRiesgo } from "@/components/plataforma/instrumentos/insignias";
 import { PreguntarFinBot } from "@/components/plataforma/instrumentos/preguntar-finbot";
 import { Termino } from "@/components/plataforma/instrumentos/termino";
+import { QuePuedeSalirMal } from "@/components/plataforma/primitivas";
 import { fecha } from "@/lib/plataforma/formato";
 import { TERMINOS, type ClaveTermino } from "@/lib/plataforma/instrumentos/glosario";
 import { NOTA_RIESGO, PRECIO_NO_DISPONIBLE, preguntaFinBot } from "@/lib/plataforma/instrumentos/textos";
@@ -51,7 +52,7 @@ export function FichaInstrumento({ instrumento: i }: { instrumento: Instrumento 
           <BadgeRiesgo riesgo={i.riesgo} />
         </div>
         <div>
-          <p className="font-mono text-sm font-bold text-blue-300">{i.ticker}</p>
+          <p className="font-mono text-sm font-bold text-info">{i.ticker}</p>
           <h1 className="text-3xl font-extrabold leading-tight md:text-4xl">{i.nombre}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {esCedear ? (
@@ -76,7 +77,7 @@ export function FichaInstrumento({ instrumento: i }: { instrumento: Instrumento 
             <CircleDollarSign className="h-4 w-4" aria-hidden />
             No disponible
           </span>
-          <span className="mt-1 block text-[11px] font-normal leading-snug text-muted-foreground/80">{PRECIO_NO_DISPONIBLE}</span>
+          <span className="mt-1 block text-legal font-normal leading-snug text-muted-foreground/80">{PRECIO_NO_DISPONIBLE}</span>
         </Dato>
         <Dato titulo="Horizonte sugerido">{NOMBRE_HORIZONTE[i.horizonte]}</Dato>
         <Dato titulo="Se opera en">{i.monedas.map((m) => NOMBRE_MONEDA[m]).join(" y ")}</Dato>
@@ -95,7 +96,7 @@ export function FichaInstrumento({ instrumento: i }: { instrumento: Instrumento 
             <ul className="mt-3 flex flex-wrap gap-2">
               {i.criterios.map((c) => (
                 <li key={c} className="flex items-center gap-1.5 rounded-full border border-border bg-secondary/40 px-2.5 py-1 text-xs">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" aria-hidden />
+                  <CheckCircle2 className="h-3.5 w-3.5 text-exito" aria-hidden />
                   {c === "liquidez" ? <Termino clave="liquidez">{NOMBRE_CRITERIO[c]}</Termino> : NOMBRE_CRITERIO[c]}
                 </li>
               ))}
@@ -113,17 +114,21 @@ export function FichaInstrumento({ instrumento: i }: { instrumento: Instrumento 
         </TabsContent>
 
         <TabsContent value="riesgos" className="space-y-4">
-          <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-4">
-            <p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-amber-300">
-              <TriangleAlert className="h-4 w-4" aria-hidden />
-              Qué puede salir mal
-            </p>
-            <ul className="list-disc space-y-1.5 pl-5 text-sm leading-relaxed text-amber-100/90">
+          <QuePuedeSalirMal
+            className="p-4"
+            titulo={
+              <>
+                <TriangleAlert className="h-4 w-4" aria-hidden />
+                Qué puede salir mal
+              </>
+            }
+          >
+            <ul className="list-disc space-y-1.5 pl-5">
               {i.riesgos.map((r) => (
                 <li key={r}>{r}</li>
               ))}
             </ul>
-          </div>
+          </QuePuedeSalirMal>
           <Seccion titulo="Nivel de riesgo">
             <div className="flex flex-wrap items-center gap-2">
               <BadgeRiesgo riesgo={i.riesgo} />
@@ -132,7 +137,7 @@ export function FichaInstrumento({ instrumento: i }: { instrumento: Instrumento 
               </span>
             </div>
             <p className="mt-2 text-sm leading-relaxed text-foreground/85">{QUE_SIGNIFICA_RIESGO[i.riesgo]}</p>
-            <p className="mt-2 text-[11px] leading-snug text-muted-foreground/80">{NOTA_RIESGO}</p>
+            <p className="mt-2 text-legal leading-snug text-muted-foreground/80">{NOTA_RIESGO}</p>
           </Seccion>
         </TabsContent>
 
@@ -160,7 +165,7 @@ export function FichaInstrumento({ instrumento: i }: { instrumento: Instrumento 
         </TabsContent>
       </Tabs>
 
-      <div className="flex flex-col gap-3 rounded-xl border border-blue-500/20 bg-blue-500/10 p-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 rounded-xl border border-info/20 bg-info/10 p-4 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm leading-relaxed text-foreground/85">¿Te quedó alguna duda? FinBot te lo explica con tus palabras.</p>
         <PreguntarFinBot pregunta={preguntaFinBot(i)} />
       </div>
@@ -196,7 +201,7 @@ function Dato({ titulo, children }: { titulo: string; children: React.ReactNode 
 function Seccion({ titulo, children }: { titulo: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-blue-400">{titulo}</h2>
+      <h2 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-enlace">{titulo}</h2>
       {children}
     </section>
   );

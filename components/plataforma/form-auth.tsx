@@ -46,7 +46,7 @@ export function FormAuth({ modo, siguiente, errorEnlace }: Props) {
     return (
       <Card>
         <CardHeader>
-          <MailCheck className="mb-1 h-8 w-8 text-blue-400" aria-hidden />
+          <MailCheck className="mb-1 h-8 w-8 text-enlace" aria-hidden />
           <CardTitle>Revisá tu email</CardTitle>
           <CardDescription>
             Si el email es válido, te enviamos un enlace para confirmar tu cuenta. Si no lo ves, mirá en spam.
@@ -134,7 +134,7 @@ export function FormAuth({ modo, siguiente, errorEnlace }: Props) {
           </div>
 
           {error && (
-            <p role="alert" className="flex items-start gap-2 rounded-md border border-red-500/40 bg-red-500/10 p-2.5 text-sm text-red-300">
+            <p role="alert" className="flex items-start gap-2 rounded-md border border-error/40 bg-error/10 p-2.5 text-sm text-error">
               <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
               {error}
             </p>
@@ -149,14 +149,14 @@ export function FormAuth({ modo, siguiente, errorEnlace }: Props) {
           {esLogin ? (
             <>
               ¿No tenés cuenta?{" "}
-              <Link href="/registro" className="font-medium text-blue-400 hover:underline">
+              <Link href="/registro" className="font-medium text-enlace hover:underline">
                 Creala acá
               </Link>
             </>
           ) : (
             <>
               ¿Ya tenés cuenta?{" "}
-              <Link href="/login" className="font-medium text-blue-400 hover:underline">
+              <Link href="/login" className="font-medium text-enlace hover:underline">
                 Ingresá
               </Link>
             </>

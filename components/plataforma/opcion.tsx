@@ -27,8 +27,8 @@ export function Opcion({
       className={cn(
         "flex w-full cursor-pointer items-start justify-between gap-3 rounded-xl border px-4 py-3 text-left transition-all",
         seleccionada
-          ? "border-ring bg-primary text-primary-foreground shadow-lg shadow-blue-500/10"
-          : "border-input bg-transparent text-slate-200 hover:border-ring",
+          ? "border-ring bg-primary text-primary-foreground shadow-lg shadow-primary/10"
+          : "border-input bg-transparent text-foreground/90 hover:border-ring",
       )}
     >
       <span className="min-w-0">

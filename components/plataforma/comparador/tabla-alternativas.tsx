@@ -88,9 +88,9 @@ function Nombre({ c, conProducto }: { c: Cotizacion; conProducto: boolean }) {
     <div className="min-w-0 space-y-0.5">
       <p className="font-semibold leading-snug">{conProducto ? a.producto : a.entidad}</p>
       {conProducto && <p className="text-xs text-muted-foreground">{a.entidad}</p>}
-      {c.nota && !conProducto && <p className="line-clamp-2 text-[11px] leading-snug text-muted-foreground" title={c.nota}>{c.nota}</p>}
+      {c.nota && !conProducto && <p className="line-clamp-2 text-legal leading-snug text-muted-foreground" title={c.nota}>{c.nota}</p>}
       {c.notas.map((n) => (
-        <p key={n} className="text-[11px] leading-snug text-amber-200/80">
+        <p key={n} className="text-legal leading-snug text-atencion-texto/80">
           {n}
         </p>
       ))}
@@ -127,10 +127,10 @@ function Escritorio({ cotizaciones, dias, conProducto }: { cotizaciones: Cotizac
               </TableCell>
               <TableCell className="text-right">
                 <p className="font-mono text-base font-semibold">{tasaTexto(c, c.tna)}</p>
-                <p className="text-[11px] text-muted-foreground">TEA {tasaTexto(c, c.tea)}</p>
-                <p className="text-[11px] text-muted-foreground">TEM {tasaTexto(c, c.tem)}</p>
+                <p className="text-legal text-muted-foreground">TEA {tasaTexto(c, c.tea)}</p>
+                <p className="text-legal text-muted-foreground">TEM {tasaTexto(c, c.tem)}</p>
               </TableCell>
-              <TableCell className="text-right font-mono font-semibold text-cyan-200">{ars(c.ganancia)}</TableCell>
+              <TableCell className="text-right font-mono font-semibold text-cifra">{ars(c.ganancia)}</TableCell>
               <TableCell className="text-center">
                 <BadgeTasaReal real={c.tasaRealMensual} />
               </TableCell>
@@ -156,15 +156,15 @@ function Celular({ cotizaciones, dias, conProducto }: { cotizaciones: Cotizacion
           </div>
           <dl className="grid grid-cols-2 gap-3 text-sm">
             <div>
-              <dt className="text-[11px] text-muted-foreground">TNA</dt>
+              <dt className="text-legal text-muted-foreground">TNA</dt>
               <dd className="font-mono text-base font-semibold">{tasaTexto(c, c.tna)}</dd>
-              <dd className="text-[11px] text-muted-foreground">
+              <dd className="text-legal text-muted-foreground">
                 TEA {tasaTexto(c, c.tea)} · TEM {tasaTexto(c, c.tem)}
               </dd>
             </div>
             <div>
-              <dt className="text-[11px] text-muted-foreground">{conProducto ? `Si rinde igual, en ${dias} días` : `Ganancia en ${dias} días`}</dt>
-              <dd className="font-mono text-base font-semibold text-cyan-200">{ars(c.ganancia)}</dd>
+              <dt className="text-legal text-muted-foreground">{conProducto ? `Si rinde igual, en ${dias} días` : `Ganancia en ${dias} días`}</dt>
+              <dd className="font-mono text-base font-semibold text-cifra">{ars(c.ganancia)}</dd>
             </div>
           </dl>
           <div className="flex flex-wrap items-center gap-1.5">

@@ -111,12 +111,12 @@ function Vista({
                 <h4 className="text-sm font-semibold">{e.titulo}</h4>
                 <p className="text-foreground/85">{e.queEs}</p>
                 <p>
-                  <span className="font-semibold text-blue-300">Ventajas: </span>
+                  <span className="font-semibold text-info">Ventajas: </span>
                   <span className="text-foreground/85">{e.ventajas}</span>
                 </p>
-                <p className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-2.5">
-                  <span className="font-semibold text-amber-300">Riesgos: </span>
-                  <span className="text-amber-100/90">{e.riesgos}</span>
+                <p className="rounded-lg border border-atencion/20 bg-atencion/10 p-2.5">
+                  <span className="font-semibold text-atencion">Riesgos: </span>
+                  <span className="text-atencion-texto/90">{e.riesgos}</span>
                 </p>
               </article>
             );
@@ -130,7 +130,7 @@ function Vista({
 // ---------- Gráfico: ganancia estimada por tipo ----------
 
 const ESPACIO_FIJO = String.fromCharCode(160); // no separable: "$ 19.315" no se parte en dos líneas
-const config = { ganancia: { label: "Ganancia estimada", color: "#3b82f6" } } satisfies ChartConfig;
+const config = { ganancia: { label: "Ganancia estimada", color: "var(--chart-1)" } } satisfies ChartConfig;
 
 function Grafico({ filas, perdidaPorInflacion, dias }: { filas: Fila[]; perdidaPorInflacion: number | null; dias: number }) {
   const angosto = useIsMobile();
@@ -182,9 +182,9 @@ function Grafico({ filas, perdidaPorInflacion, dias }: { filas: Fila[]; perdidaP
           {perdidaPorInflacion !== null && (
             <ReferenceLine
               x={perdidaPorInflacion}
-              stroke="#94a3b8"
+              stroke="var(--chart-4)"
               strokeWidth={1.5}
-              label={{ value: "Inflación", position: "top", fill: "#cbd5e1", fontSize: 11 }}
+              label={{ value: "Inflación", position: "top", fill: "var(--muted-foreground)", fontSize: 11 }}
             />
           )}
           <Bar dataKey="ganancia" fill="var(--color-ganancia)" radius={[0, 4, 4, 0]} maxBarSize={24} isAnimationActive={false}>
@@ -213,7 +213,7 @@ function Opcion({ f }: { f: Fila }) {
       <p className="font-semibold leading-snug">{a.tipo.startsWith("fci") ? a.producto : a.entidad}</p>
       {a.tipo.startsWith("fci") && <p className="text-xs text-muted-foreground">{a.entidad}</p>}
       {f.mejor.notas.map((n) => (
-        <p key={n} className="text-[11px] leading-snug text-amber-200/80">
+        <p key={n} className="text-legal leading-snug text-atencion-texto/80">
           {n}
         </p>
       ))}
@@ -258,7 +258,7 @@ function Resumen({ filas, dias }: { filas: Fila[]; dias: number }) {
                 {f.mejor && (
                   <>
                     <TableCell className="text-right font-mono font-semibold">{tnaTexto(f.mejor)}</TableCell>
-                    <TableCell className="text-right font-mono font-semibold text-cyan-200">{ars(f.mejor.ganancia)}</TableCell>
+                    <TableCell className="text-right font-mono font-semibold text-cifra">{ars(f.mejor.ganancia)}</TableCell>
                     <TableCell className="text-center">
                       <BadgeTasaReal real={f.mejor.tasaRealMensual} />
                     </TableCell>
@@ -276,18 +276,18 @@ function Resumen({ filas, dias }: { filas: Fila[]; dias: number }) {
       <ul className="space-y-3 lg:hidden">
         {filas.map((f) => (
           <li key={f.tipo} className="space-y-2 rounded-xl border border-border bg-card/70 p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-blue-400">{NOMBRE_CORTO[f.tipo]}</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-enlace">{NOMBRE_CORTO[f.tipo]}</p>
             <Opcion f={f} />
             {f.mejor && (
               <>
                 <dl className="grid grid-cols-2 gap-3 text-sm">
                   <div>
-                    <dt className="text-[11px] text-muted-foreground">TNA</dt>
+                    <dt className="text-legal text-muted-foreground">TNA</dt>
                     <dd className="font-mono font-semibold">{tnaTexto(f.mejor)}</dd>
                   </div>
                   <div>
-                    <dt className="text-[11px] text-muted-foreground">Ganancia en {dias} días</dt>
-                    <dd className="font-mono font-semibold text-cyan-200">{ars(f.mejor.ganancia)}</dd>
+                    <dt className="text-legal text-muted-foreground">Ganancia en {dias} días</dt>
+                    <dd className="font-mono font-semibold text-cifra">{ars(f.mejor.ganancia)}</dd>
                   </div>
                 </dl>
                 <div className="flex flex-wrap gap-1.5">
@@ -301,7 +301,7 @@ function Resumen({ filas, dias }: { filas: Fila[]; dias: number }) {
           </li>
         ))}
       </ul>
-      <p className="text-[11px] leading-snug text-muted-foreground/80">
+      <p className="text-legal leading-snug text-muted-foreground/80">
         UVA: estimado con la última inflación. Fondos: rendimiento de los últimos 30 días, que puede no repetirse. Tasa real:{" "}
         rendimiento mensual comparado con la última inflación mensual.
       </p>

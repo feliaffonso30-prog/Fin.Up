@@ -45,7 +45,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
         aria-current={activo ? "page" : undefined}
         className={cn(
           "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors",
-          activo ? "bg-secondary font-semibold text-blue-400" : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground",
+          activo ? "bg-secondary font-semibold text-enlace" : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground",
         )}
       >
         <Icono className="h-4 w-4 shrink-0" aria-hidden />
@@ -67,7 +67,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
         <div className="mt-auto">
           <BotonSalir />
         </div>
-        <p className="mt-2 px-3 text-[11px] leading-snug text-muted-foreground/70">
+        <p className="mt-2 px-3 text-legal leading-snug text-muted-foreground/70">
           Versión beta. Contenido educativo, no es asesoramiento financiero.
         </p>
       </aside>
@@ -80,7 +80,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
               <img src="/finup.logo.1.png" alt="FinUp" className="h-10 w-auto" />
             </Link>
             <div className="flex items-center gap-2">
-              <span className="rounded-full border border-border px-2 py-0.5 text-[10px] font-medium text-blue-400">Beta</span>
+              <span className="rounded-full border border-border px-2 py-0.5 text-legal font-medium text-enlace">Beta</span>
               <BotonSalir />
             </div>
           </div>

@@ -71,7 +71,6 @@ export function calcularDistribucion(perfil: PerfilRiesgo, r: Respuestas): Distr
 
 interface Contenido {
   nombre: string;
-  color: string;
   queEs: string;
   ventaja: string;
   queSalePuedeMal: string;
@@ -81,7 +80,6 @@ interface Contenido {
 const CONTENIDO: Record<Categoria, Contenido> = {
   fija: {
     nombre: "Renta fija (bonos, Lecaps y ONs)",
-    color: "bg-blue-600",
     queEs: "Préstamos que le hacés al Estado o a empresas: te devuelven tu plata más intereses en fechas pactadas.",
     ventaja: "Ingresos más previsibles y menos sobresaltos que las acciones.",
     queSalePuedeMal:
@@ -90,7 +88,6 @@ const CONTENIDO: Record<Categoria, Contenido> = {
   },
   variable: {
     nombre: "Acciones y ETFs (vía CEDEARs)",
-    color: "bg-cyan-500",
     queEs:
       "Partes de empresas, o canastas con muchas empresas. Su valor sube y baja según los resultados de las empresas y el humor del mercado.",
     ventaja: "Históricamente es lo que más crece en plazos largos.",
@@ -100,7 +97,6 @@ const CONTENIDO: Record<Categoria, Contenido> = {
   },
   dividendos: {
     nombre: "Acciones y ETFs de dividendos",
-    color: "bg-sky-400",
     queEs: "Empresas maduras que reparten parte de sus ganancias en efectivo, de forma periódica.",
     ventaja: "Te generan ingresos aunque el precio no suba.",
     queSalePuedeMal:
@@ -109,7 +105,6 @@ const CONTENIDO: Record<Categoria, Contenido> = {
   },
   liquidez: {
     nombre: "Liquidez (FCI money market y cauciones)",
-    color: "bg-slate-400",
     queEs: "Plata disponible casi al instante que rinde algo mientras tanto.",
     ventaja: "Es tu colchón: podés usarla sin vender nada con pérdida.",
     queSalePuedeMal:
@@ -118,7 +113,6 @@ const CONTENIDO: Record<Categoria, Contenido> = {
   },
   alternativo: {
     nombre: "Alternativos (cripto y oro)",
-    color: "bg-indigo-400",
     queEs: "Activos que no son ni empresas ni préstamos, como las criptomonedas o el oro.",
     ventaja: "Se mueven distinto al resto, lo que puede ayudar a diversificar.",
     queSalePuedeMal:
@@ -159,7 +153,6 @@ export function armarPosiciones(d: Distribucion, perfil: PerfilRiesgo, r: Respue
         nombre: base.nombre,
         porcentaje: d[c],
         montoInicial: Math.round((r.capitalInicial * d[c]) / 100),
-        color: base.color,
         queEs: base.queEs,
         ventaja: base.ventaja,
         porQueEnTuCartera: porQue(c, d[c], perfil, r),

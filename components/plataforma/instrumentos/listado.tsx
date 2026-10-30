@@ -97,7 +97,7 @@ export function ListadoInstrumentos({ instrumentos }: { instrumentos: readonly I
             </button>
           )}
         </div>
-        <p className="text-[11px] leading-snug text-muted-foreground/80">{NOTA_RIESGO}</p>
+        <p className="text-legal leading-snug text-muted-foreground/80">{NOTA_RIESGO}</p>
       </section>
 
       {grupos.length === 0 ? (
@@ -135,11 +135,11 @@ function TarjetaInstrumento({ instrumento: i }: { instrumento: Instrumento }) {
   return (
     <Link
       href={`/instrumentos/${i.ticker}`}
-      className="group flex h-full flex-col gap-2 rounded-xl border border-border bg-card/70 p-4 transition-colors hover:border-blue-500/40 hover:bg-secondary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="group flex h-full flex-col gap-2 rounded-xl border border-border bg-card/70 p-4 transition-colors hover:border-enlace/40 hover:bg-secondary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="font-mono text-sm font-bold text-blue-300">{i.ticker}</p>
+          <p className="font-mono text-sm font-bold text-info">{i.ticker}</p>
           <p className="line-clamp-2 text-sm font-medium">{i.nombre}</p>
         </div>
         <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden />
@@ -147,7 +147,7 @@ function TarjetaInstrumento({ instrumento: i }: { instrumento: Instrumento }) {
       <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">{i.descripcion}</p>
       <div className="mt-auto flex flex-wrap gap-1.5 pt-1">
         <BadgeRiesgo riesgo={i.riesgo} />
-        <span className="text-[11px] leading-5 text-muted-foreground">{i.sector}</span>
+        <span className="text-legal leading-5 text-muted-foreground">{i.sector}</span>
       </div>
     </Link>
   );

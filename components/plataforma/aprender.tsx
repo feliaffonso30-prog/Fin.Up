@@ -21,7 +21,7 @@ export function Aprender() {
   return (
     <div className="space-y-10">
       <header className="space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-widest text-blue-400">Aprender</p>
+        <p className="text-xs font-semibold uppercase tracking-widest text-enlace">Aprender</p>
         <h1 className="text-3xl font-extrabold md:text-4xl">Finanzas sin humo</h1>
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
           Lo esencial, explicado simple. Si algo no queda claro, preguntale a FinBot con el botón de abajo a la derecha.
@@ -69,12 +69,12 @@ export function Aprender() {
                 <div className="flex items-start justify-between gap-3">
                   <h3 className="text-sm font-semibold">{c.termino}</h3>
                   {c.riesgo !== "—" && (
-                    <span className="shrink-0 rounded-full border border-border px-2 py-0.5 text-[10px] text-muted-foreground">Riesgo: {c.riesgo.toLowerCase()}</span>
+                    <span className="shrink-0 rounded-full border border-border px-2 py-0.5 text-legal text-muted-foreground">Riesgo: {c.riesgo.toLowerCase()}</span>
                   )}
                 </div>
                 <p className="mt-1.5 text-xs leading-relaxed text-foreground/85">{c.simple}</p>
                 <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                  <span className="font-medium text-blue-400">Ejemplo: </span>
+                  <span className="font-medium text-enlace">Ejemplo: </span>
                   {c.ejemplo}
                 </p>
               </div>

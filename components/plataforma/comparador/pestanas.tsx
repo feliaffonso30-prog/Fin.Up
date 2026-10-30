@@ -33,20 +33,20 @@ export function Explicacion({ tipo, abierta = false }: { tipo: TipoAlternativa; 
     <details open={abierta} className="group rounded-xl border border-border bg-secondary/30 px-4 py-3">
       <summary className="cursor-pointer list-none text-sm">
         <span className="font-semibold">{e.titulo}:</span> <span className="text-muted-foreground">{e.queEs}</span>{" "}
-        <span className="whitespace-nowrap text-xs text-blue-400 group-open:hidden">Ver ventajas y riesgos</span>
+        <span className="whitespace-nowrap text-xs text-enlace group-open:hidden">Ver ventajas y riesgos</span>
       </summary>
       <div className="mt-3 space-y-2 text-xs leading-relaxed">
         <p>
-          <span className="font-semibold text-blue-300">Ventajas: </span>
+          <span className="font-semibold text-info">Ventajas: </span>
           <span className="text-foreground/85">{e.ventajas}</span>
         </p>
-        <p className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-2.5">
-          <span className="font-semibold text-amber-300">Qué puede salir mal: </span>
-          <span className="text-amber-100/90">{e.riesgos}</span>
+        <p className="rounded-lg border border-atencion/20 bg-atencion/10 p-2.5">
+          <span className="font-semibold text-atencion">Qué puede salir mal: </span>
+          <span className="text-atencion-texto/90">{e.riesgos}</span>
         </p>
         {e.cuandoConviene && (
           <p>
-            <span className="font-semibold text-blue-300">Cuándo suele convenir: </span>
+            <span className="font-semibold text-info">Cuándo suele convenir: </span>
             <span className="text-foreground/85">{e.cuandoConviene}</span>
           </p>
         )}
@@ -151,7 +151,7 @@ export function TabUva({ uva, plazoFijo, ...comun }: Comun & { uva: Fuente; plaz
     <div className="space-y-4">
       <Explicacion tipo="uva" abierta />
       {comparacion && (
-        <p className="rounded-xl border border-blue-500/20 bg-blue-500/10 p-4 text-xs leading-relaxed text-foreground/85">{comparacion}</p>
+        <p className="rounded-xl border border-info/20 bg-info/10 p-4 text-xs leading-relaxed text-foreground/85">{comparacion}</p>
       )}
       <PanelRanking
         consulta={consulta}
@@ -277,7 +277,7 @@ function ListaFci({ fci, tipo, orden, ...comun }: Comun & { fci: Promise<Fuente>
         orden={textoOrden}
         sinDatos="No hay datos de estos fondos en este momento."
       />
-      <p className="text-[11px] leading-snug text-muted-foreground/80">
+      <p className="text-legal leading-snug text-muted-foreground/80">
         Mostramos fondos en pesos con al menos $1.000 millones de patrimonio y rescate en hasta 48 h.
       </p>
       <FuenteDato fuente={FUENTES.fci} resultado={resultado} fechaDato={fechaMasNueva(resultado.datos)} />

@@ -277,7 +277,7 @@ export function Onboarding() {
           plan && <Resultado plan={plan} onVolver={volver} onContinuar={verCartera} guardando={guardando} errorGuardado={errorGuardado} />
         )}
 
-        <p className="mt-6 text-center text-[11px] leading-snug text-muted-foreground/70">
+        <p className="mt-6 text-center text-legal leading-snug text-muted-foreground/70">
           {AUTH_CONFIGURADA
             ? "Contenido educativo, no es asesoramiento financiero. Tus respuestas se guardan en tu cuenta para que puedas verlas desde cualquier dispositivo."
             : "Contenido educativo, no es asesoramiento financiero. Tus respuestas se guardan solo en este dispositivo."}
@@ -309,8 +309,8 @@ function Resultado({
   return (
     <Card className="animate-in fade-in border-border bg-card shadow-2xl shadow-black/40 duration-500">
       <CardHeader className="space-y-3">
-        <p className="text-xs font-semibold uppercase tracking-widest text-blue-400">Tu perfil de inversor</p>
-        <CardTitle className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-4xl font-extrabold text-transparent">
+        <p className="text-xs font-semibold uppercase tracking-widest text-enlace">Tu perfil de inversor</p>
+        <CardTitle className="text-4xl font-extrabold text-enlace">
           <h1 ref={tituloRef} tabIndex={-1} className="outline-none">
             {perfil.perfil}
           </h1>
@@ -325,7 +325,7 @@ function Resultado({
           <ul className="space-y-2">
             {perfil.motivos.map((m) => (
               <li key={m} className="flex gap-2 text-sm text-muted-foreground">
-                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-cyan-400" aria-hidden />
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden />
                 {m}
               </li>
             ))}
@@ -333,14 +333,14 @@ function Resultado({
         </div>
 
         {perfil.ajustes.length > 0 && (
-          <div className="space-y-2 rounded-xl border border-amber-500/25 bg-amber-500/10 p-4">
-            <p className="flex items-center gap-2 text-sm font-semibold text-amber-300">
+          <div className="space-y-2 rounded-xl border border-atencion/25 bg-atencion/10 p-4">
+            <p className="flex items-center gap-2 text-sm font-semibold text-atencion">
               <ShieldAlert className="h-4 w-4" aria-hidden /> Ajustamos tu perfil por seguridad
             </p>
-            <p className="text-xs text-amber-200/80">
+            <p className="text-xs text-atencion-texto/80">
               Por tus respuestas te habría salido un perfil {perfil.perfilPorPuntaje.toLowerCase()}, pero lo bajamos a {perfil.perfil.toLowerCase()} porque:
             </p>
-            <ul className="list-disc space-y-1 pl-4 text-xs leading-relaxed text-amber-200/90">
+            <ul className="list-disc space-y-1 pl-4 text-xs leading-relaxed text-atencion-texto/90">
               {perfil.ajustes.map((a) => (
                 <li key={a}>{a}</li>
               ))}
@@ -349,7 +349,7 @@ function Resultado({
         )}
 
         {errorGuardado && (
-          <p role="alert" className="flex items-start gap-2 rounded-md border border-red-500/40 bg-red-500/10 p-2.5 text-sm text-red-300">
+          <p role="alert" className="flex items-start gap-2 rounded-md border border-error/40 bg-error/10 p-2.5 text-sm text-error">
             <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
             No pudimos guardar tu cartera. Revisá tu conexión y probá de nuevo.
           </p>

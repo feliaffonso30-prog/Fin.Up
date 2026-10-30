@@ -194,7 +194,7 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
         <button
           ref={botonRef}
           onClick={abrir}
-          className="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-full bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary-hover active:bg-primary-active shadow-xl shadow-blue-500/20 transition-transform hover:scale-105 cursor-pointer"
+          className="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-full bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary-hover active:bg-primary-active shadow-xl shadow-primary/20 transition-transform hover:scale-105 cursor-pointer"
         >
           <Bot className="h-5 w-5" />
           Preguntale a FinBot
@@ -209,12 +209,12 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
         >
           <header className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 text-white">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
                 <Bot className="h-4 w-4" />
               </div>
               <div className="min-w-0">
                 <p id="finbot-titulo" className="text-sm font-semibold leading-tight">FinBot</p>
-                <p className="text-[11px] text-muted-foreground leading-tight truncate">
+                <p className="text-legal text-muted-foreground leading-tight truncate">
                   {contexto ? `Conoce tu perfil ${contexto.perfil.toLowerCase()}` : "Mercado en vivo y conceptos simples"}
                 </p>
               </div>
@@ -236,9 +236,9 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
                     <button
                       key={s}
                       onClick={() => enviar(s)}
-                      className="flex items-center gap-2 rounded-lg border border-border bg-secondary/40 px-3 py-2 text-left text-xs text-foreground/90 transition-colors hover:border-blue-400 cursor-pointer"
+                      className="flex items-center gap-2 rounded-lg border border-border bg-secondary/40 px-3 py-2 text-left text-xs text-foreground/90 transition-colors hover:border-enlace cursor-pointer"
                     >
-                      <Sparkles className="h-3.5 w-3.5 shrink-0 text-cyan-400" />
+                      <Sparkles className="h-3.5 w-3.5 shrink-0 text-accent" />
                       {s}
                     </button>
                   ))}
@@ -263,7 +263,7 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
             <div role="status" aria-live="polite" className="space-y-3">
               {estado && (
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <Loader2 className="h-3.5 w-3.5 animate-spin text-cyan-400" />
+                  <Loader2 className="h-3.5 w-3.5 animate-spin text-accent" />
                   {estado}
                 </div>
               )}
@@ -297,7 +297,7 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
                 <Send className="h-4 w-4" />
               </button>
             </div>
-            <p className="mt-2 text-[10px] leading-snug text-muted-foreground/70">
+            <p className="mt-2 text-legal leading-snug text-muted-foreground/70">
               Contenido educativo, no es asesoramiento financiero. Los precios pueden tener demora.
             </p>
           </form>

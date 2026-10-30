@@ -83,7 +83,7 @@ export function Comparador({ datos, fci, montoUrl, usdUrl, tabUrl }: Props) {
   return (
     <div className="space-y-6">
       <header className="space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-widest text-blue-400">Comparador</p>
+        <p className="text-xs font-semibold uppercase tracking-widest text-enlace">Comparador</p>
         <h1 className="text-3xl font-extrabold text-foreground md:text-4xl">
           Alternativas en pesos
         </h1>
@@ -145,7 +145,7 @@ export function Comparador({ datos, fci, montoUrl, usdUrl, tabUrl }: Props) {
 
           <div id="monto-ayuda" className="space-y-1 text-xs leading-relaxed">
             {!validado.ok ? (
-              <p className="text-red-300" role="alert">
+              <p className="text-error" role="alert">
                 {validado.error}
               </p>
             ) : origen === "plan" && mep ? (
@@ -157,7 +157,7 @@ export function Comparador({ datos, fci, montoUrl, usdUrl, tabUrl }: Props) {
                 Precargamos esa parte de tu cartera ({usd(usdDeCartera.monto)}) al dólar MEP de compra ({ars(mep.compra)}). Podés cambiarlo.
               </p>
             ) : origen === "sin-mep" ? (
-              <p className="text-amber-200/90">
+              <p className="text-atencion-texto/90">
                 No pudimos obtener el dólar MEP para pasar a pesos el monto de tu cartera. Escribí el monto en pesos.
               </p>
             ) : origen === "url" ? (

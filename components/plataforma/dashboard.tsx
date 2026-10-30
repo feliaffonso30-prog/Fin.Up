@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { AlertTriangle, Info, Scale, Sparkles } from "lucide-react";
+import { AlertTriangle, Scale, Sparkles } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { GraficoProyeccion } from "@/components/plataforma/grafico-proyeccion";
+import { Aviso, COLOR_CATEGORIA, Dato, QuePuedeSalirMal, Sobretitulo, TextoLegal } from "@/components/plataforma/primitivas";
 import { VerEjemplos } from "@/components/plataforma/instrumentos/ver-ejemplos";
 import { CATEGORIAS_CON_EJEMPLOS } from "@/lib/plataforma/instrumentos/catalogo";
 import { DESCRIPCION_PERFIL } from "@/lib/plataforma/perfil";
@@ -32,7 +33,7 @@ export function Dashboard() {
   if (error) {
     return (
       <div className="mx-auto flex min-h-[50vh] max-w-md flex-col items-center justify-center text-center">
-        <AlertTriangle className="mb-3 h-8 w-8 text-amber-400" aria-hidden />
+        <AlertTriangle className="mb-3 h-8 w-8 text-atencion" aria-hidden />
         <h1 className="text-xl font-bold">No pudimos cargar tu cartera</h1>
         <p className="mt-2 text-sm text-muted-foreground">{error}</p>
         <Button onClick={recargar} variant="outline" className="mt-5">
@@ -48,7 +49,7 @@ export function Dashboard() {
 function SinPlan() {
   return (
     <div className="mx-auto flex min-h-[50vh] max-w-md flex-col items-center justify-center text-center">
-      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-border bg-card text-blue-400">
+      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-border bg-card text-enlace">
         <Sparkles className="h-5 w-5" aria-hidden />
       </div>
       <h1 className="text-2xl font-bold">Todavía no armaste tu perfil</h1>
@@ -71,7 +72,7 @@ function Cartera({ plan }: { plan: Plan }) {
   return (
     <div className="space-y-8">
       <header className="space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-widest text-blue-400">Tu cartera sugerida</p>
+        <Sobretitulo>Tu cartera sugerida</Sobretitulo>
         <h1 className="text-3xl font-extrabold text-foreground md:text-4xl">
           Perfil {perfil.perfil.toLowerCase()}
         </h1>
@@ -81,34 +82,19 @@ function Cartera({ plan }: { plan: Plan }) {
       {avisos.length > 0 && (
         <section aria-label="Avisos importantes" className="space-y-3">
           {avisos.map((a) => (
-            <div
-              key={a.titulo}
-              className={
-                a.nivel === "atencion"
-                  ? "flex gap-3 rounded-xl border border-amber-500/25 bg-amber-500/10 p-4"
-                  : "flex gap-3 rounded-xl border border-blue-500/20 bg-blue-500/10 p-4"
-              }
-            >
-              {a.nivel === "atencion" ? (
-                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" aria-hidden />
-              ) : (
-                <Info className="mt-0.5 h-4 w-4 shrink-0 text-blue-300" aria-hidden />
-              )}
-              <div className="space-y-0.5">
-                <p className={a.nivel === "atencion" ? "text-sm font-semibold text-amber-200" : "text-sm font-semibold text-blue-200"}>{a.titulo}</p>
-                <p className="text-xs leading-relaxed text-foreground/80">{a.texto}</p>
-              </div>
-            </div>
+            <Aviso key={a.titulo} nivel={a.nivel} titulo={a.titulo}>
+              {a.texto}
+            </Aviso>
           ))}
         </section>
       )}
 
-      <section aria-label="Resumen de riesgo y retorno" className="grid gap-3 sm:grid-cols-3">
+      <section aria-label="Resumen de riesgo y retorno" className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <Dato titulo="Retorno anual estimado" valor={`${pct(analisis.retornoMin)} a ${pct(analisis.retornoMax)}`} nota="Supuesto ilustrativo, no es una promesa." />
         <Dato
           titulo="En un mal año"
           valor={pct(analisis.caida, 0)}
-          valorClase="text-amber-300"
+          valorClase="text-atencion"
           nota={capital > 0 ? `Con ${usd(capital)} invertidos, quedarías cerca de ${usd(capital * (1 + analisis.caida / 100))}.` : "Así de fuerte podría caer tu cartera."}
         />
         <Dato titulo="Nivel de riesgo" valor={analisis.nivelRiesgo} nota="Según cuánto podría caer la cartera en un mal año." />
@@ -124,7 +110,7 @@ function Cartera({ plan }: { plan: Plan }) {
         <CardContent className="space-y-5">
           <div className="flex h-4 w-full overflow-hidden rounded-full border border-border/50 bg-background" role="img" aria-label={posiciones.map((p) => `${p.nombre} ${p.porcentaje}%`).join(", ")}>
             {posiciones.map((p) => (
-              <div key={p.categoria} style={{ width: `${p.porcentaje}%` }} className={`${p.color} h-full`} title={`${p.nombre}: ${p.porcentaje}%`} />
+              <div key={p.categoria} style={{ width: `${p.porcentaje}%` }} className={`${COLOR_CATEGORIA[p.categoria]} h-full`} title={`${p.nombre}: ${p.porcentaje}%`} />
             ))}
           </div>
 
@@ -133,7 +119,7 @@ function Cartera({ plan }: { plan: Plan }) {
               <AccordionItem key={p.categoria} value={p.categoria} className="rounded-xl border border-border bg-secondary/30 px-4 last:border-b">
                 <AccordionTrigger className="cursor-pointer py-3 hover:no-underline">
                   <span className="flex min-w-0 flex-1 items-center gap-3 pr-2">
-                    <span className={`h-3 w-3 shrink-0 rounded-full ${p.color}`} aria-hidden />
+                    <span className={`h-3 w-3 shrink-0 rounded-full ${COLOR_CATEGORIA[p.categoria]}`} aria-hidden />
                     <span className="min-w-0 text-left text-sm font-medium leading-snug">{p.nombre}</span>
                   </span>
                   <span className="mr-2 flex shrink-0 items-center gap-2">
@@ -145,11 +131,7 @@ function Cartera({ plan }: { plan: Plan }) {
                   <p className="leading-relaxed text-muted-foreground">{p.queEs}</p>
                   <Bloque titulo="Por qué está en tu cartera">{p.porQueEnTuCartera}</Bloque>
                   <Bloque titulo="Su ventaja">{p.ventaja}</Bloque>
-                  <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-3">
-                    <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-amber-300">Qué puede salir mal</p>
-                    <p className="text-sm leading-relaxed text-amber-100/90">{p.queSalePuedeMal}</p>
-                    <p className="mt-2 text-xs text-amber-200/70">Volatilidad: {p.volatilidad.toLowerCase()}</p>
-                  </div>
+                  <QuePuedeSalirMal pie={`Volatilidad: ${p.volatilidad.toLowerCase()}`}>{p.queSalePuedeMal}</QuePuedeSalirMal>
                   <VerDondeConviene posicion={p} />
                   {CATEGORIAS_CON_EJEMPLOS.includes(p.categoria) ? (
                     <VerEjemplos categoria={p.categoria} perfil={perfil.perfil} />
@@ -164,7 +146,7 @@ function Cartera({ plan }: { plan: Plan }) {
                           </li>
                         ))}
                       </ul>
-                      <p className="mt-2 text-[11px] text-muted-foreground/70">Son ejemplos educativos, no recomendaciones de compra. Preguntale a FinBot para entenderlos mejor.</p>
+                      <TextoLegal className="mt-2">Son ejemplos educativos, no recomendaciones de compra. Preguntale a FinBot para entenderlos mejor.</TextoLegal>
                     </div>
                   )}
                 </AccordionContent>
@@ -211,9 +193,9 @@ function Cartera({ plan }: { plan: Plan }) {
             ))}
           </ul>
           {perfil.ajustes.length > 0 && (
-            <p className="text-xs leading-relaxed text-amber-200/80">
+            <TextoLegal tono="atencion">
               Ajustamos el perfil de {perfil.perfilPorPuntaje.toLowerCase()} a {perfil.perfil.toLowerCase()} por seguridad: {perfil.ajustes.join(" ")}
-            </p>
+            </TextoLegal>
           )}
           <Button asChild variant="outline" size="sm" className="mt-1">
             <Link href="/onboarding">Rehacer mi perfil</Link>
@@ -221,7 +203,7 @@ function Cartera({ plan }: { plan: Plan }) {
         </CardContent>
       </Card>
 
-      <p className="text-center text-[11px] leading-snug text-muted-foreground/70">{DESCARGO}</p>
+      <TextoLegal className="text-center">{DESCARGO}</TextoLegal>
     </div>
   );
 }
@@ -231,7 +213,7 @@ function VerDondeConviene({ posicion }: { posicion: Posicion }) {
   const href = hrefComparador(posicion);
   if (!href) return null;
   return (
-    <div className="flex flex-col gap-2 rounded-lg border border-blue-500/20 bg-blue-500/10 p-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-2 rounded-lg border border-info/20 bg-info/10 p-3 sm:flex-row sm:items-center sm:justify-between">
       <p className="text-xs leading-relaxed text-foreground/85">
         Compará tasas de plazo fijo, billeteras y fondos en pesos
         {posicion.montoInicial > 0 ? ` para los ${usd(posicion.montoInicial)} de esta parte` : ""}.
@@ -246,20 +228,10 @@ function VerDondeConviene({ posicion }: { posicion: Posicion }) {
   );
 }
 
-function Dato({ titulo, valor, nota, valorClase }: { titulo: string; valor: string; nota: string; valorClase?: string }) {
-  return (
-    <div className="rounded-xl border border-border bg-secondary/40 p-4">
-      <p className="text-xs text-muted-foreground">{titulo}</p>
-      <p className={`mt-1 text-xl font-semibold ${valorClase ?? ""}`}>{valor}</p>
-      <p className="mt-1 text-[11px] leading-snug text-muted-foreground/80">{nota}</p>
-    </div>
-  );
-}
-
 function Bloque({ titulo, children }: { titulo: string; children: React.ReactNode }) {
   return (
     <div>
-      <p className="mb-0.5 text-xs font-semibold uppercase tracking-wide text-blue-400">{titulo}</p>
+      <p className="mb-0.5 text-xs font-semibold uppercase tracking-wide text-enlace">{titulo}</p>
       <p className="text-sm leading-relaxed text-foreground/85">{children}</p>
     </div>
   );
