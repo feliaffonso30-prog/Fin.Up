@@ -24,11 +24,19 @@ const MONTO_EJEMPLO = 1_000_000;
 export const TABS = ["todo", "plazo-fijo", "uva", "billeteras", "fci"] as const;
 export type Tab = (typeof TABS)[number];
 const ETIQUETA_TAB: Record<Tab, string> = {
-  todo: "Comparar todo",
+  todo: "Resumen",
   "plazo-fijo": "Plazo fijo",
-  uva: "UVA",
+  uva: "Plazo fijo UVA",
   billeteras: "Billeteras",
   fci: "Fondos",
+};
+
+// El plazo dicho como lo piensa la persona: cuándo va a necesitar la plata.
+const ETIQUETA_PLAZO: Record<(typeof PLAZOS)[number], string> = {
+  30: "En 1 mes",
+  60: "En 2 meses",
+  90: "En 3 meses",
+  180: "En 6 meses",
 };
 
 const montoFmt = new Intl.NumberFormat("es-AR", { maximumFractionDigits: 2 });
@@ -68,13 +76,14 @@ export function Comparador({ datos, fci, montoUrl, usdUrl, tabUrl }: Props) {
   const [tab, setTab] = useState<Tab>(() => (TABS as readonly string[]).includes(tabUrl ?? "") ? (tabUrl as Tab) : "todo");
   const usdDeCartera = validarMonto(usdUrl ?? "");
 
-  // Si no vino un monto en la URL, precargamos el capital de la cartera (USD → ARS al MEP).
-  const capitalUsd = plan?.respuestas.capitalInicial ?? 0;
+  // Si no vino un monto en la URL, precargamos solo la parte de liquidez del plan (USD → ARS al MEP):
+  // es la que tiene sentido dejar en pesos. Precargar todo el capital se leía como "poné todo acá".
+  const liquidezUsd = plan?.posiciones.find((p) => p.categoria === "liquidez")?.montoInicial ?? 0;
   useEffect(() => {
-    if (origen !== "ejemplo" || !mep || capitalUsd <= 0) return;
-    setTexto(formatearMonto(usdAArs(capitalUsd, mep)));
+    if (origen !== "ejemplo" || !mep || liquidezUsd <= 0) return;
+    setTexto(formatearMonto(usdAArs(liquidezUsd, mep)));
     setOrigen("plan");
-  }, [origen, mep, capitalUsd]);
+  }, [origen, mep, liquidezUsd]);
 
   const validado = validarMonto(texto);
   const monto = validado.ok ? validado.monto : null;
@@ -83,17 +92,17 @@ export function Comparador({ datos, fci, montoUrl, usdUrl, tabUrl }: Props) {
 
   return (
     <div className="space-y-6">
-      <EncabezadoPagina sobretitulo="Tus pesos" titulo="Alternativas en pesos">
-        Ranking de plazos fijos, billeteras y fondos según cuánto ganarías con tu monto y plazo, comparado contra la inflación.
+      <EncabezadoPagina sobretitulo="Tus pesos" titulo="¿Dónde dejar tus pesos?">
+        Compará cuánto rendiría tu plata en plazos fijos, billeteras y fondos, y si le gana a la inflación. Respondé dos preguntas y listo.
       </EncabezadoPagina>
 
       <Disclaimer />
 
       <Card className="border-border bg-card">
         <CardContent className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <Label htmlFor="monto">Monto a invertir</Label>
+              <Label htmlFor="monto">¿Cuánta plata?</Label>
               <div className="relative">
                 <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">$</span>
                 <Input
@@ -114,28 +123,30 @@ export function Comparador({ datos, fci, montoUrl, usdUrl, tabUrl }: Props) {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="plazo">Plazo</Label>
+              <Label htmlFor="plazo">¿Cuándo la vas a necesitar?</Label>
               <Select value={String(dias)} onValueChange={(v) => setDias(Number(v))}>
                 <SelectTrigger id="plazo" className="w-full">
-                  <SelectValue>{dias} días</SelectValue>
+                  <SelectValue>
+                    {ETIQUETA_PLAZO[dias as (typeof PLAZOS)[number]]} ({dias} días)
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {PLAZOS.map((d) => (
                     <SelectItem key={d} value={String(d)}>
-                      {d} días
+                      {ETIQUETA_PLAZO[d]} ({d} días)
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
+          </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="cliente">¿Ya sos cliente del banco?</Label>
-              <div className="flex h-9 items-center gap-3">
-                <Switch id="cliente" checked={esCliente} onCheckedChange={setEsCliente} />
-                <span className="text-sm text-muted-foreground">{esCliente ? "Soy cliente" : "No soy cliente"}</span>
-              </div>
-            </div>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-border pt-4">
+            <Switch id="cliente" checked={esCliente} onCheckedChange={setEsCliente} />
+            <Label htmlFor="cliente" className="font-normal">
+              Mostrar la tasa para clientes del banco
+            </Label>
+            <span className="text-xs text-muted-foreground">Algunos bancos pagan más si ya tenés cuenta con ellos.</span>
           </div>
 
           <div id="monto-ayuda" className="space-y-1 text-xs leading-relaxed">
@@ -145,11 +156,12 @@ export function Comparador({ datos, fci, montoUrl, usdUrl, tabUrl }: Props) {
               </p>
             ) : origen === "plan" && mep ? (
               <p className="text-muted-foreground">
-                Precargamos el capital de tu cartera ({usd(capitalUsd)}) al dólar MEP de compra ({ars(mep.compra)}). Podés cambiarlo.
+                Precargamos la parte de tu plan para tener disponible ({usd(liquidezUsd)}), pasada a pesos al dólar MEP de compra ({ars(mep.compra)}).
+                Podés cambiarlo.
               </p>
             ) : origen === "cartera" && mep && usdDeCartera.ok ? (
               <p className="text-muted-foreground">
-                Precargamos esa parte de tu cartera ({usd(usdDeCartera.monto)}) al dólar MEP de compra ({ars(mep.compra)}). Podés cambiarlo.
+                Precargamos esa parte de tu plan ({usd(usdDeCartera.monto)}), pasada a pesos al dólar MEP de compra ({ars(mep.compra)}). Podés cambiarlo.
               </p>
             ) : origen === "sin-mep" ? (
               <p className="text-atencion-texto/90">

@@ -211,10 +211,10 @@ function Resumen({ filas, dias }: { filas: Fila[]; dias: number }) {
           <TableHeader>
             <TableRow className="hover:bg-transparent">
               <TableHead>Tipo</TableHead>
-              <TableHead>Opción de mayor ganancia</TableHead>
-              <TableHead className="text-right">TNA</TableHead>
+              <TableHead>La que más rinde</TableHead>
+              <TableHead className="text-right">Tasa anual (TNA)</TableHead>
               <TableHead className="text-right">Ganancia en {dias} días</TableHead>
-              <TableHead className="text-center">Tasa real</TableHead>
+              <TableHead className="text-center">¿Le gana a la inflación?</TableHead>
               <TableHead className="w-32">
                 <span className="sr-only">Link</span>
               </TableHead>
@@ -262,7 +262,7 @@ function Resumen({ filas, dias }: { filas: Fila[]; dias: number }) {
               <>
                 <dl className="grid grid-cols-2 gap-3 text-sm">
                   <div>
-                    <dt className="text-legal text-muted-foreground">TNA</dt>
+                    <dt className="text-legal text-muted-foreground">Tasa anual (TNA)</dt>
                     <dd className="font-mono font-semibold">{tnaTexto(f.mejor)}</dd>
                   </div>
                   <div>

@@ -106,9 +106,9 @@ function Escritorio({ cotizaciones, dias, conProducto }: { cotizaciones: Cotizac
           <TableRow className="hover:bg-transparent">
             <TableHead className="w-8 text-center">#</TableHead>
             <TableHead>{conProducto ? "Fondo" : "Entidad"}</TableHead>
-            <TableHead className="text-right">TNA</TableHead>
+            <TableHead className="text-right">Tasa anual (TNA)</TableHead>
             <TableHead className="text-right">{conProducto ? `Si rinde igual, en ${dias} días` : `Ganancia en ${dias} días`}</TableHead>
-            <TableHead className="text-center">Tasa real</TableHead>
+            <TableHead className="text-center">¿Le gana a la inflación?</TableHead>
             <TableHead className="w-32">
               <span className="sr-only">Link</span>
             </TableHead>
@@ -156,7 +156,7 @@ function Celular({ cotizaciones, dias, conProducto }: { cotizaciones: Cotizacion
           </div>
           <dl className="grid grid-cols-2 gap-3 text-sm">
             <div>
-              <dt className="text-legal text-muted-foreground">TNA</dt>
+              <dt className="text-legal text-muted-foreground">Tasa anual (TNA)</dt>
               <dd className="font-mono text-base font-semibold">{tasaTexto(c, c.tna)}</dd>
               <dd className="text-legal text-muted-foreground">
                 TEA {tasaTexto(c, c.tea)} · TEM {tasaTexto(c, c.tem)}
