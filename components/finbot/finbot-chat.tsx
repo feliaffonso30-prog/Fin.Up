@@ -32,8 +32,10 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
   const finRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const botonRef = useRef<HTMLButtonElement>(null);
-  // Solo devolvemos el foco al botón flotante cuando el usuario cerró el panel (no en el primer render).
+  // Solo devolvemos el foco cuando el usuario cerró el panel (no en el primer render).
   const devolverFocoRef = useRef(false);
+  // Quién abrió el panel: el botón flotante, la barra inferior del celular o un botón de una ficha.
+  const origenRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const reducir = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -41,6 +43,7 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
   }, [mensajes, estado]);
 
   function abrir() {
+    origenRef.current = document.activeElement as HTMLElement | null;
     setAbierto(true);
     requestAnimationFrame(() => inputRef.current?.focus());
   }
@@ -54,7 +57,10 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
   useEffect(() => {
     if (!abierto && devolverFocoRef.current) {
       devolverFocoRef.current = false;
-      botonRef.current?.focus();
+      // Vuelve a quien lo abrió si sigue visible; si no, al botón flotante.
+      const origen = origenRef.current;
+      if (origen?.isConnected && origen.offsetParent !== null) origen.focus();
+      else botonRef.current?.focus();
     }
   }, [abierto]);
 
@@ -72,6 +78,7 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
   useEffect(() => {
     const alAbrir = (e: Event) => {
       const { pregunta } = (e as CustomEvent<DetalleAbrirFinBot>).detail ?? {};
+      origenRef.current = document.activeElement as HTMLElement | null;
       setAbierto(true);
       if (pregunta) setInput(pregunta);
       requestAnimationFrame(() => inputRef.current?.focus());
@@ -90,7 +97,7 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
         <button
           ref={botonRef}
           onClick={abrir}
-          className="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-full bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary-hover active:bg-primary-active font-display shadow-[0_24px_48px_-12px_rgba(2,6,23,0.6),inset_0_1px_0_rgba(255,255,255,0.18)] transition-colors cursor-pointer"
+          className="fixed bottom-5 right-5 z-50 hidden items-center md:flex gap-2 rounded-full bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary-hover active:bg-primary-active font-display shadow-[0_24px_48px_-12px_rgba(2,6,23,0.6),inset_0_1px_0_rgba(255,255,255,0.18)] transition-colors cursor-pointer"
         >
           <Bot className="h-5 w-5" />
           Preguntale a FinBot

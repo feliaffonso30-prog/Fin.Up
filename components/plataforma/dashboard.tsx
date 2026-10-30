@@ -71,7 +71,7 @@ function Cartera({ plan }: { plan: Plan }) {
 
   return (
     <div className="space-y-8">
-      <EncabezadoPagina sobretitulo="Tu cartera sugerida" titulo={`Perfil ${perfil.perfil.toLowerCase()}`}>
+      <EncabezadoPagina sobretitulo="Mi plan" titulo={`Perfil ${perfil.perfil.toLowerCase()}`}>
         {DESCRIPCION_PERFIL[perfil.perfil]}
       </EncabezadoPagina>
 

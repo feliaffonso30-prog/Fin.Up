@@ -5,14 +5,14 @@ import { EncabezadoPagina } from "@/components/plataforma/primitivas";
 import { CATALOGO_INSTRUMENTOS } from "@/lib/plataforma/instrumentos/catalogo";
 
 export const metadata: Metadata = {
-  title: "Biblioteca de instrumentos | FinUp",
+  title: "Ejemplos | FinUp",
   robots: { index: false },
 };
 
 export default function Page() {
   return (
     <div className="space-y-8">
-      <EncabezadoPagina sobretitulo="Biblioteca de instrumentos" titulo="Instrumentos reales, explicados">
+      <EncabezadoPagina sobretitulo="Ejemplos" titulo="Instrumentos reales, explicados">
         Fichas de CEDEARs, acciones y bonos que se negocian en Argentina, para entender qué hay detrás de cada parte de una cartera: qué son, por
         qué están en esta lista y qué puede salir mal.
       </EncabezadoPagina>

@@ -83,7 +83,7 @@ export function Comparador({ datos, fci, montoUrl, usdUrl, tabUrl }: Props) {
 
   return (
     <div className="space-y-6">
-      <EncabezadoPagina sobretitulo="Comparador" titulo="Alternativas en pesos">
+      <EncabezadoPagina sobretitulo="Tus pesos" titulo="Alternativas en pesos">
         Ranking de plazos fijos, billeteras y fondos según cuánto ganarías con tu monto y plazo, comparado contra la inflación.
       </EncabezadoPagina>
 

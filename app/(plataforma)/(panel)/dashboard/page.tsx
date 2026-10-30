@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Dashboard } from "@/components/plataforma/dashboard";
 
 export const metadata: Metadata = {
-  title: "Mi cartera | FinUp",
+  title: "Mi plan | FinUp",
   robots: { index: false },
 };
 
