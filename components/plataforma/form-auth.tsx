@@ -12,6 +12,7 @@ import { destinoSeguro, mensajeDeError, validarEmail, validarPassword } from "@/
 import { AUTH_CONFIGURADA } from "@/lib/supabase/config";
 import { crearClienteNavegador } from "@/lib/supabase/client";
 import { reiniciarPlanRemoto } from "@/lib/plataforma/store";
+import { Filo } from "@/components/plataforma/primitivas";
 
 type Props = { modo: "login" | "registro"; siguiente?: string; errorEnlace?: boolean };
 
@@ -49,7 +50,8 @@ export function FormAuth({ modo, siguiente, errorEnlace }: Props) {
           <MailCheck className="mb-1 h-8 w-8 text-enlace" aria-hidden />
           <CardTitle>Revisá tu email</CardTitle>
           <CardDescription>
-            Si el email es válido, te enviamos un enlace para confirmar tu cuenta. Si no lo ves, mirá en spam.
+            Te mandamos un mail a <span className="font-medium text-foreground">{email}</span>. Abrilo y tocá el enlace para seguir con tus
+            preguntas. Si no llega en unos minutos, mirá en spam o probá ingresar: puede que ya tengas cuenta.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -108,11 +110,14 @@ export function FormAuth({ modo, siguiente, errorEnlace }: Props) {
   }
 
   return (
-    <Card>
+    <Card className="relative overflow-hidden">
+      <Filo className="absolute inset-x-0 top-0" />
       <CardHeader>
         <CardTitle>{esLogin ? "Ingresá a FinUp" : "Creá tu cuenta"}</CardTitle>
         <CardDescription>
-          {esLogin ? "Retomá tu cartera donde la dejaste." : "Guardá tu perfil y tu cartera para entrar desde cualquier dispositivo."}
+          {esLogin
+            ? "Retomá tu plan donde lo dejaste."
+            : "Respondé 7 preguntas y armamos tu plan, explicado parte por parte. Tu cuenta lo guarda para verlo desde cualquier dispositivo."}
         </CardDescription>
       </CardHeader>
       <CardContent>
