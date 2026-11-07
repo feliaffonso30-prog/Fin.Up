@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { abrirFinBot } from "@/lib/finbot/abrir";
 import { GLOSARIO } from "@/lib/finbot/knowledge";
 import { LECCIONES } from "@/lib/plataforma/lecciones";
-import { EncabezadoPagina, Rombo } from "@/components/plataforma/primitivas";
+import { EncabezadoPagina, Punto } from "@/components/plataforma/primitivas";
 
 const normalizar = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
 
@@ -31,7 +31,7 @@ export function Aprender() {
 
   return (
     <div className="space-y-10">
-      <EncabezadoPagina sobretitulo="Aprender" titulo="Finanzas sin humo">
+      <EncabezadoPagina titulo="Finanzas sin humo">
         Lo esencial, en {LECCIONES.length} pasos cortos y en orden. Si algo no queda claro, preguntale a FinBot.
       </EncabezadoPagina>
 
@@ -58,7 +58,7 @@ export function Aprender() {
                   <ul className="space-y-2 text-sm leading-relaxed text-foreground/85">
                     {l.puntos.map((p) => (
                       <li key={p} className="flex gap-3">
-                        <Rombo className="mt-1.5 bg-enlace" />
+                        <Punto className="mt-1.5 bg-enlace" />
                         {p}
                       </li>
                     ))}

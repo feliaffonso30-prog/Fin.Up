@@ -3,6 +3,19 @@ const usdFmt = new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 });
 // "USD 1.250"
 export const usd = (n: number) => `USD ${usdFmt.format(Math.round(n))}`;
 
+const signo = (n: number) => (n < 0 ? "−" : "+");
+
+// "−USD 121" o, sin moneda, "−121"
+export const montoConSigno = (n: number, conMoneda = true) => `${signo(n)}${conMoneda ? "USD " : ""}${usdFmt.format(Math.abs(Math.round(n)))}`;
+
+// "+USD 29 a 69"; si cruza el cero, "−5 a +30"
+export function rangoConSigno(min: number, max: number, conMoneda = true): string {
+  const prefijo = conMoneda ? "USD " : "";
+  const abs = (n: number) => usdFmt.format(Math.abs(Math.round(n)));
+  if (Math.round(min) < 0 && Math.round(max) > 0) return `${signo(min)}${prefijo}${abs(min)} a ${signo(max)}${abs(max)}`;
+  return `${signo(max)}${prefijo}${abs(min)} a ${abs(max)}`;
+}
+
 // "$ 1.500.000"
 export const ars = (n: number) => `$ ${usdFmt.format(Math.round(n))}`;
 
@@ -38,3 +51,6 @@ export function mesAnio(iso: string): string {
 // "7,5%" (con signo opcional)
 export const pct = (n: number, decimales = 1) =>
   `${n.toLocaleString("es-AR", { minimumFractionDigits: decimales, maximumFractionDigits: decimales })}%`;
+
+// "−12%" o "+2,9%": con el signo menos real, para las cifras grandes
+export const pctConSigno = (n: number, decimales = 1) => `${signo(n)}${pct(Math.abs(n), decimales)}`;

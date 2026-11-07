@@ -67,18 +67,18 @@ const TOPES: Tope[] = [
     aplica: (r) => r.horizonte === "2-5",
     maximo: "Moderado",
     texto:
-      "Tu horizonte es de 2 a 5 años: alcanza para asumir algo de riesgo, pero no para una cartera agresiva, que puede tardar más en recuperarse de una caída.",
+      "Tu horizonte es de 2 a 5 años: alcanza para asumir algo de riesgo, pero no para un plan agresivo, que puede tardar más en recuperarse de una caída.",
   },
   {
     aplica: (r) => r.reaccionCaida === "vendo-todo",
     maximo: "Conservador",
     texto:
-      "Si una caída del 20% te haría vender todo, una cartera con acciones te llevaría a perder plata de verdad. Mejor empezar con algo que puedas sostener.",
+      "Si una caída del 20% te haría vender todo, un plan con acciones te llevaría a perder plata de verdad. Mejor empezar con algo que puedas sostener.",
   },
   {
     aplica: (r) => r.reaccionCaida === "vendo-parte",
     maximo: "Moderado",
-    texto: "Una caída fuerte te haría vender parte de lo invertido, así que evitamos una cartera agresiva.",
+    texto: "Una caída fuerte te haría vender parte de lo invertido, así que evitamos un plan agresivo.",
   },
   {
     aplica: (r) => r.conocimiento === "ninguno",
@@ -124,11 +124,11 @@ const MOTIVO_CONOCIMIENTO: Record<Conocimiento, string> = {
 
 export const DESCRIPCION_PERFIL: Record<PerfilRiesgo, string> = {
   Conservador:
-    "Priorizás cuidar tu plata antes que hacerla crecer rápido. Tu cartera apunta a tener pocos sobresaltos: aceptás ganar menos a cambio de dormir tranquilo.",
+    "Priorizás cuidar tu plata antes que hacerla crecer rápido. Tu plan apunta a tener pocos sobresaltos: aceptás ganar menos a cambio de dormir tranquilo.",
   Moderado:
     "Buscás un equilibrio: estás dispuesto a tolerar subas y bajas para que tu plata crezca, pero con una parte protegida que amortigua los golpes.",
   Agresivo:
-    "Priorizás el crecimiento a largo plazo y aceptás caídas fuertes en el camino. Tu cartera tiene mucho peso en activos que suben y bajan bastante.",
+    "Priorizás el crecimiento a largo plazo y aceptás caídas fuertes en el camino. Tu plan tiene mucho peso en activos que suben y bajan bastante.",
 };
 
 export function definirPerfil(r: Respuestas): ResultadoPerfil {

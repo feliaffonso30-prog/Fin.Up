@@ -1,7 +1,9 @@
 // Reglas de navegación del login. Puras (sin Next ni red) para poder testearlas.
 
-export const RUTAS_PROTEGIDAS = ["/dashboard", "/comparador", "/instrumentos", "/aprender", "/onboarding"];
-export const RUTAS_DE_ACCESO = ["/login", "/registro"];
+// La entrada, el cuestionario y Mi plan son públicos: primero el plan, después la cuenta.
+// Sin sesión, el plan queda en este navegador y se pasa a la cuenta al registrarse.
+export const RUTAS_PROTEGIDAS = ["/comparador", "/instrumentos", "/aprender"];
+export const RUTAS_DE_ACCESO = ["/login", "/registro", "/recuperar"];
 export const DESTINO_POR_DEFECTO = "/dashboard";
 
 const coincide = (ruta: string, base: string) => ruta === base || ruta.startsWith(base + "/");

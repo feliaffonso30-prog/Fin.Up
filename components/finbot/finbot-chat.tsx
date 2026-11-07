@@ -32,7 +32,6 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
   const { mensajes, input, setInput, cargando, estado, anuncio, enviar } = useFinBot(contexto);
   const finRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const botonRef = useRef<HTMLButtonElement>(null);
   // Solo devolvemos el foco cuando el usuario cerró el panel (no en el primer render).
   const devolverFocoRef = useRef(false);
   // Quién abrió el panel: el botón flotante, la barra inferior del celular o un botón de una ficha.
@@ -43,25 +42,18 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
     finRef.current?.scrollIntoView({ behavior: reducir ? "auto" : "smooth", block: "end" });
   }, [mensajes, estado]);
 
-  function abrir() {
-    origenRef.current = document.activeElement as HTMLElement | null;
-    setAbierto(true);
-    requestAnimationFrame(() => inputRef.current?.focus());
-  }
-
   function cerrar() {
     devolverFocoRef.current = true;
     setAbierto(false);
   }
 
-  // Al cerrar, el botón flotante se vuelve a montar: le devolvemos el foco después del render.
+  // Al cerrar, le devolvemos el foco a quien abrió el chat, después del render.
   useEffect(() => {
     if (!abierto && devolverFocoRef.current) {
       devolverFocoRef.current = false;
-      // Vuelve a quien lo abrió si sigue visible; si no, al botón flotante.
+      // Vuelve a quien lo abrió, si sigue visible.
       const origen = origenRef.current;
       if (origen?.isConnected && origen.offsetParent !== null) origen.focus();
-      else botonRef.current?.focus();
     }
   }, [abierto]);
 
@@ -94,22 +86,11 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
         {anuncio}
       </div>
 
-      {!abierto && (
-        <button
-          ref={botonRef}
-          onClick={abrir}
-          className="fixed bottom-5 right-5 z-50 hidden items-center md:flex gap-2 rounded-full bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary-hover active:bg-primary-active font-display shadow-[0_24px_48px_-12px_rgba(2,6,23,0.6),inset_0_1px_0_rgba(255,255,255,0.18)] transition-colors cursor-pointer"
-        >
-          <Bot className="h-5 w-5" />
-          Preguntale a FinBot
-        </button>
-      )}
-
       {abierto && (
         <div
           role="dialog"
           aria-labelledby="finbot-titulo"
-          className="fixed inset-x-3 bottom-3 z-50 flex h-[min(620px,calc(100dvh-1.5rem))] flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-[0_24px_48px_-12px_rgba(2,6,23,0.6)] sm:inset-x-auto sm:right-5 sm:bottom-5 sm:w-[400px] animate-in fade-in slide-in-from-bottom-4 duration-300"
+          className="fixed inset-x-3 bottom-3 z-50 flex h-[min(620px,calc(100dvh-1.5rem))] flex-col overflow-hidden rounded-2xl border border-border bg-popover shadow-[0_24px_48px_-12px_rgba(2,6,23,0.6)] sm:inset-x-auto sm:right-5 sm:bottom-5 sm:w-[400px] animate-in fade-in slide-in-from-bottom-4 duration-300"
         >
           <header className="relative flex items-center justify-between gap-3 px-4 py-3">
             <div className="flex items-center gap-2.5 min-w-0">

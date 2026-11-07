@@ -14,12 +14,13 @@ Next.js 16 (App Router) · React 19 · Tailwind 4 + shadcn/ui · Supabase · Gem
 
 - `npm run dev` · `npm test` · `npm run typecheck`
 - `next.config.mjs` tiene `typescript.ignoreBuildErrors: true`, así que **`next build` no frena por errores de tipos**: correr siempre `npm run typecheck`.
-- Si `next build` falla al bajar Inter/Plus Jakarta de Google Fonts, es red del entorno, no el código.
+- Si `next build` falla al bajar Schibsted Grotesk de Google Fonts, es red del entorno, no el código.
 - Variables de entorno: ver `.env.example`.
 
 ## Estructura
 
-- `app/page.tsx` → redirige a `/dashboard`.
+- `app/page.tsx` → portada pública (`components/plataforma/inicio.tsx`); quien ya tiene plan sigue a `/dashboard`.
+- Identidad visual: `PRODUCT.md` (decisiones del fundador) y `DESIGN.md`. La etapa 2 del rediseño (Tus pesos, Ejemplos, Aprender) está pendiente: hoy solo heredan la paleta.
 - `app/(plataforma)/` → `/onboarding` (sin shell) y `/dashboard`, `/aprender` (dentro de `(panel)` con barra lateral).
 - `components/plataforma/` → UI de la plataforma. `components/ui/` → shadcn. `components/finbot/` → chat de FinBot.
 - `lib/plataforma/` → **dominio, sin React ni red**: `perfil.ts` (puntaje + topes de seguridad), `cartera.ts` (distribución, explicaciones, avisos), `proyeccion.ts`, `plan.ts` (`generarPlan`), `store.ts` (persistencia local, temporal).
@@ -47,8 +48,8 @@ Next.js 16 (App Router) · React 19 · Tailwind 4 + shadcn/ui · Supabase · Gem
 
 ## Hoja de ruta (en orden)
 
-1. ✅ **Login con Supabase Auth** (email + contraseña, confirmación por email). Hecho: `proxy.ts` (refresca sesión y protege las rutas de `RUTAS_PROTEGIDAS`: `/dashboard`, `/comparador`, `/instrumentos`, `/aprender`, `/onboarding`), `lib/supabase/*`, `lib/auth/rutas.ts` (reglas puras + tests), páginas `/login` y `/registro`, `/auth/callback` y `/auth/salir` (POST). **Sin las variables `NEXT_PUBLIC_SUPABASE_*` la app corre en "modo sin cuenta"** (no protege nada, plan en `localStorage`). Falta: probarlo contra un proyecto Supabase real.
-2. ✅ **Plan guardado en Supabase** (`planes_inversion`) cuando hay login: `usePlan()` (en `store.ts`) elige Supabase (`remoto.ts`) o `localStorage` según `AUTH_CONFIGURADA`. Rehacer el cuestionario archiva el plan anterior (historial). Un plan local previo se pasa a la cuenta la primera vez. Falta: probarlo contra el proyecto Supabase real.
+1. ✅ **Login con Supabase Auth** (email + contraseña, confirmación por email). Hecho: `proxy.ts` (refresca sesión y protege las rutas de `RUTAS_PROTEGIDAS`: `/comparador`, `/instrumentos`, `/aprender`; la portada, `/onboarding` y `/dashboard` son públicas: primero el plan, después la cuenta), `lib/supabase/*`, `lib/auth/rutas.ts` (reglas puras + tests), páginas `/login`, `/registro`, `/recuperar` y `/nueva-contrasena`, `/auth/callback` y `/auth/salir` (POST). **Sin las variables `NEXT_PUBLIC_SUPABASE_*` la app corre en "modo sin cuenta"** (no protege nada, plan en `localStorage`). Falta: probarlo contra un proyecto Supabase real.
+2. ✅ **Plan guardado en Supabase** (`planes_inversion`) cuando hay login: `usePlan()` (en `store.ts`) usa Supabase (`remoto.ts`) si hay sesión y `localStorage` si no. Rehacer el cuestionario archiva el plan anterior (historial). Un plan local previo se pasa a la cuenta la primera vez. Falta: probarlo contra el proyecto Supabase real.
 3. **Límites Free/Plus en `/api/chat`** con `uso_finbot` (escribe solo el servidor con service role) y reemplazar `rate-limit.ts` (en memoria, por IP).
 4. Pantalla de planes y cuenta.
 5. Mostrar montos en ARS con dólar MEP (DolarAPI) y comparar contra inflación.

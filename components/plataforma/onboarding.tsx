@@ -2,61 +2,32 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, CheckCircle2, ShieldAlert } from "lucide-react";
+import { ArrowLeft, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
+import { EscenariosGrandes } from "@/components/plataforma/escenarios";
 import { GrupoOpciones, Opcion } from "@/components/plataforma/opcion";
-import { Rombo, Sobretitulo } from "@/components/plataforma/primitivas";
+import { Aviso, Marca, Punto, TextoLegal } from "@/components/plataforma/primitivas";
 import { PASOS, useCuestionario } from "@/hooks/use-cuestionario";
-import { DESCRIPCION_PERFIL } from "@/lib/plataforma/perfil";
 import { URL_LANDING } from "@/lib/config";
-import { AUTH_CONFIGURADA } from "@/lib/supabase/config";
+import { ars, usd } from "@/lib/plataforma/formato";
+import { DESCRIPCION_PERFIL } from "@/lib/plataforma/perfil";
 import type { Plan } from "@/lib/plataforma/tipos";
+import { AUTH_CONFIGURADA } from "@/lib/supabase/config";
+import { cn } from "@/lib/utils";
 
 // Pasos cuyo input recibe el foco con autoFocus: ahí no se mueve el foco al título.
-const PASOS_CON_AUTOFOCUS = [0, 3];
-// Clases visuales de components/ui/label.tsx, para preguntas que no son un <label>.
-const CLASES_PREGUNTA = "flex items-center gap-2 text-sm leading-none font-medium select-none";
+const PASOS_CON_AUTOFOCUS = [0, 3, 4];
+
+const orden = (n: number) => ({ "--orden": n }) as React.CSSProperties;
 
 export function Onboarding() {
-  const {
-    enBienvenida,
-    empezar,
-    respuestasPrevias,
-    paso,
-    def,
-    enResultado,
-    resp,
-    set,
-    err,
-    edad,
-    setEdad,
-    capital,
-    setCapital,
-    aporte,
-    setAporte,
-    siguiente,
-    volver,
-    plan,
-    verCartera,
-    guardando,
-    errorGuardado,
-  } = useCuestionario();
+  const c = useCuestionario();
+  const { paso, def, enResultado, enBienvenida, resp, set, err, plan } = c;
 
   // Al cambiar de paso, el foco va al título para que el lector de pantalla anuncie la pregunta nueva.
-  // Se compara con el paso anterior (no con un flag de "primer render") para no disparar en el montaje,
-  // tampoco con el doble efecto de StrictMode.
   const tituloRef = useRef<HTMLHeadingElement>(null);
   const pasoPrevio = useRef(paso);
-  // Si vuelve desde la primera pregunta a la bienvenida, el foco va al título de la bienvenida.
-  const volvioABienvenida = useRef(false);
-  const alVolver = () => {
-    if (paso === 0) volvioABienvenida.current = true;
-    volver();
-  };
   useEffect(() => {
     if (pasoPrevio.current === paso) return;
     pasoPrevio.current = paso;
@@ -64,224 +35,188 @@ export function Onboarding() {
     tituloRef.current?.focus();
   }, [paso]);
 
+  const enPreguntas = !enBienvenida && !enResultado;
+
   return (
-    <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
-      <main className="mx-auto flex max-w-xl flex-col px-4 py-8">
-        <div className="mb-6 flex items-center justify-between">
-          <Link href="/dashboard">
-            <img src="/finup.logo.1.png" alt="FinUp" className="h-14 w-auto" />
-          </Link>
-          <a href={URL_LANDING} className="flex min-h-10 items-center px-2 text-sm text-muted-foreground hover:text-foreground">
+    <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-4 md:max-w-xl">
+      <header className="flex items-center justify-between gap-3 py-5">
+        <Link href="/" aria-label="FinUp, volver a la portada">
+          <Marca />
+        </Link>
+        <div className="flex items-center gap-3 text-sm">
+          {enPreguntas && (
+            <span className="tabular-nums">
+              Pregunta {paso + 1} de {PASOS.length}
+            </span>
+          )}
+          {enResultado && <span>Tu resultado</span>}
+          <a href={URL_LANDING} className="flex min-h-10 items-center px-1 text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
             Salir
           </a>
         </div>
+      </header>
 
-        {enBienvenida ? (
-          <Bienvenida onEmpezar={empezar} respuestasPrevias={respuestasPrevias} enfocar={volvioABienvenida.current} />
-        ) : !enResultado ? (
-          <Card className="border-border bg-card">
-            <CardHeader className="space-y-4">
-              <div className="space-y-1.5">
-                <p className="font-mono text-xs uppercase tracking-[0.08em] text-muted-foreground">
-                  Pregunta {paso + 1} de {PASOS.length}
-                </p>
-                <Progress value={((paso + 1) / PASOS.length) * 100} aria-label={`Pregunta ${paso + 1} de ${PASOS.length}`} />
+      {/* Hasta leer el avance guardado, no se dibuja una pregunta que podría no ser la que sigue */}
+      {!c.listo ? (
+        <div className="flex-1" aria-busy="true" aria-label="Preparando tus preguntas" />
+      ) : enBienvenida ? (
+        <Bienvenida onEmpezar={c.empezar} />
+      ) : enResultado ? (
+        plan && <Resultado plan={plan} onVolver={c.volver} onContinuar={c.verPlan} guardando={c.guardando} errorGuardado={c.errorGuardado} />
+      ) : (
+        <main className="flex flex-1 flex-col">
+          <div
+            role="progressbar"
+            aria-label="Avance del cuestionario"
+            aria-valuemin={1}
+            aria-valuemax={PASOS.length}
+            aria-valuenow={paso + 1}
+            className="flex gap-1"
+          >
+            {PASOS.map((p, i) => (
+              <span key={p.titulo} className={cn("h-1.5 flex-1 rounded-full", i <= paso ? "bg-white" : "bg-white/25")} />
+            ))}
+          </div>
+
+          <h1 id="titulo-paso" ref={tituloRef} tabIndex={-1} className="mt-7 text-[2.0625rem] font-black leading-[1.04] tracking-[-0.03em] outline-none md:text-4xl">
+            {def.titulo}
+          </h1>
+          <p id="ayuda-paso" className="mt-3 text-base leading-snug text-muted-foreground">
+            {def.ayuda}
+          </p>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              c.siguiente();
+            }}
+            className="mt-6 flex flex-1 flex-col"
+          >
+            {paso === 0 && (
+              <CampoNumero id="edad" prefijo="" sufijo="años" valor={c.edad} onCambio={c.setEdad} error={err("edad")} placeholder="24" />
+            )}
+
+            {paso === 1 && (
+              <GrupoOpciones labelledBy="titulo-paso" describedBy="ayuda-paso">
+                <Opcion seleccionada={resp.objetivo === "Preservar capital"} onClick={() => set("objetivo", "Preservar capital")} titulo="Cuidar lo que tengo" detalle="Que mi plata no pierda valor. No busco crecer rápido." />
+                <Opcion seleccionada={resp.objetivo === "Crecimiento"} onClick={() => set("objetivo", "Crecimiento")} titulo="Hacerla crecer" detalle="Que mi plata crezca a largo plazo, aunque haya altibajos." />
+                <Opcion seleccionada={resp.objetivo === "Generar ingresos"} onClick={() => set("objetivo", "Generar ingresos")} titulo="Generar ingresos" detalle="Cobrar una renta de forma periódica." />
+                <MensajeError texto={err("objetivo")} />
+              </GrupoOpciones>
+            )}
+
+            {paso === 2 && (
+              <GrupoOpciones labelledBy="titulo-paso" describedBy="ayuda-paso">
+                <Opcion seleccionada={resp.horizonte === "menos-2"} onClick={() => set("horizonte", "menos-2")} titulo="En menos de 2 años" detalle="Un viaje, una mudanza, un estudio" />
+                <Opcion seleccionada={resp.horizonte === "2-5"} onClick={() => set("horizonte", "2-5")} titulo="Entre 2 y 5 años" />
+                <Opcion seleccionada={resp.horizonte === "5-10"} onClick={() => set("horizonte", "5-10")} titulo="Entre 5 y 10 años" />
+                <Opcion seleccionada={resp.horizonte === "mas-10"} onClick={() => set("horizonte", "mas-10")} titulo="En más de 10 años" detalle="Largo plazo, retiro" />
+                <MensajeError texto={err("horizonte")} />
+              </GrupoOpciones>
+            )}
+
+            {(paso === 3 || paso === 4) && (
+              <CampoMonto
+                key={paso}
+                valor={paso === 3 ? c.capital : c.aporte}
+                onCambio={paso === 3 ? c.setCapital : c.setAporte}
+                error={err(paso === 3 ? "capitalInicial" : "aporteMensual")}
+                placeholder={c.enPesos ? (paso === 3 ? "500000" : "50000") : paso === 3 ? "500" : "50"}
+                enPesos={c.enPesos}
+                mep={c.mep}
+                enDolares={c.aDolares(paso === 3 ? c.capital : c.aporte)}
+                puedeCambiar={c.cotizacionDisponible}
+                onCambiarMoneda={c.cambiarMoneda}
+              />
+            )}
+
+            {paso === 5 && (
+              <GrupoOpciones labelledBy="titulo-paso" describedBy="ayuda-paso">
+                <Opcion seleccionada={resp.fondoEmergencia === "si"} onClick={() => set("fondoEmergencia", "si")} titulo="Sí, ya lo tengo" />
+                <Opcion seleccionada={resp.fondoEmergencia === "parcial"} onClick={() => set("fondoEmergencia", "parcial")} titulo="Tengo una parte" />
+                <Opcion seleccionada={resp.fondoEmergencia === "no"} onClick={() => set("fondoEmergencia", "no")} titulo="Todavía no" />
+                <MensajeError texto={err("fondoEmergencia")} />
+              </GrupoOpciones>
+            )}
+
+            {paso === 6 && (
+              <GrupoOpciones labelledBy="titulo-paso" describedBy="ayuda-paso">
+                <Opcion seleccionada={resp.deudasCaras === false} onClick={() => set("deudasCaras", false)} titulo="No" />
+                <Opcion seleccionada={resp.deudasCaras === true} onClick={() => set("deudasCaras", true)} titulo="Sí" />
+                <MensajeError texto={err("deudasCaras")} />
+              </GrupoOpciones>
+            )}
+
+            {paso === 7 && (
+              <GrupoOpciones labelledBy="titulo-paso" describedBy="ayuda-paso">
+                <Opcion seleccionada={resp.reaccionCaida === "vendo-todo"} onClick={() => set("reaccionCaida", "vendo-todo")} titulo="Vendería todo para no perder más" />
+                <Opcion seleccionada={resp.reaccionCaida === "vendo-parte"} onClick={() => set("reaccionCaida", "vendo-parte")} titulo="Vendería una parte para quedarme tranquilo" />
+                <Opcion seleccionada={resp.reaccionCaida === "espero"} onClick={() => set("reaccionCaida", "espero")} titulo="Esperaría sin hacer nada" />
+                <Opcion seleccionada={resp.reaccionCaida === "compro-mas"} onClick={() => set("reaccionCaida", "compro-mas")} titulo="Aprovecharía para invertir más" />
+                <MensajeError texto={err("reaccionCaida")} />
+              </GrupoOpciones>
+            )}
+
+            {paso === 8 && (
+              <GrupoOpciones labelledBy="titulo-paso" describedBy="ayuda-paso">
+                <Opcion seleccionada={resp.prioridad === "seguridad"} onClick={() => set("prioridad", "seguridad")} titulo="No perder lo que ya tengo" />
+                <Opcion seleccionada={resp.prioridad === "equilibrio"} onClick={() => set("prioridad", "equilibrio")} titulo="Un equilibrio entre cuidar mi plata y hacerla crecer" />
+                <Opcion seleccionada={resp.prioridad === "crecimiento"} onClick={() => set("prioridad", "crecimiento")} titulo="Que crezca lo máximo posible, aunque haya subas y bajas" />
+                <MensajeError texto={err("prioridad")} />
+              </GrupoOpciones>
+            )}
+
+            {paso === 9 && (
+              <GrupoOpciones labelledBy="titulo-paso" describedBy="ayuda-paso">
+                <Opcion seleccionada={resp.conocimiento === "ninguno"} onClick={() => set("conocimiento", "ninguno")} titulo="Recién empiezo" detalle="Casi no sé cómo funcionan las inversiones." />
+                <Opcion seleccionada={resp.conocimiento === "basico"} onClick={() => set("conocimiento", "basico")} titulo="Tengo nociones básicas" detalle="Sé qué es un plazo fijo, una acción o un bono." />
+                <Opcion seleccionada={resp.conocimiento === "intermedio"} onClick={() => set("conocimiento", "intermedio")} titulo="Ya invierto o conozco bastante" detalle="Sé cómo repartir el riesgo entre distintas inversiones." />
+                <MensajeError texto={err("conocimiento")} />
+              </GrupoOpciones>
+            )}
+
+            <div className="mt-auto pb-5 pt-7">
+              <div className="flex gap-2.5">
+                <Button type="button" variant="ghost" onClick={c.volver} aria-label="Atrás" className="vidrio h-14 w-14 shrink-0 rounded-lg">
+                  <ArrowLeft className="size-5" aria-hidden />
+                </Button>
+                <Button type="submit" size="cta" className="min-w-0 flex-1">
+                  {paso === PASOS.length - 1 ? "Ver mi perfil" : "Seguir"}
+                </Button>
               </div>
-              <div>
-                <CardTitle className="text-2xl font-bold">
-                  <h1 id="titulo-paso" ref={tituloRef} tabIndex={-1} className="outline-none">
-                    {def.titulo}
-                  </h1>
-                </CardTitle>
-                <CardDescription className="mt-1.5 text-muted-foreground">{def.ayuda}</CardDescription>
-              </div>
-            </CardHeader>
-
-            <CardContent>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  siguiente();
-                }}
-                className="space-y-6"
-              >
-                {paso === 0 && (
-                  <Campo etiqueta="Edad" error={err("edad")} htmlFor="edad">
-                    <Input
-                      id="edad"
-                      type="number"
-                      inputMode="numeric"
-                      min={18}
-                      max={100}
-                      placeholder="Ej. 24"
-                      value={edad}
-                      onChange={(e) => setEdad(e.target.value)}
-                      aria-invalid={!!err("edad")}
-                      autoFocus
-                    />
-                  </Campo>
-                )}
-
-                {paso === 1 && (
-                  <GrupoOpciones labelledBy="titulo-paso">
-                    <Opcion seleccionada={resp.objetivo === "Preservar capital"} onClick={() => set("objetivo", "Preservar capital")} titulo="Preservar mi capital" detalle="Que mi plata no pierda valor. No busco crecer rápido." />
-                    <Opcion seleccionada={resp.objetivo === "Crecimiento"} onClick={() => set("objetivo", "Crecimiento")} titulo="Hacerla crecer" detalle="Que mi plata crezca a largo plazo, aunque haya altibajos." />
-                    <Opcion seleccionada={resp.objetivo === "Generar ingresos"} onClick={() => set("objetivo", "Generar ingresos")} titulo="Generar ingresos" detalle="Cobrar rentas o dividendos de forma periódica." />
-                    <MensajeError texto={err("objetivo")} />
-                  </GrupoOpciones>
-                )}
-
-                {paso === 2 && (
-                  <GrupoOpciones labelledBy="titulo-paso">
-                    <Opcion seleccionada={resp.horizonte === "menos-2"} onClick={() => set("horizonte", "menos-2")} titulo="En menos de 2 años" detalle="Para algo cercano: un viaje, una mudanza, un estudio." />
-                    <Opcion seleccionada={resp.horizonte === "2-5"} onClick={() => set("horizonte", "2-5")} titulo="Entre 2 y 5 años" />
-                    <Opcion seleccionada={resp.horizonte === "5-10"} onClick={() => set("horizonte", "5-10")} titulo="Entre 5 y 10 años" />
-                    <Opcion seleccionada={resp.horizonte === "mas-10"} onClick={() => set("horizonte", "mas-10")} titulo="Más de 10 años" detalle="Largo plazo: independencia financiera, retiro." />
-                    <MensajeError texto={err("horizonte")} />
-                  </GrupoOpciones>
-                )}
-
-                {paso === 3 && (
-                  <div className="space-y-5">
-                    <Campo etiqueta="Capital con el que arrancás (USD)" error={err("capitalInicial")} htmlFor="capital" ayuda="Si todavía no tenés nada para arrancar, poné 0.">
-                      <Input id="capital" type="number" inputMode="decimal" min={0} placeholder="Ej. 500" value={capital} onChange={(e) => setCapital(e.target.value)} aria-invalid={!!err("capitalInicial")} autoFocus />
-                    </Campo>
-                    <Campo etiqueta="Cuánto podés sumar por mes (USD)" error={err("aporteMensual")} htmlFor="aporte" ayuda="Lo que podrías aportar sin ajustar tus gastos básicos.">
-                      <Input id="aporte" type="number" inputMode="decimal" min={0} placeholder="Ej. 50" value={aporte} onChange={(e) => setAporte(e.target.value)} aria-invalid={!!err("aporteMensual")} />
-                    </Campo>
-                  </div>
-                )}
-
-                {paso === 4 && (
-                  <div className="space-y-6">
-                    <div className="space-y-2">
-                      <p id="pregunta-fondo" className={CLASES_PREGUNTA}>¿Tenés un fondo de emergencia?</p>
-                      <p id="ayuda-fondo" className="text-xs text-muted-foreground">Plata guardada para imprevistos, equivalente a 3 meses de gastos o más.</p>
-                      <GrupoOpciones labelledBy="pregunta-fondo" describedBy="ayuda-fondo">
-                        <Opcion seleccionada={resp.fondoEmergencia === "si"} onClick={() => set("fondoEmergencia", "si")} titulo="Sí, ya lo tengo" />
-                        <Opcion seleccionada={resp.fondoEmergencia === "parcial"} onClick={() => set("fondoEmergencia", "parcial")} titulo="Tengo una parte" />
-                        <Opcion seleccionada={resp.fondoEmergencia === "no"} onClick={() => set("fondoEmergencia", "no")} titulo="Todavía no" />
-                        <MensajeError texto={err("fondoEmergencia")} />
-                      </GrupoOpciones>
-                    </div>
-                    <div className="space-y-2">
-                      <p id="pregunta-deudas" className={CLASES_PREGUNTA}>¿Tenés deudas con tasas altas?</p>
-                      <p id="ayuda-deudas" className="text-xs text-muted-foreground">Por ejemplo, saldo de tarjeta financiado o préstamos personales caros.</p>
-                      <GrupoOpciones labelledBy="pregunta-deudas" describedBy="ayuda-deudas">
-                        <Opcion seleccionada={resp.deudasCaras === false} onClick={() => set("deudasCaras", false)} titulo="No" />
-                        <Opcion seleccionada={resp.deudasCaras === true} onClick={() => set("deudasCaras", true)} titulo="Sí" />
-                        <MensajeError texto={err("deudasCaras")} />
-                      </GrupoOpciones>
-                    </div>
-                  </div>
-                )}
-
-                {paso === 5 && (
-                  <div className="space-y-6">
-                    <div className="space-y-2">
-                      <p id="pregunta-caida" className={CLASES_PREGUNTA}>Invertiste y, en unos meses, tu inversión cae 20%. ¿Qué harías?</p>
-                      <GrupoOpciones labelledBy="pregunta-caida">
-                        <Opcion seleccionada={resp.reaccionCaida === "vendo-todo"} onClick={() => set("reaccionCaida", "vendo-todo")} titulo="Vendería todo para no perder más" />
-                        <Opcion seleccionada={resp.reaccionCaida === "vendo-parte"} onClick={() => set("reaccionCaida", "vendo-parte")} titulo="Vendería una parte para sentirme más tranquilo" />
-                        <Opcion seleccionada={resp.reaccionCaida === "espero"} onClick={() => set("reaccionCaida", "espero")} titulo="Esperaría sin hacer nada" />
-                        <Opcion seleccionada={resp.reaccionCaida === "compro-mas"} onClick={() => set("reaccionCaida", "compro-mas")} titulo="Aprovecharía para invertir más" />
-                        <MensajeError texto={err("reaccionCaida")} />
-                      </GrupoOpciones>
-                    </div>
-                    <div className="space-y-2">
-                      <p id="pregunta-prioridad" className={CLASES_PREGUNTA}>¿Qué te importa más?</p>
-                      <GrupoOpciones labelledBy="pregunta-prioridad">
-                        <Opcion seleccionada={resp.prioridad === "seguridad"} onClick={() => set("prioridad", "seguridad")} titulo="No perder lo que ya tengo" />
-                        <Opcion seleccionada={resp.prioridad === "equilibrio"} onClick={() => set("prioridad", "equilibrio")} titulo="Un equilibrio entre cuidar mi plata y hacerla crecer" />
-                        <Opcion seleccionada={resp.prioridad === "crecimiento"} onClick={() => set("prioridad", "crecimiento")} titulo="Que crezca lo máximo posible, aunque haya subas y bajas" />
-                        <MensajeError texto={err("prioridad")} />
-                      </GrupoOpciones>
-                    </div>
-                  </div>
-                )}
-
-                {paso === 6 && (
-                  <GrupoOpciones labelledBy="titulo-paso">
-                    <Opcion seleccionada={resp.conocimiento === "ninguno"} onClick={() => set("conocimiento", "ninguno")} titulo="Recién empiezo" detalle="Casi no sé cómo funcionan las inversiones." />
-                    <Opcion seleccionada={resp.conocimiento === "basico"} onClick={() => set("conocimiento", "basico")} titulo="Tengo nociones básicas" detalle="Sé qué es un plazo fijo, una acción o un bono." />
-                    <Opcion seleccionada={resp.conocimiento === "intermedio"} onClick={() => set("conocimiento", "intermedio")} titulo="Ya invierto o conozco bastante" detalle="Entiendo conceptos como diversificación o volatilidad." />
-                    <MensajeError texto={err("conocimiento")} />
-                  </GrupoOpciones>
-                )}
-
-                <div className="flex items-center justify-between gap-3 pt-2">
-                  <Button type="button" variant="ghost" onClick={alVolver} className="cursor-pointer text-muted-foreground">
-                    <ArrowLeft className="mr-1 h-4 w-4" /> Atrás
-                  </Button>
-                  <Button type="submit" className="cursor-pointer font-semibold">
-                    {paso === PASOS.length - 1 ? "Ver mi perfil" : "Siguiente"} <ArrowRight className="ml-1 h-4 w-4" />
-                  </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-        ) : (
-          plan && <Resultado plan={plan} onVolver={volver} onContinuar={verCartera} guardando={guardando} errorGuardado={errorGuardado} />
-        )}
-
-        <p className="mt-6 text-center text-legal leading-snug text-muted-foreground/70">
-          {AUTH_CONFIGURADA
-            ? "Contenido educativo, no es asesoramiento financiero. Tus respuestas se guardan en tu cuenta para que puedas verlas desde cualquier dispositivo."
-            : "Contenido educativo, no es asesoramiento financiero. Tus respuestas se guardan solo en este dispositivo."}
-        </p>
-      </main>
+              <TextoLegal className="mt-3 text-center">
+                Contenido educativo, no es asesoramiento financiero.
+                {(!AUTH_CONFIGURADA || c.sinCuenta) && " Tus respuestas quedan en este dispositivo."}
+              </TextoLegal>
+            </div>
+          </form>
+        </main>
+      )}
     </div>
   );
 }
 
-function Bienvenida({
-  onEmpezar,
-  respuestasPrevias,
-  enfocar,
-}: {
-  onEmpezar: () => void;
-  respuestasPrevias: boolean;
-  enfocar: boolean;
-}) {
+/** Solo para quien vuelve a hacer el cuestionario: quien arranca ya pasó por la portada. */
+function Bienvenida({ onEmpezar }: { onEmpezar: () => void }) {
   const tituloRef = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
-    if (enfocar) tituloRef.current?.focus();
-  }, [enfocar]);
+    tituloRef.current?.focus();
+  }, []);
   return (
-    <Card className="animate-in fade-in border-border bg-card duration-500 motion-reduce:animate-none">
-      <CardHeader className="space-y-3">
-        <Sobretitulo>Tu perfil de inversor</Sobretitulo>
-        <CardTitle className="text-3xl font-extrabold">
-          <h1 ref={tituloRef} tabIndex={-1} className="outline-none">
-            {respuestasPrevias ? "Revisemos tus respuestas" : "Antes de invertir, conocete"}
-          </h1>
-        </CardTitle>
-        <CardDescription className="text-sm leading-relaxed text-muted-foreground">
-          {respuestasPrevias
-            ? "Tus respuestas anteriores ya están cargadas: cambiá solo lo que haya cambiado en tu vida."
-            : "Con unas preguntas simples armamos un plan pensado para vos, explicado parte por parte."}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <ul className="space-y-3 text-sm leading-relaxed text-foreground/90">
-          {[
-            "7 preguntas cortas, unos 3 minutos.",
-            "Te mostramos un plan con el porqué de cada parte y qué puede salir mal.",
-            "No movemos tu plata ni te pedimos datos bancarios: FinUp no opera ni vende inversiones.",
-          ].map((t) => (
-            <li key={t} className="flex gap-3">
-              <Rombo className="mt-1.5 bg-enlace" />
-              {t}
-            </li>
-          ))}
-        </ul>
-        <div className="flex justify-end">
-          <Button type="button" onClick={onEmpezar} className="cursor-pointer">
-            {respuestasPrevias ? "Revisar mis respuestas" : "Empezar"} <ArrowRight className="ml-1 h-4 w-4" />
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+    <main className="flex flex-1 flex-col">
+      <h1 ref={tituloRef} tabIndex={-1} className="mt-8 text-[2.75rem] font-black leading-none tracking-[-0.035em] outline-none">
+        Revisemos tus respuestas
+      </h1>
+      <p className="mt-4 text-lg leading-snug text-muted-foreground">Ya están cargadas: cambiá solo lo que haya cambiado en tu vida.</p>
+      <div className="mt-auto pb-5 pt-8">
+        <Button type="button" size="cta" onClick={onEmpezar}>
+          Revisar mis respuestas
+        </Button>
+        <Button asChild variant="ghost" className="mt-2 h-12 w-full">
+          <Link href="/dashboard">Volver a mi plan</Link>
+        </Button>
+      </div>
+    </main>
   );
 }
 
@@ -298,81 +233,153 @@ function Resultado({
   guardando: boolean;
   errorGuardado: boolean;
 }) {
-  const { perfil } = plan;
+  const { perfil, analisis, respuestas } = plan;
+  const capital = respuestas.capitalInicial;
   // Al llegar al resultado, el foco va a su título.
   const tituloRef = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
     tituloRef.current?.focus();
   }, []);
   return (
-    <Card className="animate-in fade-in border-border bg-card duration-500 motion-reduce:animate-none">
-      <CardHeader className="space-y-3">
-        <Sobretitulo>Tu perfil de inversor</Sobretitulo>
-        <CardTitle className="text-4xl font-extrabold text-enlace">
-          <h1 ref={tituloRef} tabIndex={-1} className="outline-none">
-            {perfil.perfil}
-          </h1>
-        </CardTitle>
-        <CardDescription className="text-sm leading-relaxed text-muted-foreground">
-          {DESCRIPCION_PERFIL[perfil.perfil]}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div>
-          <p className="mb-2 text-sm font-semibold">Así llegamos a este perfil</p>
-          <ul className="space-y-2">
-            {perfil.motivos.map((m) => (
-              <li key={m} className="flex gap-2 text-sm text-muted-foreground">
-                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden />
+    <main className="flex flex-1 flex-col">
+      <h1 ref={tituloRef} tabIndex={-1} className="mt-3 outline-none">
+        <span className="revelar block text-lg font-semibold tracking-normal" style={orden(0)}>
+          Te salió un perfil
+        </span>
+        <span className="revelar block text-[3.125rem] font-black leading-none tracking-[-0.04em]" style={orden(1)}>
+          {perfil.perfil}
+        </span>
+      </h1>
+      <p className="revelar mt-4 text-base leading-snug text-muted-foreground" style={orden(2)}>
+        {DESCRIPCION_PERFIL[perfil.perfil]}
+        {capital > 0 ? ` Con ${usd(capital)}, en un año podría pasar esto:` : " En un año podría pasar esto:"}
+      </p>
+
+      <div className="mt-6">
+        <EscenariosGrandes analisis={analisis} capital={capital} />
+      </div>
+
+      <div className="revelar mt-6 space-y-3" style={orden(5)}>
+        {perfil.ajustes.length > 0 && (
+          <p className="text-base font-semibold leading-snug">
+            Por tus respuestas te habría salido {perfil.perfilPorPuntaje.toLowerCase()}; por seguridad lo dejamos en {perfil.perfil.toLowerCase()}.
+          </p>
+        )}
+        <details className="group">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 text-base font-bold [&::-webkit-details-marker]:hidden">
+            Por qué te salió este perfil
+            <ChevronDown className="h-4 w-4 shrink-0 transition-transform group-open:rotate-180 motion-reduce:transition-none" aria-hidden />
+          </summary>
+          <ul className="mt-1 space-y-2 pb-2">
+            {[...perfil.ajustes, ...perfil.motivos].map((m) => (
+              <li key={m} className="flex gap-2.5 text-sm leading-snug text-muted-foreground">
+                <Punto className="mt-1 bg-enlace" />
                 {m}
               </li>
             ))}
           </ul>
-        </div>
-
-        {perfil.ajustes.length > 0 && (
-          <div className="space-y-2 rounded-xl border border-atencion/25 bg-atencion/10 p-4">
-            <p className="flex items-center gap-2 text-sm font-semibold text-atencion">
-              <ShieldAlert className="h-4 w-4" aria-hidden /> Ajustamos tu perfil por seguridad
-            </p>
-            <p className="text-xs text-atencion-texto/80">
-              Por tus respuestas te habría salido un perfil {perfil.perfilPorPuntaje.toLowerCase()}, pero lo bajamos a {perfil.perfil.toLowerCase()} porque:
-            </p>
-            <ul className="list-disc space-y-1 pl-4 text-xs leading-relaxed text-atencion-texto/90">
-              {perfil.ajustes.map((a) => (
-                <li key={a}>{a}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-
+        </details>
         {errorGuardado && (
-          <p role="alert" className="flex items-start gap-2 rounded-md border border-error/40 bg-error/10 p-2.5 text-sm text-error">
-            <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
-            No pudimos guardar tu cartera. Revisá tu conexión y probá de nuevo.
-          </p>
+          <Aviso nivel="error" role="alert" compacto>
+            No pudimos guardar tu plan. Revisá tu conexión y probá de nuevo.
+          </Aviso>
         )}
+      </div>
 
-        <div className="flex items-center justify-between gap-3 pt-2">
-          <Button type="button" variant="ghost" onClick={onVolver} className="cursor-pointer text-muted-foreground">
-            <ArrowLeft className="mr-1 h-4 w-4" /> Cambiar respuestas
-          </Button>
-          <Button type="button" onClick={onContinuar} disabled={guardando} className="cursor-pointer font-semibold">
-            {guardando ? "Guardando…" : "Ver mi cartera"} <ArrowRight className="ml-1 h-4 w-4" />
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+      <div className="revelar mt-auto pb-5 pt-7" style={orden(6)}>
+        <Button type="button" size="cta" onClick={onContinuar} disabled={guardando}>
+          {guardando ? "Guardando…" : "Ver mi plan"}
+        </Button>
+        <p className="mt-2.5 text-center text-sm text-muted-foreground">Estimaciones, no promesas.</p>
+        <Button type="button" variant="ghost" onClick={onVolver} className="mt-1 h-11 w-full">
+          Cambiar respuestas
+        </Button>
+      </div>
+    </main>
   );
 }
 
-function Campo({ etiqueta, htmlFor, ayuda, error, children }: { etiqueta: string; htmlFor: string; ayuda?: string; error?: string; children: React.ReactNode }) {
+const CLASE_CAMPO =
+  "vidrio h-16 rounded-lg border-0 pl-4 text-2xl font-black tracking-[-0.02em] tabular-nums placeholder:font-semibold placeholder:text-muted-foreground/70 md:text-2xl dark:bg-transparent aria-invalid:ring-2";
+
+function CampoNumero({
+  id,
+  prefijo,
+  sufijo,
+  valor,
+  onCambio,
+  error,
+  placeholder,
+}: {
+  id: string;
+  prefijo: string;
+  sufijo?: string;
+  valor: string;
+  onCambio: (v: string) => void;
+  error?: string;
+  placeholder: string;
+}) {
   return (
-    <div className="space-y-2">
-      <Label htmlFor={htmlFor} className="font-medium">{etiqueta}</Label>
-      {children}
-      {ayuda && !error && <p className="text-xs text-muted-foreground">{ayuda}</p>}
-      <MensajeError texto={error} />
+    <div>
+      <div className="relative">
+        {prefijo && <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xl font-bold">{prefijo}</span>}
+        <Input
+          id={id}
+          type="number"
+          inputMode="decimal"
+          min={0}
+          placeholder={placeholder}
+          value={valor}
+          onChange={(e) => onCambio(e.target.value)}
+          aria-labelledby="titulo-paso"
+          aria-describedby="ayuda-paso"
+          aria-invalid={!!error}
+          autoFocus
+          className={cn(CLASE_CAMPO, prefijo && (prefijo.length > 1 ? "pl-16" : "pl-9"), sufijo && "pr-16")}
+        />
+        {sufijo && <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-base font-semibold text-muted-foreground">{sufijo}</span>}
+      </div>
+      <div className="mt-2">
+        <MensajeError texto={error} />
+      </div>
+    </div>
+  );
+}
+
+function CampoMonto({
+  valor,
+  onCambio,
+  error,
+  placeholder,
+  enPesos,
+  mep,
+  enDolares,
+  puedeCambiar,
+  onCambiarMoneda,
+}: {
+  valor: string;
+  onCambio: (v: string) => void;
+  error?: string;
+  placeholder: string;
+  enPesos: boolean;
+  mep: number | null;
+  enDolares: number;
+  puedeCambiar: boolean;
+  onCambiarMoneda: () => void;
+}) {
+  return (
+    <div>
+      <CampoNumero id="monto" prefijo={enPesos ? "$" : "USD"} valor={valor} onCambio={onCambio} error={error} placeholder={placeholder} />
+      {enPesos && mep !== null && Number.isFinite(enDolares) && (
+        <p aria-live="polite" className="text-sm leading-snug text-muted-foreground">
+          Son unos {usd(enDolares)} al dólar MEP de hoy ({ars(mep)}). Tu plan se calcula en dólares.
+        </p>
+      )}
+      {puedeCambiar && (
+        <button type="button" onClick={onCambiarMoneda} className="mt-2 min-h-10 text-sm font-medium text-enlace underline underline-offset-4">
+          {enPesos ? "Prefiero escribirlo en dólares" : "Prefiero escribirlo en pesos"}
+        </button>
+      )}
     </div>
   );
 }
@@ -380,7 +387,7 @@ function Campo({ etiqueta, htmlFor, ayuda, error, children }: { etiqueta: string
 function MensajeError({ texto }: { texto?: string }) {
   if (!texto) return null;
   return (
-    <p role="alert" className="text-xs font-medium text-destructive">
+    <p role="alert" className="text-sm font-medium text-error">
       {texto}
     </p>
   );

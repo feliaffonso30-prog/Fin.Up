@@ -124,7 +124,7 @@ const CONTENIDO: Record<Categoria, Contenido> = {
 function porQue(cat: Categoria, pct: number, perfil: PerfilRiesgo, r: Respuestas): string {
   switch (cat) {
     case "fija":
-      if (perfil === "Conservador") return `Es la base de tu cartera (${pct}%) porque priorizás no tener sobresaltos: te da ingresos más previsibles.`;
+      if (perfil === "Conservador") return `Es la base de tu plan (${pct}%) porque priorizás no tener sobresaltos: te da ingresos más previsibles.`;
       if (perfil === "Moderado") return `Un ${pct}% en renta fija amortigua los golpes cuando las acciones caen.`;
       return `Solo un ${pct}%: alcanza para tener un amortiguador sin frenar demasiado el crecimiento.`;
     case "variable":
@@ -223,7 +223,7 @@ export function generarAvisos(perfil: PerfilRiesgo, d: Distribucion, r: Respuest
       nivel: "atencion",
       titulo: "Plazo muy corto",
       texto:
-        "Con menos de 2 años dejamos tu cartera sin acciones ni cripto. Aun así, los bonos pueden oscilar de precio antes de vencer: si ese monto es clave para vos, mantené la mayor parte disponible.",
+        "Con menos de 2 años dejamos tu plan sin acciones ni cripto. Aun así, los bonos pueden oscilar de precio antes de vencer: si ese monto es clave para vos, mantené la mayor parte disponible.",
     });
   }
   if (perfil === "Agresivo" && r.objetivo === "Preservar capital") {

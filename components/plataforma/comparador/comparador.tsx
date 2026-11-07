@@ -92,7 +92,7 @@ export function Comparador({ datos, fci, montoUrl, usdUrl, tabUrl }: Props) {
 
   return (
     <div className="space-y-6">
-      <EncabezadoPagina sobretitulo="Tus pesos" titulo="¿Dónde dejar tus pesos?">
+      <EncabezadoPagina titulo="¿Dónde dejar tus pesos?">
         Compará cuánto rendiría tu plata en plazos fijos, billeteras y fondos, y si le gana a la inflación. Respondé dos preguntas y listo.
       </EncabezadoPagina>
 

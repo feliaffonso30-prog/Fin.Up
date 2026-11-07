@@ -1,16 +1,11 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter, JetBrains_Mono, Plus_Jakarta_Sans } from 'next/font/google'
+import { JetBrains_Mono, Schibsted_Grotesk } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const inter = Inter({ 
+const schibsted = Schibsted_Grotesk({
   subsets: ["latin"],
-  variable: '--font-inter',
-});
-
-const plusJakarta = Plus_Jakarta_Sans({ 
-  subsets: ["latin"],
-  variable: '--font-jakarta',
+  variable: '--font-schibsted',
 });
 
 // Tickers, porcentajes y tasas
@@ -25,7 +20,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#0a1752',
+  themeColor: '#0b0e30',
 }
 
 export default function RootLayout({
@@ -34,8 +29,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="es" className="bg-background">
-      <body className={`${inter.variable} ${plusJakarta.variable} ${jetbrains.variable} font-sans antialiased`}>
+    <html lang="es">
+      <body className={`${schibsted.variable} ${jetbrains.variable} font-sans antialiased`}>
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

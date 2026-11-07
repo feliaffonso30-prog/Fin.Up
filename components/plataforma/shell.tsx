@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, Bot, ChartPie, Library, LogOut, Wallet } from "lucide-react";
+import { BookOpen, ChartPie, Library, LogOut, Wallet } from "lucide-react";
 import { FinBotChat } from "@/components/finbot/finbot-chat";
+import { Button } from "@/components/ui/button";
+import { Marca } from "@/components/plataforma/primitivas";
 import { abrirFinBot } from "@/lib/finbot/abrir";
 import { aContextoEstrategia } from "@/lib/plataforma/plan";
 import { usePlan } from "@/lib/plataforma/store";
@@ -22,8 +24,21 @@ const NAV = [
 const esActivo = (pathname: string, href: string) => pathname === href || pathname.startsWith(href + "/");
 
 /** Cerrar sesión: solo existe con cuenta. La pantalla de cuenta llega con el paso 4 de la hoja de ruta. */
-function BotonSalir({ compacto }: { compacto?: boolean }) {
+function BotonSalir({ compacto, sinCuenta }: { compacto?: boolean; sinCuenta: boolean }) {
   if (!AUTH_CONFIGURADA) return null;
+  if (sinCuenta) {
+    return (
+      <Link
+        href="/login"
+        className={cn(
+          "flex items-center rounded-md text-sm font-medium underline-offset-4 hover:underline",
+          compacto ? "min-h-11 px-2" : "min-h-10 w-full px-3 py-2",
+        )}
+      >
+        Ingresar
+      </Link>
+    );
+  }
   return (
     <form action="/auth/salir" method="post">
       <button
@@ -43,14 +58,14 @@ function BotonSalir({ compacto }: { compacto?: boolean }) {
 
 export function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { plan } = usePlan();
+  const { plan, sinCuenta } = usePlan();
 
   return (
-    <div className="min-h-screen bg-background text-foreground md:grid md:grid-cols-[220px_1fr]">
+    <div className="min-h-screen text-foreground md:grid md:grid-cols-[220px_1fr]">
       {/* Barra lateral (escritorio) */}
-      <aside className="sticky top-0 hidden h-screen flex-col border-r border-border bg-card/60 p-4 md:flex">
-        <Link href="/dashboard" className="mb-6 block">
-          <img src="/finup.logo.1.png" alt="FinUp" className="h-14 w-auto" />
+      <aside className="sticky top-0 hidden h-screen flex-col border-r border-border p-4 md:flex">
+        <Link href="/dashboard" className="mb-6 block px-3 pt-2" aria-label="FinUp, ir a Mi plan">
+          <Marca />
         </Link>
         <nav className="flex flex-col gap-1" aria-label="Principal">
           {NAV.map(({ href, etiqueta, Icono }) => {
@@ -61,9 +76,9 @@ export function Shell({ children }: { children: React.ReactNode }) {
                 href={href}
                 aria-current={activo ? "page" : undefined}
                 className={cn(
-                  "relative flex min-h-10 items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors",
+                  "flex min-h-11 items-center gap-2.5 rounded-md px-3 py-2 text-base transition-colors",
                   activo
-                    ? "bg-secondary font-semibold text-foreground before:filo-vertical before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-full"
+                    ? "bg-white/12 font-bold text-foreground"
                     : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground",
                 )}
               >
@@ -73,31 +88,33 @@ export function Shell({ children }: { children: React.ReactNode }) {
             );
           })}
         </nav>
+        <Button type="button" onClick={() => abrirFinBot()} className="mt-5 h-11 w-full">
+          Preguntale a FinBot
+        </Button>
         <div className="mt-auto">
-          <BotonSalir />
+          <BotonSalir sinCuenta={sinCuenta} />
         </div>
-        <p className="mt-2 px-3 text-legal text-muted-foreground/80">Versión beta. Contenido educativo, no es asesoramiento financiero.</p>
+        <p className="mt-2 px-3 text-legal text-muted-foreground">Versión beta. Contenido educativo, no es asesoramiento financiero.</p>
       </aside>
 
       <div className="min-w-0">
         {/* Barra superior (celular): solo marca y cuenta; la navegación va abajo, al alcance del pulgar */}
-        <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border bg-background/90 px-4 backdrop-blur md:hidden">
-          <Link href="/dashboard" className="flex items-center">
-            <img src="/finup.logo.1.png" alt="FinUp" className="h-9 w-auto" />
+        <header className="flex h-16 items-center justify-between px-4 md:hidden">
+          <Link href="/dashboard" className="flex items-center" aria-label="FinUp, ir a Mi plan">
+            <Marca />
           </Link>
           <div className="flex items-center gap-1">
-            <span className="rounded-full border border-border px-2 py-0.5 text-legal font-medium text-enlace">Beta</span>
-            <BotonSalir compacto />
+            <BotonSalir compacto sinCuenta={sinCuenta} />
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-4xl px-4 pb-32 pt-8 md:px-8 md:pb-28">{children}</main>
+        <main className="mx-auto w-full max-w-4xl px-4 pb-32 pt-3 md:px-8 md:pb-28 md:pt-10">{children}</main>
       </div>
 
       {/* Barra inferior (celular): 4 secciones con FinBot al centro */}
       <nav
         aria-label="Principal"
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-popover pb-[env(safe-area-inset-bottom)] md:hidden"
       >
         <ul className="mx-auto grid h-16 max-w-md grid-cols-5 items-stretch">
           {NAV.slice(0, 2).map((item) => (
@@ -105,14 +122,13 @@ export function Shell({ children }: { children: React.ReactNode }) {
               <PestanaInferior {...item} activo={esActivo(pathname, item.href)} />
             </li>
           ))}
-          <li className="flex items-start justify-center">
+          <li className="flex items-center justify-center px-0.5">
             <button
               type="button"
               onClick={() => abrirFinBot()}
-              className="-mt-4 flex h-12 w-12 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-[0_12px_24px_-8px_rgba(2,6,23,0.7),inset_0_1px_0_rgba(255,255,255,0.18)] hover:bg-primary-hover active:bg-primary-active"
+              className="h-10 w-full rounded-full bg-primary text-xs font-extrabold text-primary-foreground transition-transform duration-150 hover:bg-primary-hover active:scale-[0.97] active:bg-primary-active motion-reduce:active:scale-100"
             >
-              <Bot className="h-5 w-5" aria-hidden />
-              <span className="sr-only">Abrir FinBot</span>
+              FinBot
             </button>
           </li>
           {NAV.slice(2).map((item) => (
@@ -144,8 +160,8 @@ function PestanaInferior({
       href={href}
       aria-current={activo ? "page" : undefined}
       className={cn(
-        "relative flex h-full flex-col items-center justify-center gap-1 text-xs font-medium transition-colors",
-        activo ? "text-foreground before:filo before:absolute before:inset-x-3 before:top-0 before:h-0.5" : "text-muted-foreground",
+        "flex h-full flex-col items-center justify-center gap-1 text-xs transition-colors",
+        activo ? "font-extrabold text-foreground" : "font-medium text-muted-foreground",
       )}
     >
       <Icono className="h-5 w-5" aria-hidden />

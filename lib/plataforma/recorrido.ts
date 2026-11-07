@@ -45,13 +45,13 @@ export function armarRecorrido(plan: Plan): PasoRecorrido[] {
     pasos.push({
       id: "deudas",
       corto: "Ordená tus deudas caras",
-      titulo: "Primero, tus deudas caras",
+      titulo: "Ahora, tus deudas caras",
       texto:
-        "Pagar una deuda con tasa alta te ahorra más de lo que te daría casi cualquier inversión, y sin riesgo. Empezá por ahí: tu plan te espera.",
+        "Pagarla te ahorra más de lo que te daría casi cualquier inversión, y sin riesgo.",
       accion: {
         tipo: "finbot",
         pregunta: "Tengo deudas con tasas altas. ¿Cómo las ordeno antes de empezar a invertir?",
-        etiqueta: "Preguntale a FinBot cómo empezar",
+        etiqueta: "Ver cómo empezar",
       },
       aviso: AVISO_DEUDAS,
     });
