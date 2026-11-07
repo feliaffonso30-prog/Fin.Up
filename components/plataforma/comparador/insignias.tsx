@@ -43,7 +43,7 @@ export function BadgeTasaReal({ real }: { real: number | null }) {
   return (
     <Badge
       variant="outline"
-      className={gana ? "border-exito/40 bg-exito/10 text-exito" : "border-error/40 bg-error/10 text-error"}
+      className={gana ? "border-border bg-card text-foreground" : "vidrio-mal border-transparent text-atencion"}
       aria-label={`${texto}: ${gana ? "le gana" : "no le gana"} a la inflación`}
       title={gana ? "Le gana a la última inflación mensual" : "No le gana a la última inflación mensual"}
     >

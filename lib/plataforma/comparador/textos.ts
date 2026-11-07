@@ -49,7 +49,7 @@ export const EDUCATIVO: Record<TipoAlternativa, Educativo> = {
   billetera: {
     titulo: "Billeteras y cuentas remuneradas",
     queEs: "Cuentas donde la plata rinde todos los días y la podés usar o retirar cuando quieras.",
-    ventajas: "Liquidez inmediata: es ideal para el fondo de emergencia o para plata que vas a necesitar pronto.",
+    ventajas: "La podés usar al instante: sirve para el fondo de emergencia o para plata que vas a necesitar pronto.",
     riesgos:
       "La tasa puede cambiar cualquier día, sin aviso. Las billeteras que no son bancos no tienen la garantía de depósitos (SEDESA); muchas invierten tu saldo en un fondo money market.",
   },

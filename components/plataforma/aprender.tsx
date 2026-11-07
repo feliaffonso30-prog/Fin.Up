@@ -45,7 +45,7 @@ export function Aprender() {
             <li key={l.id} className="relative">
               <details id={l.id} open={n === 0} className="group scroll-mt-20 rounded-xl border border-border bg-card open:border-enlace/40">
                 <summary className="flex min-h-14 cursor-pointer list-none items-start gap-4 p-4 [&::-webkit-details-marker]:hidden">
-                  <span className="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-secondary font-mono text-sm font-medium text-enlace group-open:border-enlace/60">
+                  <span className="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-secondary text-sm font-medium text-enlace group-open:border-enlace/60">
                     {n + 1}
                   </span>
                   <span className="min-w-0 flex-1">

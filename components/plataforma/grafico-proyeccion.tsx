@@ -41,7 +41,7 @@ export function GraficoProyeccion({ datos }: { datos: PuntoProyeccion[] }) {
               formatter={(valor, nombre) => (
                 <span className="flex w-full items-center justify-between gap-4">
                   <span className="text-muted-foreground">{config[nombre as keyof typeof config]?.label ?? nombre}</span>
-                  <span className="font-mono font-medium">{usd(Number(valor))}</span>
+                  <span className="font-medium">{usd(Number(valor))}</span>
                 </span>
               )}
             />

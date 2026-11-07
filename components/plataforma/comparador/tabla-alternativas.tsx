@@ -117,7 +117,7 @@ function Escritorio({ cotizaciones, dias, conProducto }: { cotizaciones: Cotizac
         <TableBody>
           {cotizaciones.map((c, i) => (
             <TableRow key={c.alternativa.id} className="align-top">
-              <TableCell className="text-center font-mono text-muted-foreground">{i + 1}</TableCell>
+              <TableCell className="text-center text-muted-foreground">{i + 1}</TableCell>
               <TableCell className="min-w-[13rem] whitespace-normal">
                 <Nombre c={c} conProducto={conProducto} />
                 <div className="mt-1.5 flex flex-wrap gap-1">
@@ -126,11 +126,11 @@ function Escritorio({ cotizaciones, dias, conProducto }: { cotizaciones: Cotizac
                 </div>
               </TableCell>
               <TableCell className="text-right">
-                <p className="font-mono text-base font-semibold">{tasaTexto(c, c.tna)}</p>
+                <p className="text-base font-semibold">{tasaTexto(c, c.tna)}</p>
                 <p className="text-legal text-muted-foreground">TEA {tasaTexto(c, c.tea)}</p>
                 <p className="text-legal text-muted-foreground">TEM {tasaTexto(c, c.tem)}</p>
               </TableCell>
-              <TableCell className="text-right font-mono font-semibold text-cifra">{ars(c.ganancia)}</TableCell>
+              <TableCell className="text-right font-semibold text-cifra">{ars(c.ganancia)}</TableCell>
               <TableCell className="text-center">
                 <BadgeTasaReal real={c.tasaRealMensual} />
               </TableCell>
@@ -151,20 +151,20 @@ function Celular({ cotizaciones, dias, conProducto }: { cotizaciones: Cotizacion
       {cotizaciones.map((c, i) => (
         <li key={c.alternativa.id} className="space-y-3 rounded-xl border border-border bg-card p-4">
           <div className="flex gap-3">
-            <span className="font-mono text-sm text-muted-foreground">{i + 1}</span>
+            <span className="text-sm text-muted-foreground">{i + 1}</span>
             <Nombre c={c} conProducto={conProducto} />
           </div>
           <dl className="grid grid-cols-2 gap-3 text-sm">
             <div>
               <dt className="text-legal text-muted-foreground">Tasa anual (TNA)</dt>
-              <dd className="font-mono text-base font-semibold">{tasaTexto(c, c.tna)}</dd>
+              <dd className="text-base font-semibold">{tasaTexto(c, c.tna)}</dd>
               <dd className="text-legal text-muted-foreground">
                 TEA {tasaTexto(c, c.tea)} · TEM {tasaTexto(c, c.tem)}
               </dd>
             </div>
             <div>
               <dt className="text-legal text-muted-foreground">{conProducto ? `Si rinde igual, en ${dias} días` : `Ganancia en ${dias} días`}</dt>
-              <dd className="font-mono text-base font-semibold text-cifra">{ars(c.ganancia)}</dd>
+              <dd className="text-base font-semibold text-cifra">{ars(c.ganancia)}</dd>
             </div>
           </dl>
           <div className="flex flex-wrap items-center gap-1.5">

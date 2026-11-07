@@ -16,11 +16,6 @@ export function Marca({ className }: { className?: string }) {
   return <span className={cn("font-display text-2xl font-black tracking-[-0.04em] text-foreground", className)}>finup</span>;
 }
 
-/** El filo: la línea degradada de 1px que firma FinUp. Solo en encabezados, FinBot y el menú. */
-export function Filo({ className }: { className?: string }) {
-  return <div aria-hidden className={cn("filo h-px w-full", className)} />;
-}
-
 /** Encabezado de cada pantalla: título y bajada. */
 export function EncabezadoPagina({ titulo, children }: { titulo: React.ReactNode; children?: React.ReactNode }) {
   return (

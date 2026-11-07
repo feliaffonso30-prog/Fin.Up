@@ -51,7 +51,7 @@ export function FichaInstrumento({ instrumento: i }: { instrumento: Instrumento 
           <BadgeRiesgo riesgo={i.riesgo} />
         </div>
         <div>
-          <p className="font-mono text-sm font-bold text-info">{i.ticker}</p>
+          <p className="text-sm font-bold text-info">{i.ticker}</p>
           <h1 className="text-3xl font-extrabold leading-tight md:text-4xl">{i.nombre}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {esCedear ? (
@@ -176,7 +176,7 @@ export function FichaInstrumento({ instrumento: i }: { instrumento: Instrumento 
 function Dato({ titulo, children }: { titulo: string; children: React.ReactNode }) {
   return (
     <div className="rounded-lg border border-border bg-card p-4">
-      <p className="font-mono text-xs uppercase tracking-[0.08em] text-muted-foreground">{titulo}</p>
+      <p className="text-sm font-semibold text-muted-foreground">{titulo}</p>
       <div className="mt-1 text-base font-semibold">{children}</div>
     </div>
   );
@@ -185,7 +185,7 @@ function Dato({ titulo, children }: { titulo: string; children: React.ReactNode 
 function Seccion({ titulo, children }: { titulo: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-enlace">{titulo}</h2>
+      <h2 className="mb-1.5 text-base font-extrabold">{titulo}</h2>
       {children}
     </section>
   );

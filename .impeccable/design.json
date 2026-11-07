@@ -693,7 +693,7 @@
       },
       {
         "name": "The Cifra Tabular Rule",
-        "body": "Las cifras que se comparan o cambian usan numerales tabulares.",
+        "body": "Los números sin separadores pueden usar numerales tabulares. Las cifras con coma o punto no: en esta fuente separan de más los signos.",
         "section": "typography"
       },
       {

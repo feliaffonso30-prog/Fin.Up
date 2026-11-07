@@ -300,7 +300,7 @@ function Resultado({
 }
 
 const CLASE_CAMPO =
-  "vidrio h-16 rounded-lg border-0 pl-4 text-2xl font-black tracking-[-0.02em] tabular-nums placeholder:font-semibold placeholder:text-muted-foreground/70 md:text-2xl dark:bg-transparent aria-invalid:ring-2";
+  "vidrio h-16 rounded-lg border-0 pl-4 text-2xl font-black tracking-[-0.02em] placeholder:font-semibold placeholder:text-muted-foreground/70 md:text-2xl dark:bg-transparent aria-invalid:ring-2";
 
 function CampoNumero({
   id,

@@ -16,8 +16,9 @@ import { consumir, ipDe } from "@/lib/finbot/rate-limit";
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
-// Lee GEMINI_API_KEY de .env.local
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+// Se crea recién al primer pedido: sin GEMINI_API_KEY el build no se queja y FinBot avisa que no está disponible.
+let clienteGemini: GoogleGenAI | null = null;
+const gemini = () => (clienteGemini ??= new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY }));
 
 // Modelos del plan gratuito, en orden de preferencia. Si uno está saturado
 // (429/503) se prueba el siguiente.
@@ -53,6 +54,10 @@ const BodySchema = z.object({
 const saturado = (e: unknown) => e instanceof ApiError && (e.status === 429 || e.status === 503);
 
 export async function POST(req: Request) {
+  if (!process.env.GEMINI_API_KEY) {
+    return Response.json({ error: "FinBot no está disponible por ahora." }, { status: 503 });
+  }
+
   const parsed = BodySchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
     return Response.json({ error: "Pedido inválido" }, { status: 400 });
@@ -63,7 +68,7 @@ export async function POST(req: Request) {
   if (!limite.permitido) {
     return Response.json(
       {
-        error: `Llegaste al máximo de preguntas de la demo por ahora. Podés volver a preguntar en ${limite.minutosParaReintentar} min.`,
+        error: `Llegaste al máximo de preguntas por ahora. Podés volver a preguntar en ${limite.minutosParaReintentar} min.`,
       },
       { status: 429 },
     );
@@ -112,7 +117,7 @@ export async function POST(req: Request) {
           const candidatos: string[] = modelo ? [modelo] : MODELOS;
           for (const m of candidatos) {
             try {
-              respuesta = await ai.models.generateContentStream({ model: m, contents, config: cfg });
+              respuesta = await gemini().models.generateContentStream({ model: m, contents, config: cfg });
               modelo = m;
               break;
             } catch (e) {

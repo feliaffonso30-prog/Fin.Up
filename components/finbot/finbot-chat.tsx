@@ -6,7 +6,6 @@ import { EVENTO_ABRIR_FINBOT, type DetalleAbrirFinBot } from "@/lib/finbot/abrir
 import type { ContextoEstrategia } from "@/lib/finbot/types";
 import { useFinBot } from "@/hooks/use-finbot";
 import { Formato } from "./formato";
-import { Filo } from "@/components/plataforma/primitivas";
 
 const SUGERENCIAS_BASE = [
   "¿Qué es un CEDEAR?",
@@ -111,7 +110,6 @@ export function FinBotChat({ contexto }: { contexto: ContextoEstrategia | null }
             >
               <X className="h-4 w-4" />
             </button>
-            <Filo className="absolute inset-x-0 bottom-0" />
           </header>
 
           <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4 text-sm">

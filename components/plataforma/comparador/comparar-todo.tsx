@@ -7,8 +7,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { inflacionDelPeriodo } from "@/lib/plataforma/finanzas";
 import { ars } from "@/lib/plataforma/formato";
-import { compararTodo, ORDEN_TIPOS as ORDEN, type FilaComparacion as Fila } from "@/lib/plataforma/comparador/cotizar";
-import { EDUCATIVO } from "@/lib/plataforma/comparador/textos";
+import { compararTodo, type FilaComparacion as Fila } from "@/lib/plataforma/comparador/cotizar";
 import type { Alternativa, Consulta, Cotizacion, Inflacion, TipoAlternativa } from "@/lib/plataforma/comparador/tipos";
 import { BadgeLiquidez, BadgeRiesgo, BadgeTasaReal, BotonEntidad, tasa } from "./insignias";
 import type { Fuente } from "./pestanas";
@@ -79,30 +78,6 @@ function Vista({
 
       <Resumen filas={filas} dias={consulta.dias} />
 
-      <section className="space-y-3" aria-labelledby="que-es-cada-una">
-        <h3 id="que-es-cada-una" className="text-base font-semibold">
-          Qué es cada opción
-        </h3>
-        <div className="grid gap-3 sm:grid-cols-2">
-          {ORDEN.map((tipo) => {
-            const e = EDUCATIVO[tipo];
-            return (
-              <article key={tipo} className="space-y-2 rounded-xl border border-border bg-secondary/30 p-4 text-xs leading-relaxed">
-                <h4 className="text-sm font-semibold">{e.titulo}</h4>
-                <p className="text-foreground/85">{e.queEs}</p>
-                <p>
-                  <span className="font-semibold text-info">Ventajas: </span>
-                  <span className="text-foreground/85">{e.ventajas}</span>
-                </p>
-                <p className="rounded-lg border border-atencion/20 bg-atencion/10 p-2.5">
-                  <span className="font-semibold text-atencion">Riesgos: </span>
-                  <span className="text-atencion-texto/90">{e.riesgos}</span>
-                </p>
-              </article>
-            );
-          })}
-        </div>
-      </section>
     </div>
   );
 }
@@ -151,7 +126,7 @@ function Grafico({ filas, perdidaPorInflacion, dias }: { filas: Fila[]; perdidaP
                 <div className="rounded-lg border border-border bg-popover px-3 py-2 text-xs shadow-lg">
                   <p className="font-semibold">{d.tipo}</p>
                   <p className="text-muted-foreground">{d.opcion}</p>
-                  <p className="mt-1 font-mono">
+                  <p className="mt-1">
                     {ars(d.ganancia)} · TNA {d.esUva ? "UVA + " : ""}
                     {tasa(d.tna)}
                   </p>
@@ -237,8 +212,8 @@ function Resumen({ filas, dias }: { filas: Fila[]; dias: number }) {
                 </TableCell>
                 {f.mejor && (
                   <>
-                    <TableCell className="text-right font-mono font-semibold">{tnaTexto(f.mejor)}</TableCell>
-                    <TableCell className="text-right font-mono font-semibold text-cifra">{ars(f.mejor.ganancia)}</TableCell>
+                    <TableCell className="text-right font-semibold">{tnaTexto(f.mejor)}</TableCell>
+                    <TableCell className="text-right font-semibold text-cifra">{ars(f.mejor.ganancia)}</TableCell>
                     <TableCell className="text-center">
                       <BadgeTasaReal real={f.mejor.tasaRealMensual} />
                     </TableCell>
@@ -256,18 +231,18 @@ function Resumen({ filas, dias }: { filas: Fila[]; dias: number }) {
       <ul className="space-y-3 lg:hidden">
         {filas.map((f) => (
           <li key={f.tipo} className="space-y-2 rounded-xl border border-border bg-card p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-enlace">{NOMBRE_CORTO[f.tipo]}</p>
+            <p className="text-base font-extrabold">{NOMBRE_CORTO[f.tipo]}</p>
             <Opcion f={f} />
             {f.mejor && (
               <>
                 <dl className="grid grid-cols-2 gap-3 text-sm">
                   <div>
                     <dt className="text-legal text-muted-foreground">Tasa anual (TNA)</dt>
-                    <dd className="font-mono font-semibold">{tnaTexto(f.mejor)}</dd>
+                    <dd className="font-semibold">{tnaTexto(f.mejor)}</dd>
                   </div>
                   <div>
                     <dt className="text-legal text-muted-foreground">Ganancia en {dias} días</dt>
-                    <dd className="font-mono font-semibold text-cifra">{ars(f.mejor.ganancia)}</dd>
+                    <dd className="font-semibold text-cifra">{ars(f.mejor.ganancia)}</dd>
                   </div>
                 </dl>
                 <div className="flex flex-wrap gap-1.5">

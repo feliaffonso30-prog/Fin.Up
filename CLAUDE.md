@@ -20,7 +20,7 @@ Next.js 16 (App Router) · React 19 · Tailwind 4 + shadcn/ui · Supabase · Gem
 ## Estructura
 
 - `app/page.tsx` → portada pública (`components/plataforma/inicio.tsx`); quien ya tiene plan sigue a `/dashboard`.
-- Identidad visual: `PRODUCT.md` (decisiones del fundador) y `DESIGN.md`. La etapa 2 del rediseño (Tus pesos, Ejemplos, Aprender) está pendiente: hoy solo heredan la paleta.
+- Identidad visual: `PRODUCT.md` (decisiones del fundador) y `DESIGN.md`. Tus pesos ya está simplificado (`comparador/respuesta.tsx` arriba, el detalle plegado). Ejemplos y Aprender solo heredan la paleta.
 - `app/(plataforma)/` → `/onboarding` (sin shell) y `/dashboard`, `/aprender` (dentro de `(panel)` con barra lateral).
 - `components/plataforma/` → UI de la plataforma. `components/ui/` → shadcn. `components/finbot/` → chat de FinBot.
 - `lib/plataforma/` → **dominio, sin React ni red**: `perfil.ts` (puntaje + topes de seguridad), `cartera.ts` (distribución, explicaciones, avisos), `proyeccion.ts`, `plan.ts` (`generarPlan`), `store.ts` (persistencia local, temporal).
@@ -48,7 +48,7 @@ Next.js 16 (App Router) · React 19 · Tailwind 4 + shadcn/ui · Supabase · Gem
 
 ## Hoja de ruta (en orden)
 
-1. ✅ **Login con Supabase Auth** (email + contraseña, confirmación por email). Hecho: `proxy.ts` (refresca sesión y protege las rutas de `RUTAS_PROTEGIDAS`: `/comparador`, `/instrumentos`, `/aprender`; la portada, `/onboarding` y `/dashboard` son públicas: primero el plan, después la cuenta), `lib/supabase/*`, `lib/auth/rutas.ts` (reglas puras + tests), páginas `/login`, `/registro`, `/recuperar` y `/nueva-contrasena`, `/auth/callback` y `/auth/salir` (POST). **Sin las variables `NEXT_PUBLIC_SUPABASE_*` la app corre en "modo sin cuenta"** (no protege nada, plan en `localStorage`). Falta: probarlo contra un proyecto Supabase real.
+1. ✅ **Login con Supabase Auth** (email + contraseña, confirmación por email). Hecho: `proxy.ts` (refresca sesión y protege las rutas de `RUTAS_PROTEGIDAS`, hoy vacía: toda la plataforma es pública, primero el valor y después la cuenta), `lib/supabase/*`, `lib/auth/rutas.ts` (reglas puras + tests), páginas `/login`, `/registro`, `/recuperar` y `/nueva-contrasena`, `/auth/callback` y `/auth/salir` (POST). **Sin las variables `NEXT_PUBLIC_SUPABASE_*` la app corre en "modo sin cuenta"** (no protege nada, plan en `localStorage`). Falta: probarlo contra un proyecto Supabase real.
 2. ✅ **Plan guardado en Supabase** (`planes_inversion`) cuando hay login: `usePlan()` (en `store.ts`) usa Supabase (`remoto.ts`) si hay sesión y `localStorage` si no. Rehacer el cuestionario archiva el plan anterior (historial). Un plan local previo se pasa a la cuenta la primera vez. Falta: probarlo contra el proyecto Supabase real.
 3. **Límites Free/Plus en `/api/chat`** con `uso_finbot` (escribe solo el servidor con service role) y reemplazar `rate-limit.ts` (en memoria, por IP).
 4. Pantalla de planes y cuenta.
@@ -57,8 +57,6 @@ Next.js 16 (App Router) · React 19 · Tailwind 4 + shadcn/ui · Supabase · Gem
 
 ## Pendientes conocidos
 
-- `app/api/chat/route.ts` crea `GoogleGenAI` al importar el módulo: sin `GEMINI_API_KEY` el build imprime "API key should be set". Pasarlo a inicialización perezosa.
-- Los mensajes de límite de FinBot dicen "de la demo" (texto heredado). Se reemplazan al implementar los límites por plan.
 - `npm run lint` apunta a `eslint .` pero eslint no está instalado como dependencia.
 - Comparador: completar `ENLACES` en `lib/plataforma/comparador/enlaces.ts` (hoy muchas entidades dicen "Sin link disponible").
 - Biblioteca: verificar los datos marcados `TODO-VERIFICAR` en `lib/plataforma/instrumentos/datos.ts` (ratios de CEDEARs, series reales de las ONs `YPF-ON`/`PAMP-ON`, panel líder) y después pasar `LISTA_EN_BORRADOR` a `false`.

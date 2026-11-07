@@ -91,10 +91,6 @@ typography:
     fontSize: "0.75rem"
     fontWeight: 400
     lineHeight: 1.45
-  mono:
-    fontFamily: "JetBrains Mono, ui-monospace, Menlo, Consolas, monospace"
-    fontSize: "0.875rem"
-    fontWeight: 600
 rounded:
   sm: "10px"
   md: "14px"
@@ -223,7 +219,7 @@ Una sola gama azul y lavanda sobre noche profunda, con el blanco reservado para 
 
 **Display Font:** Schibsted Grotesk (con system-ui, sans-serif)
 **Body Font:** Schibsted Grotesk (con system-ui, sans-serif)
-**Label/Mono Font:** JetBrains Mono (con ui-monospace), solo para tickers y tasas en las pantallas que todavía heredan
+**Una sola familia:** Schibsted Grotesk en toda la plataforma, también en tickers y tasas. No hay fuente monoespaciada.
 
 **Character:** Una sola familia con mucho rango: Black apretado para títulos y cifras, regular cómoda para leer. Las cifras son la imagen del producto.
 
@@ -244,7 +240,7 @@ Una sola gama azul y lavanda sobre noche profunda, con el blanco reservado para 
 
 **The Sin Rótulos Rule.** Decisión del fundador: sin rótulos sobre los títulos. El título abre la pieza. El avance real ("Paso 2 de 5") es un dato de estado y va junto a su barra de segmentos, no reemplaza a un título.
 
-**The Cifra Tabular Rule.** Las cifras que se comparan o cambian usan numerales tabulares.
+**The Cifra Tabular Rule.** Los números sin separadores (porcentajes enteros, contadores) pueden usar numerales tabulares. Las cifras con coma o punto no: en esta fuente separan de más los signos.
 
 ## Layout
 

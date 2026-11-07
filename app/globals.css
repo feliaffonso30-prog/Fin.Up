@@ -48,11 +48,6 @@
   /* Azul de los bloques protagonistas (uno por pantalla) */
   --azul: linear-gradient(150deg, #4d5eff, #3140d6);
 
-  /* El filo y sus tonos, dentro de la misma gama */
-  --gema-500: #8d99ff;
-  --gema-200: #c8cdff;
-  --filo: linear-gradient(90deg, transparent 0%, var(--gema-500) 22%, var(--gema-200) 50%, var(--gema-500) 78%, transparent 100%);
-  --filo-vertical: linear-gradient(180deg, var(--gema-500), var(--gema-200));
 
   /* ---------- Tokens semánticos de FinUp ----------
      Se usan con opacidad desde Tailwind: border-atencion/25 bg-atencion/10 text-atencion. */
@@ -63,7 +58,7 @@
   --atencion: #d3d7ff;
   --atencion-texto: #eef0ff;
   --error: #ffb3a6; /* solo errores de formularios y de conexión */
-  --exito: #b4f0d6;
+  --exito: #c9e4ff;
   --cifra: #ffffff;
 
   /* Riesgo: dentro de la gama. Lo distinguen las barras 1/2/3 y la etiqueta, no el color */
@@ -96,7 +91,6 @@
 
 @theme inline {
   --font-sans: var(--font-schibsted), 'Schibsted Grotesk', system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains), 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Menlo, Consolas, monospace;
   --font-display: var(--font-schibsted), 'Schibsted Grotesk', system-ui, sans-serif;
   /* Letra de avisos legales y notas al pie: nunca menos de 12px */
   --text-legal: 0.75rem;
@@ -159,14 +153,6 @@
 }
 
 /* ---------- Rasgos de identidad ---------- */
-
-/* El filo: usar en un div de 1px de alto (h-px) */
-@utility filo {
-  background-image: var(--filo);
-}
-@utility filo-vertical {
-  background-image: var(--filo-vertical);
-}
 
 /* Bloque azul protagonista: uno por pantalla */
 @utility bloque-azul {

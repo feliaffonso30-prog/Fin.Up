@@ -1,8 +1,9 @@
 // Reglas de navegación del login. Puras (sin Next ni red) para poder testearlas.
 
-// La entrada, el cuestionario y Mi plan son públicos: primero el plan, después la cuenta.
-// Sin sesión, el plan queda en este navegador y se pasa a la cuenta al registrarse.
-export const RUTAS_PROTEGIDAS = ["/comparador", "/instrumentos", "/aprender"];
+// Hoy toda la plataforma es pública: primero el valor, después la cuenta. Sin sesión, el plan queda
+// en este navegador y se pasa a la cuenta al registrarse. Lo que más adelante exija cuenta (Plus,
+// por ejemplo) se agrega acá y el proxy lo protege.
+export const RUTAS_PROTEGIDAS: string[] = [];
 export const RUTAS_DE_ACCESO = ["/login", "/registro", "/recuperar"];
 export const DESTINO_POR_DEFECTO = "/dashboard";
 
