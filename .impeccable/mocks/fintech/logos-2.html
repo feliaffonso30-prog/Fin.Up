@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FinUp: logos, segunda ronda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800;900&display=swap">
+<style>
+:root{--noche:radial-gradient(135% 88% at 94% -10%,#5361e0 0%,#3740ac 30%,#171c5e 62%,#0b0e30 100%);--gris:#d3d7f2;--curva:cubic-bezier(0.23,1,0.32,1)}
+*{box-sizing:border-box;margin:0}
+body{background:#e4e5ea;color:#15172b;font-family:"Schibsted Grotesk","Segoe UI",system-ui,Arial,sans-serif;font-size:16px;line-height:1.4;padding:28px 16px 64px}
+.ancho{max-width:1120px;margin:0 auto}
+h1{font-size:34px;line-height:1.08;font-weight:900;letter-spacing:-.03em}
+.bajada{margin-top:8px;font-size:17px;color:#3f4259;max-width:68ch}
+.familia{margin-top:40px;font-size:15px;font-weight:800;color:#3f4259}
+.opcion{margin-top:14px}
+.opcion h2{font-size:26px;font-weight:900;letter-spacing:-.025em}
+.opcion>p{margin-top:3px;color:#3f4259;max-width:72ch}
+.lamina{margin-top:12px;border-radius:24px;overflow:hidden;background:#0b0e30;background-image:var(--noche);color:#fff;display:grid;grid-template-columns:1.25fr 1fr}
+.hero{padding:30px 28px;display:flex;flex-direction:column;justify-content:center;gap:16px;min-height:220px}
+.lado{padding:22px 24px;display:flex;flex-direction:column;gap:18px;justify-content:center;background:rgba(11,14,48,.55)}
+.sello{display:flex;align-items:center;gap:.22em;font-weight:900;letter-spacing:-.04em;line-height:1}
+.sello svg{display:block;flex:none}
+.tamanos{display:flex;align-items:flex-end;gap:16px}
+.tamanos figure{margin:0;text-align:center}
+.tamanos figcaption{font-size:12px;color:var(--gris);margin-top:5px}
+.icono{display:block;border-radius:22%}
+.barra-app{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.09);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);font-size:14px}
+.apps{display:flex;gap:12px;align-items:flex-end}
+.apps i{display:block;width:44px;height:44px;border-radius:22%}
+.apps span{display:block;text-align:center;font-size:11px;color:#fff;margin-top:3px}
+.apps div{width:48px}
+.lectura{display:grid;grid-template-columns:1fr 1fr;gap:6px 22px;margin-top:10px;font-size:15px;color:#3f4259}
+.lectura b{color:#15172b}
+.controles{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:0;background:rgba(255,255,255,.12);box-shadow:inset 0 0 0 1px rgba(255,255,255,.22);color:#fff;font:inherit;font-weight:700;font-size:14px;min-height:40px;padding:7px 13px;border-radius:12px;cursor:pointer;transition:transform .12s var(--curva)}
+.chip:active{transform:scale(.97)}
+.chip[aria-pressed=true]{background:#fff;color:#0b0e30}
+.chip:focus-visible{outline:3px solid #8d99ff;outline-offset:2px}
+/* Abanico */
+.cuna{transform-box:fill-box;transition:transform .6s var(--curva)}
+.cuna.arriba{transform-origin:left bottom}.cuna.abajo{transform-origin:left top}
+.cerrado .cuna{transform:scaleY(0)}
+.cargando .cuna{animation:respira 1.4s ease-in-out infinite alternate}
+@keyframes respira{from{transform:scaleY(0)}to{transform:scaleY(.6)}}
+/* Tu línea */
+.var{transition:height .5s var(--curva),y .5s var(--curva)}
+@media (prefers-reduced-motion:reduce){.cuna,.var,.chip{transition:none}.cargando .cuna{animation:none;transform:none}}
+@media (max-width:760px){.lamina{grid-template-columns:1fr}.hero{min-height:160px;padding:24px 20px}.lectura{grid-template-columns:1fr}.hero .sello{font-size:54px!important}}
+</style>
+</head>
+<body>
+<div class="ancho">
+  <h1>Logos, segunda ronda</h1>
+  <p class="bajada">Más elaborados que los anteriores: símbolos compuestos, dos identidades vivas que se pueden probar y una opción ligada a mercados. Cada uno se ve grande, en los tamaños reales y en la app.</p>
+  <div id="opciones"></div>
+</div>
+<script>
+const NOCHE = "#0b0e30", LAV = "#8d99ff", LAV2 = "#d3d7ff";
+
+// Cada símbolo devuelve su SVG en un viewBox de 64. "chico" es la versión para 16 px.
+function grilla(chico) {
+  const blancas = ["1,0","1,1","1,2","1,3","1,4","2,0","0,1","2,1"];
+  const lavanda = ["3,0","3,1","3,2","3,3","3,4","2,4","4,3","2,3"];
+  let s = "";
+  for (let f = 0; f < 5; f++) for (let c = 0; c < 5; c++) {
+    const k = c + "," + f, sep = chico ? 13 : 12, lado = chico ? 12 : 10, x = (chico ? 0.5 : 3) + c * sep, y = (chico ? 0.5 : 3) + f * sep;
+    const color = blancas.includes(k) ? "#fff" : lavanda.includes(k) ? LAV : null;
+    if (color) s += `<rect x="${x}" y="${y}" width="${lado}" height="${lado}" rx="2.5" fill="${color}"/>`;
+    else if (!chico) s += `<rect x="${x}" y="${y}" width="${lado}" height="${lado}" rx="2.5" fill="#fff" fill-opacity=".08"/>`;
+  }
+  return s;
+}
+function pregunta(chico) {
+  return `<path d="M24 44V26A12 12 0 0 1 48 26" fill="none" stroke="#fff" stroke-width="${chico ? 11 : 9}" stroke-linecap="round"/>` +
+    (chico ? "" : `<line x1="14" y1="32" x2="34" y2="32" stroke="${LAV2}" stroke-width="7" stroke-linecap="round"/>`) +
+    `<circle cx="24" cy="56" r="${chico ? 6 : 4.5}" fill="${LAV}"/>`;
+}
+function lazo(chico) {
+  const tallo = "M30 54V24A10 10 0 0 1 50 24";
+  if (chico) return `<line x1="16" y1="34" x2="44" y2="34" stroke="${LAV}" stroke-width="7" stroke-linecap="round"/><path d="${tallo}" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round"/>`;
+  return `<ellipse cx="30" cy="34" rx="16" ry="6.5" fill="none" stroke="${LAV}" stroke-width="5"/>` +
+    `<path d="${tallo}" fill="none" stroke="${NOCHE}" stroke-width="14" stroke-linecap="round"/>` +
+    `<path d="${tallo}" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round"/>` +
+    `<path d="M14 34A16 6.5 0 0 0 46 34" fill="none" stroke="${LAV}" stroke-width="5"/>`;
+}
+function abanico() {
+  return `<circle cx="12" cy="32" r="5" fill="#fff"/>` +
+    `<path class="cuna arriba" d="M18 30L56 14L56 30Z" fill="#fff"/>` +
+    `<path class="cuna abajo" d="M18 34L56 34L56 50Z" fill="${LAV}"/>`;
+}
+// Alturas a escala de los supuestos del plan (ilustrativos): la caída de 230 ocupa 28.
+const PERFIL_LINEA = { sin: [16, 16], conservador: [9, 15], moderado: [10, 28] };
+function linea(chico, perfil = "sin") {
+  const [a, b] = chico ? [18, 18] : PERFIL_LINEA[perfil];
+  return `<rect class="var sube" x="${chico ? 13 : 16}" y="${30 - a}" width="${chico ? 16 : 12}" height="${a + 2}" rx="3" fill="#fff"/>` +
+    `<rect class="var baja" x="${chico ? 35 : 36}" y="32" width="${chico ? 16 : 12}" height="${b + 2}" rx="3" fill="${LAV2}"/>` +
+    `<rect x="6" y="30" width="52" height="${chico ? 4 : 2.5}" rx="1.25" fill="#fff"/>`;
+}
+function vela(chico, id) {
+  if (chico) return `<rect x="29" y="4" width="6" height="14" rx="3" fill="#fff"/><rect x="29" y="46" width="6" height="14" rx="3" fill="${LAV}"/>` +
+    `<rect x="22" y="18" width="20" height="14" rx="4" fill="#fff"/><rect x="22" y="32" width="20" height="14" rx="4" fill="${LAV}"/><rect x="22" y="28" width="20" height="8" fill="#fff"/><rect x="22" y="32" width="20" height="4" fill="${LAV}"/>`;
+  return `<rect x="6" y="30.5" width="20" height="3" rx="1.5" fill="#fff"/>` +
+    `<rect x="30" y="8" width="4" height="12" rx="2" fill="#fff"/><rect x="30" y="44" width="4" height="12" rx="2" fill="${LAV}"/>` +
+    `<clipPath id="${id}a"><rect x="0" y="0" width="64" height="32"/></clipPath><clipPath id="${id}b"><rect x="0" y="32" width="64" height="32"/></clipPath>` +
+    `<rect x="24" y="20" width="16" height="24" rx="4" fill="#fff" clip-path="url(#${id}a)"/><rect x="24" y="20" width="16" height="24" rx="4" fill="${LAV}" clip-path="url(#${id}b)"/>`;
+}
+
+const OPCIONES = [
+  { familia: "Símbolos compuestos" },
+  { id: "grilla", nombre: "Grilla espejada", dibujo: grilla,
+    idea: "Una f armada con módulos, y la misma f girada en lavanda: dos caras con exactamente la misma cantidad de piezas. Los módulos libres quedan como vidrio.",
+    dice: "Lo bueno y lo malo pesan lo mismo, literal: 8 piezas y 8 piezas.", riesgo: "Puede verse pixelado o «gamer». Es el que más rinde como sistema: patrones, cargas, fondos." },
+  { id: "pregunta", nombre: "La f que pregunta", dibujo: pregunta, fondoIcono: NOCHE,
+    idea: "Se lee como una f y como un signo de pregunta. En castellano la pregunta se abre antes: FinUp aparece antes de que decidas.",
+    dice: "Preguntate antes de poner un peso.", riesgo: "Una f blanca en un cuadrado azul recuerda a Facebook: por eso el ícono va siempre sobre noche, nunca sobre azul." },
+  { id: "lazo", nombre: "El lazo", dibujo: lazo,
+    idea: "Una f cuyo travesaño es un anillo que pasa por delante y por detrás. La f queda trabada: no sale disparada.",
+    dice: "Atar cabos antes de decidir.", riesgo: "El cruce se pierde en chico, donde queda una f simple. Puede recordar a Saturno o a un moño." },
+  { familia: "Identidades vivas" },
+  { id: "abanico", nombre: "El abanico", dibujo: abanico, vivo: "abanico",
+    idea: "Desde un punto, lo que ponés hoy, se abre un rango: arriba lo que puede ganar, abajo lo que puede perder. Respira mientras carga y se abre del todo al revelar tu resultado.",
+    dice: "El futuro es un rango, no una línea.", riesgo: "En chico puede parecer un megáfono o un botón de «atrás»." },
+  { id: "linea", nombre: "Tu línea", dibujo: linea, vivo: "linea",
+    idea: "La línea de hoy hecha logo. La forma es fija, pero las barras toman la altura del plan de cada persona: el logo de tu cuenta es tuyo.",
+    dice: "Cada plan tiene su forma, y lo malo siempre está a la vista.", riesgo: "Al compartir una captura se ve el perfil, y puede leerse como «moderado es peor». Sin el perfil, se parece a «Mismo peso»." },
+  { familia: "Ligado a mercados (una sola, para ver cómo iría)" },
+  { id: "vela", nombre: "La vela entera", dibujo: vela,
+    idea: "Una vela de cotización honesta: el máximo y el mínimo con el mismo largo, partidos justo por lo que ponés hoy, sin decir si cerró arriba o abajo.",
+    dice: "Así se ve un período de verdad: puede subir y puede bajar lo mismo.", riesgo: "Quien opera puede leerla como vela alcista, y el ícono de vela es común en apps de trading: es la más cercana a la estética que FinUp evita." },
+];
+
+let n = 0;
+const svg = (o, t, chico, extra = "") => `<svg width="${t}" height="${t}" viewBox="0 0 64 64" aria-hidden="true" ${extra}>${o.dibujo(chico, o.id === "vela" ? "v" + n++ : undefined)}</svg>`;
+function icono(o, t) {
+  const chico = t <= 20, fondo = o.fondoIcono || "#171c5e";
+  return `<svg class="icono" width="${t}" height="${t}" viewBox="0 0 64 64" role="img" aria-label="Ícono"><rect width="64" height="64" fill="${fondo}"/><g transform="translate(8 8) scale(.75)">${o.dibujo(chico, o.id === "vela" ? "v" + n++ : undefined)}</g></svg>`;
+}
+const sello = (o, fs, extra = "") => `<span class="sello" style="font-size:${fs}px" role="img" aria-label="finup">${svg(o, Math.round(fs * 1.12), false, extra)}<span>finup</span></span>`;
+function controles(o) {
+  if (o.vivo === "abanico") return `<div class="controles" role="group" aria-label="Probar el abanico"><button class="chip js-ab" data-modo="cargando" aria-pressed="false" type="button">Ver cargando</button><button class="chip js-ab" data-modo="revelar" aria-pressed="false" type="button">Ver revelado</button></div>`;
+  if (o.vivo === "linea") return `<div class="controles" role="group" aria-label="Perfil">${["sin","conservador","moderado"].map((p,i)=>`<button class="chip js-li" data-perfil="${p}" aria-pressed="${i===0}" type="button">${p === "sin" ? "Sin plan" : p[0].toUpperCase()+p.slice(1)}</button>`).join("")}</div>`;
+  return "";
+}
+document.getElementById("opciones").innerHTML = OPCIONES.map((o) => o.familia ? `<h2 class="familia">${o.familia}</h2>` : `
+  <section class="opcion">
+    <h2>${o.nombre}</h2>
+    <p>${o.idea}</p>
+    <div class="lamina">
+      <div class="hero"><div class="js-hero-${o.id}">${sello(o, 76)}</div>${controles(o)}</div>
+      <div class="lado">
+        <div class="tamanos">
+          <figure>${icono(o, 64)}<figcaption>Ícono</figcaption></figure>
+          <figure>${icono(o, 32)}<figcaption>32 px</figcaption></figure>
+          <figure>${icono(o, 16)}<figcaption>Pestaña</figcaption></figure>
+        </div>
+        <div class="barra-app">${sello(o, 22)}<span>Ingresar</span></div>
+        <div class="apps">
+          <div><i style="background:#e9e4d8"></i><span>Notas</span></div>
+          <div>${icono(o, 44)}<span>FinUp</span></div>
+          <div><i style="background:#2f6d4f"></i><span>Mapas</span></div>
+          <div><i style="background:#b8452f"></i><span>Música</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="lectura"><p><b>Qué dice:</b> ${o.dice}</p><p><b>Riesgo:</b> ${o.riesgo}</p></div>
+  </section>`).join("");
+
+// Abanico: respira al cargar, se abre al revelar
+const heroAb = document.querySelector(".js-hero-abanico svg");
+document.querySelectorAll(".js-ab").forEach((b) => b.addEventListener("click", () => {
+  document.querySelectorAll(".js-ab").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  heroAb.classList.remove("cargando", "cerrado");
+  if (b.dataset.modo === "cargando") { heroAb.classList.add("cargando"); return; }
+  heroAb.classList.add("cerrado");
+  void heroAb.getBoundingClientRect();
+  setTimeout(() => heroAb.classList.remove("cerrado"), 120);
+}));
+
+// Tu línea: las barras toman el plan de cada perfil
+const heroLi = document.querySelector(".js-hero-linea svg");
+document.querySelectorAll(".js-li").forEach((b) => b.addEventListener("click", () => {
+  document.querySelectorAll(".js-li").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  const [a, c] = PERFIL_LINEA[b.dataset.perfil];
+  const sube = heroLi.querySelector(".sube"), baja = heroLi.querySelector(".baja");
+  sube.setAttribute("y", 30 - a); sube.setAttribute("height", a + 2);
+  baja.setAttribute("height", c + 2);
+}));
+</script>
+</body>
+</html>

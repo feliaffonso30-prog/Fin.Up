@@ -48,7 +48,7 @@ Next.js 16 (App Router) · React 19 · Tailwind 4 + shadcn/ui · Supabase · Gem
 
 ## Hoja de ruta (en orden)
 
-1. ✅ **Login con Supabase Auth** (email + contraseña, confirmación por email). Hecho: `proxy.ts` (refresca sesión y protege las rutas de `RUTAS_PROTEGIDAS`, hoy vacía: toda la plataforma es pública, primero el valor y después la cuenta), `lib/supabase/*`, `lib/auth/rutas.ts` (reglas puras + tests), páginas `/login`, `/registro`, `/recuperar` y `/nueva-contrasena`, `/auth/callback` y `/auth/salir` (POST). **Sin las variables `NEXT_PUBLIC_SUPABASE_*` la app corre en "modo sin cuenta"** (no protege nada, plan en `localStorage`). Falta: probarlo contra un proyecto Supabase real.
+1. ✅ **Login con Supabase Auth** (email + contraseña, confirmación por email). Hecho: `proxy.ts` (refresca sesión y protege las rutas de `RUTAS_PROTEGIDAS`, hoy vacía: toda la plataforma es pública, primero el valor y después la cuenta), `lib/supabase/*`, `lib/auth/rutas.ts` (reglas puras + tests), páginas `/login`, `/registro`, `/recuperar` y `/nueva-contrasena`, `/auth/callback` y `/auth/salir` (POST). **Sin las variables `NEXT_PUBLIC_SUPABASE_*` la app corre en "modo sin cuenta"** (no protege nada, plan en `localStorage`). Probado contra el proyecto Supabase real ("Finup"); Redirect URLs: `http://localhost:3000/**` (sumar el dominio de producción al desplegar). Ojo: en el plan Free el proyecto se pausa por inactividad y su dominio deja de resolver (el login falla con `ENOTFOUND`); se reactiva con "Resume project" en el dashboard.
 2. ✅ **Plan guardado en Supabase** (`planes_inversion`) cuando hay login: `usePlan()` (en `store.ts`) usa Supabase (`remoto.ts`) si hay sesión y `localStorage` si no. Rehacer el cuestionario archiva el plan anterior (historial). Un plan local previo se pasa a la cuenta la primera vez. Falta: probarlo contra el proyecto Supabase real.
 3. **Límites Free/Plus en `/api/chat`** con `uso_finbot` (escribe solo el servidor con service role) y reemplazar `rate-limit.ts` (en memoria, por IP).
 4. Pantalla de planes y cuenta.
@@ -60,4 +60,5 @@ Next.js 16 (App Router) · React 19 · Tailwind 4 + shadcn/ui · Supabase · Gem
 - `npm run lint` apunta a `eslint .` pero eslint no está instalado como dependencia.
 - Comparador: completar `ENLACES` en `lib/plataforma/comparador/enlaces.ts` (hoy muchas entidades dicen "Sin link disponible").
 - Biblioteca: verificar los datos marcados `TODO-VERIFICAR` en `lib/plataforma/instrumentos/datos.ts` (ratios de CEDEARs, series reales de las ONs `YPF-ON`/`PAMP-ON`, panel líder) y después pasar `LISTA_EN_BORRADOR` a `false`.
+- Supabase Auth: "Confirm email" está **apagado** para desarrollar (el correo gratuito de Supabase manda muy pocos mails por hora y daba `over_email_send_rate_limit`). Antes de lanzar: configurar SMTP propio (Authentication → Emails) y volver a encenderlo.
 - Aún no hay revisión legal (términos, privacidad, límites de lo que puede decir FinBot); el entregable 2 la contempla.

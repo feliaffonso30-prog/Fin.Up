@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FinUp: opciones de logo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800;900&display=swap">
+<style>
+:root{--noche:radial-gradient(135% 88% at 94% -10%,#5361e0 0%,#3740ac 30%,#171c5e 62%,#0b0e30 100%);--gris:#d3d7f2}
+*{box-sizing:border-box;margin:0}
+body{background:#e4e5ea;color:#15172b;font-family:"Schibsted Grotesk","Segoe UI",system-ui,Arial,sans-serif;font-size:16px;line-height:1.4;padding:28px 16px 64px}
+.ancho{max-width:1120px;margin:0 auto}
+h1{font-size:34px;line-height:1.08;font-weight:900;letter-spacing:-.03em}
+.bajada{margin-top:8px;font-size:17px;color:#3f4259;max-width:66ch}
+.opcion{margin-top:32px}
+.opcion h2{font-size:26px;font-weight:900;letter-spacing:-.025em}
+.opcion>p{margin-top:3px;color:#3f4259;max-width:70ch}
+.lamina{margin-top:12px;border-radius:24px;overflow:hidden;background:#0b0e30;background-image:var(--noche);color:#fff;display:grid;grid-template-columns:1.25fr 1fr;gap:0}
+.hero{padding:34px 30px;display:flex;align-items:center;min-height:210px}
+.lado{padding:22px 24px;display:flex;flex-direction:column;gap:18px;justify-content:center;background:rgba(11,14,48,.55)}
+.sello{display:flex;align-items:center;gap:.26em;font-weight:900;letter-spacing:-.04em;line-height:1}
+.sello svg{display:block;flex:none}
+.palabra{display:inline-block}
+.tamanos{display:flex;align-items:flex-end;gap:16px}
+.tamanos figure{margin:0;text-align:center}
+.tamanos figcaption{font-size:12px;color:var(--gris);margin-top:5px}
+.icono{display:block;border-radius:22%;background:#171c5e}
+.barra-app{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.09);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);font-size:14px}
+.apps{display:flex;gap:12px;align-items:flex-end}
+.apps i{display:block;width:44px;height:44px;border-radius:22%}
+.apps span{display:block;text-align:center;font-size:11px;color:#fff;margin-top:3px}
+.apps div{width:48px}
+.lectura{display:grid;grid-template-columns:1fr 1fr;gap:6px 22px;margin-top:10px;font-size:15px;color:#3f4259}
+.lectura b{color:#15172b}
+@media (max-width:760px){.lamina{grid-template-columns:1fr}.hero{min-height:150px;padding:26px 20px}.lectura{grid-template-columns:1fr}.hero .sello{font-size:52px!important}}
+</style>
+</head>
+<body>
+<div class="ancho">
+  <h1>Cinco caminos para el logo de FinUp</h1>
+  <p class="bajada">Cada uno se ve grande, en los tamaños reales, en la barra de la app y entre otras apps. Son bocetos: el elegido se redibuja a mano y se revisa que no se parezca a otra marca.</p>
+  <div id="opciones"></div>
+</div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- 1. De reojo -->
+    <symbol id="reojo" viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" fill="#fff"/><circle cx="41" cy="23" r="11" fill="#0b0e30"/></symbol>
+    <!-- 2. Dos puntos -->
+    <symbol id="puntos" viewBox="0 0 64 64"><circle cx="32" cy="20" r="10" fill="#fff"/><circle cx="32" cy="44" r="10" fill="#8d99ff"/></symbol>
+    <!-- 3. Medio humo -->
+    <symbol id="humo" viewBox="0 0 64 64"><path d="M28 10H52a6 6 0 0 1 6 6V48a6 6 0 0 1-6 6H28Z" fill="#fff"/><path d="M28 10V54H16a7.33 7.33 0 0 1 0-14.66a7.33 7.33 0 0 1 0-14.68a7.33 7.33 0 0 1 0-14.66Z" fill="#8d99ff"/></symbol>
+    <!-- 4. Mismo peso -->
+    <symbol id="peso" viewBox="0 0 64 64"><path d="M6 30a20 20 0 0 1 40 0Z" fill="#fff"/><path d="M18 34a20 20 0 0 0 40 0Z" fill="#8d99ff"/></symbol>
+  </defs>
+</svg>
+<script>
+const OPCIONES = [
+  { id: "reojo", nombre: "De reojo", idea: "Un ojo que mira de costado. Es el gesto de quien no se traga una promesa.",
+    dice: "Mirá antes de creer.", riesgo: "Puede sentirse burlón: choca un poco con «No juzgamos».", colores: "Blanco y noche." },
+  { id: "puntos", nombre: "Dos puntos", idea: "«finup:» Los dos puntos anuncian lo que sigue, con dos partes del mismo tamaño. Sirve como voz: «finup: esto puede salir mal».",
+    dice: "Una pausa antes de decidir, con dos lados iguales.", riesgo: "Sin la palabra es abstracto. Tiene menos impacto como ícono.", colores: "Blanco y lavanda." },
+  { id: "humo", nombre: "Medio humo", idea: "Un bloque con un lado recto y otro que se deshace en humo: de un lado la promesa, del otro lo que queda.",
+    dice: "Le sacamos el humo a las cosas.", riesgo: "Se puede leer como ticket o nube.", colores: "Blanco y lavanda." },
+  { id: "peso", nombre: "Mismo peso", idea: "Un círculo partido en dos mitades iguales y corridas: lo bueno y lo malo pesan lo mismo, pero no se compensan.",
+    dice: "Lo bueno y lo malo, con el mismo peso.", riesgo: "Estilo geométrico muy visto: es el que más riesgo de parecido tiene.", colores: "Blanco y lavanda." },
+  { id: "p", nombre: "La p que baja", idea: "El boceto anterior, para comparar. Solo palabra: la p cruza la línea y baja en lavanda.",
+    dice: "Hasta en el «up» se ve lo que puede bajar.", riesgo: "Sin símbolo propio, el ícono es una p. Se nota poco en chico.", colores: "Blanco y lavanda." },
+];
+const usar = (id, t) => `<svg width="${t}" height="${t}" aria-hidden="true"><use href="#${id}"/></svg>`;
+function icono(o, t) {
+  if (o.id === "p") return `<svg class="icono js-p" width="${t}" height="${t}" viewBox="0 0 64 64" role="img" aria-label="Ícono"></svg>`;
+  const adentro = Math.round(t * .74), m = (t - adentro) / 2;
+  return `<svg class="icono" width="${t}" height="${t}" viewBox="0 0 ${t} ${t}" role="img" aria-label="Ícono"><use href="#${o.id}" x="${m}" y="${m}" width="${adentro}" height="${adentro}"/></svg>`;
+}
+const palabra = (o) => o.id === "puntos" ? `<span class="palabra">finup</span>` : `<span class="palabra">finup</span>`;
+function sello(o, fs) {
+  if (o.id === "p") return `<svg class="js-marca" style="height:${fs * 1.12}px;width:auto;display:block" role="img" aria-label="finup"></svg>`;
+  if (o.id === "puntos") {
+    const d = Math.round(fs * .15), g = Math.round(fs * .1);
+    return `<span class="sello" style="font-size:${fs}px;gap:.05em" role="img" aria-label="finup">${palabra(o)}<span style="display:flex;flex-direction:column;gap:${g}px;align-self:flex-end;padding-bottom:.13em"><i style="display:block;width:${d}px;height:${d}px;border-radius:50%;background:#fff"></i><i style="display:block;width:${d}px;height:${d}px;border-radius:50%;background:#8d99ff"></i></span></span>`;
+  }
+  return `<span class="sello" style="font-size:${fs}px" role="img" aria-label="finup">${usar(o.id, Math.round(fs * 1))}${palabra(o)}</span>`;
+}
+document.getElementById("opciones").innerHTML = OPCIONES.map((o, i) => `
+  <section class="opcion">
+    <h2>${i + 1}. ${o.nombre}</h2>
+    <p>${o.idea}</p>
+    <div class="lamina">
+      <div class="hero">${sello(o, 76)}</div>
+      <div class="lado">
+        <div class="tamanos">
+          <figure>${icono(o, 64)}<figcaption>Ícono</figcaption></figure>
+          <figure>${icono(o, 32)}<figcaption>32 px</figcaption></figure>
+          <figure>${icono(o, 16)}<figcaption>Pestaña</figcaption></figure>
+        </div>
+        <div class="barra-app">${sello(o, 22)}<span>Ingresar</span></div>
+        <div class="apps">
+          <div><i style="background:#e9e4d8"></i><span>Notas</span></div>
+          <div>${icono(o, 44)}<span>FinUp</span></div>
+          <div><i style="background:#2f6d4f"></i><span>Mapas</span></div>
+          <div><i style="background:#b8452f"></i><span>Música</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="lectura"><p><b>Qué dice:</b> ${o.dice}</p><p><b>Riesgo:</b> ${o.riesgo}</p></div>
+  </section>`).join("");
+
+// La p que baja, con el mismo recorte del boceto anterior
+let n = 0;
+function dibujarP() {
+  document.querySelectorAll(".js-marca").forEach((svg) => {
+    const id = "m" + n++;
+    svg.innerHTML = `<defs><clipPath id="${id}a"><rect x="-5" y="-30" width="500" height="110"/></clipPath><clipPath id="${id}b"><rect x="-5" y="88" width="500" height="50"/></clipPath></defs><g font-family="'Schibsted Grotesk',sans-serif" font-weight="900" font-size="100" letter-spacing="-4"><text y="80" fill="#fff" clip-path="url(#${id}a)">finup</text><text y="80" fill="#8d99ff" clip-path="url(#${id}b)">finup</text></g><rect class="l" y="81.5" height="4" rx="2" fill="#fff"/>`;
+    const a = svg.querySelector("text").getComputedTextLength();
+    svg.querySelector(".l").setAttribute("width", a);
+    svg.setAttribute("viewBox", `0 0 ${a} 112`);
+  });
+  document.querySelectorAll(".js-p").forEach((svg) => {
+    const id = "i" + n++;
+    svg.innerHTML = `<defs><clipPath id="${id}a"><rect width="64" height="39"/></clipPath><clipPath id="${id}b"><rect y="43.5" width="64" height="21"/></clipPath></defs><g font-family="'Schibsted Grotesk',sans-serif" font-weight="900" font-size="50" text-anchor="middle"><text x="32" y="40" fill="#fff" clip-path="url(#${id}a)">p</text><text x="32" y="40" fill="#8d99ff" clip-path="url(#${id}b)">p</text></g><rect x="10" y="40" width="44" height="2.5" rx="1.25" fill="#fff"/>`;
+  });
+}
+dibujarP();
+if (document.fonts) document.fonts.ready.then(dibujarP);
+</script>
+</body>
+</html>
