@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FinUp: logos, ronda trece</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800;900&display=swap">
+<style>
+:root{--noche:radial-gradient(135% 88% at 94% -10%,#5361e0 0%,#3740ac 30%,#171c5e 62%,#0b0e30 100%);--gris:#d3d7f2;--tinta:#15172b;--tinta2:#3f4259;--papel:#e4e5ea;--curva:cubic-bezier(0.23,1,0.32,1)}
+*{box-sizing:border-box;margin:0}
+::selection{background:#5361e0;color:#fff}
+body{background:var(--papel);color:var(--tinta);font-family:"Schibsted Grotesk","Segoe UI",system-ui,Arial,sans-serif;font-size:16px;line-height:1.4;padding:0 16px 64px}
+.ancho{max-width:1320px;margin:0 auto}
+.cabeza{position:sticky;top:0;z-index:5;background:var(--papel);padding:20px 0 12px;box-shadow:0 10px 14px -14px rgba(21,23,43,.6)}
+h1{font-size:30px;line-height:1.08;font-weight:900;letter-spacing:-.03em;text-wrap:balance}
+.bajada{margin-top:6px;color:var(--tinta2);max-width:78ch}
+.controles{display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:12px}
+.modo{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.modo>span{font-size:14px;font-weight:700;color:var(--tinta2)}
+.chip{border:0;background:#fff;color:var(--tinta);font:inherit;font-weight:700;min-height:44px;padding:8px 16px;border-radius:12px;cursor:pointer;transition:transform .12s var(--curva)}
+.chip:active{transform:scale(.97)}
+.chip[aria-pressed=true]{background:var(--tinta);color:#fff}
+.chip:focus-visible{outline:3px solid #5361e0;outline-offset:2px}
+
+.resumen{margin-top:24px;border-radius:24px;background:#0b0e30;background-image:var(--noche);color:#fff;padding:22px 24px}
+.resumen h2{font-size:15px;font-weight:800;color:var(--gris);margin-bottom:12px}
+.fila{display:grid;grid-template-columns:repeat(4,minmax(0,220px));gap:14px 40px}
+.mini{display:flex;flex-direction:column;align-items:flex-start;gap:9px;min-width:0}
+.mini b{font-size:13px;font-weight:700}
+.pestana{display:inline-flex;align-items:center;gap:7px;max-width:100%;padding:7px 10px;border-radius:9px 9px 0 0;background:#23284f;font-size:12px;color:#e8eaff;white-space:nowrap}
+.pestana .icono{border-radius:3px}
+
+.columnas{display:grid;grid-template-columns:1fr 1fr;gap:0 28px;align-items:start}
+.opcion{margin-top:30px}
+.opcion h2{font-size:22px;font-weight:900;letter-spacing:-.02em}
+.opcion>p{margin-top:3px;color:var(--tinta2);max-width:62ch}
+.lamina{margin-top:12px;border-radius:24px;overflow:hidden;background:#0b0e30;background-image:var(--noche);color:#fff}
+.hero{padding:30px 28px 26px;display:flex;flex-direction:column;justify-content:center;gap:14px;min-height:200px}
+.estado{font-size:15px;color:var(--gris)}
+.lado{padding:20px 24px 22px;display:grid;grid-template-columns:auto 1fr;gap:18px 26px;align-items:end;background:rgba(11,14,48,.55)}
+.sello{display:flex;align-items:center;gap:.22em;font-weight:900;letter-spacing:-.04em;line-height:1}
+.atras .sello{flex-direction:row-reverse}
+.hero .sello{align-self:flex-start}
+.sello svg{display:block;flex:none;overflow:visible}
+.tamanos{display:flex;align-items:flex-end;gap:12px}
+.tamanos figure{margin:0;text-align:center}
+.tamanos figcaption{font-size:12px;color:var(--gris);margin-top:5px}
+.icono{display:block;border-radius:22%}
+.barra-app{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.09);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);font-size:14px}
+.apps{display:flex;gap:12px;align-items:flex-end;justify-content:flex-end}
+.apps i{display:block;width:44px;height:44px;border-radius:22%}
+.apps span{display:block;text-align:center;font-size:11px;color:#fff;margin-top:3px}
+.apps div{width:48px}
+/* Otras aplicaciones: sobre claro y a un solo color */
+.usos{display:grid;grid-template-columns:1fr 1fr}
+.uso{padding:18px 24px 16px;display:flex;flex-direction:column;gap:8px}
+.uso small{font-size:12px}
+.uso.claro{background:#f4f5fa;color:#171c5e}
+.uso.claro small{color:#3f4259}
+.uso.mono{background:#3740ac;color:#fff}
+.uso.mono small{color:#e8eaff}
+.lectura{display:grid;gap:5px;margin-top:10px;font-size:15px;color:var(--tinta2)}
+.lectura b{color:var(--tinta)}
+
+@media (prefers-reduced-motion:reduce){.chip{transition:none}}
+@media (max-width:980px){.columnas{grid-template-columns:1fr}.cabeza{position:static;box-shadow:none}}
+@media (max-width:520px){.hero{min-height:160px;padding:24px 20px}.hero .sello{font-size:50px!important}.lado{grid-template-columns:1fr}.apps{justify-content:flex-start}.fila{grid-template-columns:repeat(2,1fr)}.usos{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="ancho">
+  <div class="cabeza">
+    <h1>Logos, ronda trece: la rosa con relieve, más fina</h1>
+    <p class="bajada">La rosa con relieve de la ronda anterior, en cuatro grados de liviandad: la referencia, una más fina, una muy fina y una fina sin aro. En 16 px todas usan un dibujo más grueso, porque el trazo fino no sobrevive a ese tamaño.</p>
+    <div class="controles">
+      <div class="modo" role="group" aria-label="Posición del símbolo"><span>Símbolo</span>
+        <button class="chip" type="button" data-pos="adelante" aria-pressed="true">Adelante del nombre</button>
+        <button class="chip" type="button" data-pos="atras" aria-pressed="false">Atrás del nombre</button>
+      </div>
+    </div>
+  </div>
+  <div class="resumen"><h2>Las cuatro en ícono de 44 px y en pestaña de 16 px</h2><div class="fila" id="resumen"></div></div>
+  <div class="columnas" id="opciones"></div>
+</div>
+<script>
+// Paletas: sobre Noche, sobre fondo claro y a un solo color. s = sombra de las puntas cortas.
+const NOCHE = { b: "#fff", l: "#8d99ff", l2: "#d3d7ff", s: "#5361e0" };
+const CLARO = { b: "#171c5e", l: "#5361e0", l2: "#3740ac", s: "#8d99ff" };
+const MONO = { b: "#fff", l: "#fff", l2: "#fff", s: "#fff" };
+
+const cara = (pts, f) => `<polygon points="${pts}" fill="${f}"/>`;
+// Puntas largas. r = largo; w = cintura. luz / sombra: la cara que mira arriba a la izquierda y la otra.
+const largas = (r, w, luz, sombra) => {
+  const p = 32 - w, q = 32 + w, a = 32 - r, z = 32 + r;
+  return cara(`32,${a} ${p},${p} 32,32`, luz) + cara(`32,${a} ${q},${p} 32,32`, sombra) +
+    cara(`${z},32 ${q},${p} 32,32`, luz) + cara(`${z},32 ${q},${q} 32,32`, sombra) +
+    cara(`32,${z} ${p},${q} 32,32`, luz) + cara(`32,${z} ${q},${q} 32,32`, sombra) +
+    cara(`${a},32 ${p},${p} 32,32`, luz) + cara(`${a},32 ${p},${q} 32,32`, sombra);
+};
+// Puntas cortas en diagonal. d = alcance; c = base sobre los ejes.
+const cortas = (d, c, luz, sombra) => {
+  const A = 32 - d, Z = 32 + d, n = `32,${32 - c}`, e = `${32 + c},32`, su = `32,${32 + c}`, o = `${32 - c},32`;
+  return cara(`${Z},${A} ${n} 32,32`, luz) + cara(`${Z},${A} ${e} 32,32`, sombra) +   // noreste
+    cara(`${Z},${Z} ${e} 32,32`, luz) + cara(`${Z},${Z} ${su} 32,32`, sombra) +       // sudeste
+    cara(`${A},${Z} ${o} 32,32`, luz) + cara(`${A},${Z} ${su} 32,32`, sombra) +       // sudoeste
+    cara(`${A},${A} ${n} 32,32`, luz) + cara(`${A},${A} ${o} 32,32`, sombra);         // noroeste
+};
+// Aro en cuatro arcos: se corta donde pasan las puntas largas.
+const arcos = (r, sw, a1, f) => {
+  const pt = (a) => `${(32 + r * Math.sin(a * Math.PI / 180)).toFixed(2)} ${(32 - r * Math.cos(a * Math.PI / 180)).toFixed(2)}`;
+  return [0, 90, 180, 270].map((g) => `<path transform="rotate(${g} 32 32)" d="M${pt(a1)}A${r} ${r} 0 0 1 ${pt(90 - a1)}" fill="none" stroke="${f}" stroke-width="${sw}" stroke-linecap="round"/>`).join("");
+};
+// Medidas: [aro radio, aro grosor (0 = sin aro), corte en grados, largo, cintura, alcance diagonal, base diagonal]
+const GRADOS = {
+  referencia: { g: [22.5, 3.5, 16, 31, 4.8, 11.5, 7.5], c: [22, 6, 25, 31, 7, 12, 10] },
+  fina:       { g: [22.5, 2.4, 13, 31, 3.6, 10, 5.8],   c: [22, 5, 24, 31, 6, 11, 8.5] },
+  muyFina:    { g: [22, 1.6, 11, 31, 2.7, 8.5, 4.4],    c: [22, 4.5, 23, 31, 5.2, 10, 7.5] },
+  sinAro:     { g: [0, 0, 0, 31, 3.6, 12, 6],           c: [0, 0, 0, 31, 6.5, 14, 10] },
+};
+// Con relieve: cada punta con una cara iluminada y otra en sombra.
+const rosa = (grado) => (chico, k) => {
+  const [R, sw, a, r, w, d, b] = GRADOS[grado][chico ? "c" : "g"];
+  return (sw ? arcos(R, sw, a, k.l) : "") + cortas(d, b, k.l2, k.s) + largas(r, w, k.b, k.l);
+};
+
+const OPCIONES = [
+  { nombre: "Referencia", dibujo: rosa("referencia"),
+    idea: "La rosa con relieve tal como quedó en la ronda anterior, para comparar.",
+    dice: "Es la que mejor acompaña al nombre en negrita y la que más cuerpo tiene en tamaños medianos.",
+    riesgo: "Al lado de las otras se ve más pesada, que es justo lo que pediste aliviar." },
+  { nombre: "Fina", dibujo: rosa("fina"),
+    idea: "Puntas un 25 % más delgadas, puntas cortas más chicas y aro más delgado.",
+    dice: "Se nota más liviana sin dejar de verse tallada: el relieve sigue leyéndose bien. Es el punto medio.",
+    riesgo: "El aro ya es una línea delgada: en la barra de la app (unos 25 px) empieza a perderse." },
+  { nombre: "Muy fina", dibujo: rosa("muyFina"),
+    idea: "Puntas como agujas, puntas cortas mínimas y un aro apenas marcado.",
+    dice: "La más delicada y elegante en grande. Se parece a la rosa de una carta náutica.",
+    riesgo: "Es la que menos acompaña al nombre: el contraste entre un símbolo de aguja y una palabra en negrita puede verse desparejo. Con caras tan angostas el relieve se nota menos, y necesita sí o sí otro dibujo para tamaños chicos." },
+  { nombre: "Fina, sin aro", dibujo: rosa("sinAro"),
+    idea: "La estrella fina sola, con las puntas cortas un poco más largas para compensar.",
+    dice: "La más minimalista: una sola pieza. El relieve es todo el dibujo.",
+    riesgo: "Sin el aro pierde el detalle de los cortes que te había gustado y se lee más como estrella que como brújula. En 16 px es un destello." },
+];
+
+const svg = (o, t, k = NOCHE) => `<svg width="${t}" height="${t}" viewBox="0 0 64 64" aria-hidden="true">${o.dibujo(t < 32, k)}</svg>`;
+const icono = (o, t) => {
+  const chico = t <= 24;
+  return `<svg class="icono" width="${t}" height="${t}" viewBox="0 0 64 64" role="img" aria-label="Ícono de ${o.nombre}"><rect width="64" height="64" fill="#171c5e"/><g transform="${chico ? "translate(4 4) scale(.875)" : "translate(8 8) scale(.75)"}">${o.dibujo(chico, NOCHE)}</g></svg>`;
+};
+const sello = (o, fs, k) => `<span class="sello" style="font-size:${fs}px" role="img" aria-label="finup">${svg(o, Math.round(fs * 1.12), k)}<span>finup</span></span>`;
+
+document.getElementById("resumen").innerHTML = OPCIONES.map((o, i) =>
+  `<div class="mini">${icono(o, 44)}<span class="pestana">${icono(o, 16)}FinUp</span><b>${i + 1}. ${o.nombre}</b></div>`).join("");
+
+document.getElementById("opciones").innerHTML = OPCIONES.map((o, i) => `
+  <section class="opcion">
+    <h2>${i + 1}. ${o.nombre}</h2>
+    <p>${o.idea}</p>
+    <div class="lamina">
+      <div class="hero">${sello(o, 64)}<p class="estado">Tu progreso financiero, paso a paso</p></div>
+      <div class="lado">
+        <div class="tamanos">
+          <figure>${icono(o, 64)}<figcaption>64</figcaption></figure>
+          <figure>${icono(o, 48)}<figcaption>48</figcaption></figure>
+          <figure>${icono(o, 32)}<figcaption>32</figcaption></figure>
+          <figure>${icono(o, 24)}<figcaption>24</figcaption></figure>
+          <figure>${icono(o, 16)}<figcaption>16</figcaption></figure>
+        </div>
+        <div class="apps">
+          <div><i style="background:#e9e4d8"></i><span>Notas</span></div>
+          <div>${icono(o, 44)}<span>FinUp</span></div>
+          <div><i style="background:#2f6d4f"></i><span>Mapas</span></div>
+        </div>
+        <div class="barra-app">${sello(o, 22)}<span>Ingresar</span></div>
+      </div>
+      <div class="usos">
+        <div class="uso claro">${sello(o, 34, CLARO)}<small>Sobre fondo claro</small></div>
+        <div class="uso mono">${sello(o, 34, MONO)}<small>A un solo color</small></div>
+      </div>
+    </div>
+    <div class="lectura"><p><b>Qué dice:</b> ${o.dice}</p><p><b>Riesgo:</b> ${o.riesgo}</p></div>
+  </section>`).join("");
+
+const pos = [...document.querySelectorAll("[data-pos]")];
+pos.forEach((b) => b.addEventListener("click", () => {
+  pos.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  document.body.classList.toggle("atras", b.dataset.pos === "atras");
+}));
+</script>
+</body>
+</html>

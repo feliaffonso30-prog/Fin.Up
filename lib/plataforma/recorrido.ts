@@ -5,7 +5,7 @@ import type { Categoria, Plan } from "./tipos";
 
 // El recorrido guiado: unos pocos pasos, en orden, armados por reglas fijas según
 // las respuestas. Primero lo que protege (deudas caras, colchón de emergencia),
-// después entender el plan, ver ejemplos reales y aprender a detectar el humo
+// después entender el plan, ver ejemplos reales y aprender a reconocer una estafa
 // antes de salir a comparar tasas. Nada se bloquea y nunca dice qué comprar.
 // "Tu siguiente paso" en Mi plan es el primer paso que falta.
 
@@ -14,7 +14,7 @@ export type AccionPaso =
   | { tipo: "finbot"; pregunta: string; etiqueta: string }
   | { tipo: "parte"; categoria: Categoria; etiqueta: string };
 
-export type IdPaso = "perfil" | "deudas" | "colchon" | "cartera" | "ejemplos" | "humo" | "pesos";
+export type IdPaso = "perfil" | "deudas" | "colchon" | "cartera" | "ejemplos" | "estafas" | "pesos";
 
 export interface PasoRecorrido {
   id: IdPaso;
@@ -28,7 +28,7 @@ export interface PasoRecorrido {
   aviso?: string;
 }
 
-export const LECCION_HUMO = "anti-humo";
+export const LECCION_ESTAFAS = "senales-de-estafa";
 
 export function armarRecorrido(plan: Plan): PasoRecorrido[] {
   const r = plan.respuestas;
@@ -96,11 +96,11 @@ export function armarRecorrido(plan: Plan): PasoRecorrido[] {
   });
 
   pasos.push({
-    id: "humo",
-    corto: "Aprendé a detectar el humo",
-    titulo: "Aprendé a detectar el humo",
+    id: "estafas",
+    corto: "Aprendé a reconocer una estafa",
+    titulo: "Aprendé a reconocer una estafa",
     texto: "Las señales de una estafa o de un falso gurú, en 2 minutos. Conviene leerlo antes de salir a buscar dónde poner tu plata.",
-    accion: { tipo: "enlace", href: `/aprender#${LECCION_HUMO}`, etiqueta: "Leer la lección" },
+    accion: { tipo: "enlace", href: `/aprender#${LECCION_ESTAFAS}`, etiqueta: "Leer la lección" },
   });
 
   // Con el colchón ya armado, el paso de comparar tasas va al final, después de la lección.

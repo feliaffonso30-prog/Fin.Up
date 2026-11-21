@@ -10,7 +10,7 @@ const schibsted = Schibsted_Grotesk({
 
 export const metadata: Metadata = {
   title: 'FinUp: antes de invertir, mirá qué puede pasar',
-  description: 'Tu plan en 3 minutos, con lo bueno y lo malo a la vista. FinUp te ayuda a decidir antes de invertir, sin humo y sin mover tu plata.',
+  description: 'Tu plan en 3 minutos, con lo bueno y lo malo a la vista. FinUp te ayuda a decidir antes de invertir, con claridad y sin mover tu plata.',
 }
 
 export const viewport: Viewport = {

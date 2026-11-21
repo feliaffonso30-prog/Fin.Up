@@ -1,21 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { AlertTriangle, ArrowDown, ArrowRight, Bot, ChevronDown, RefreshCw, Scale } from "lucide-react";
+import { AlertTriangle, ChevronDown, RefreshCw, Scale } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { BrujulaCargando } from "@/components/plataforma/brujula-cargando";
 import { GraficoProyeccion } from "@/components/plataforma/grafico-proyeccion";
 import { EscenariosCompactos } from "@/components/plataforma/escenarios";
 import { Aviso, COLOR_CATEGORIA, EncabezadoPagina, Punto, QuePuedeSalirMal, TextoLegal } from "@/components/plataforma/primitivas";
+import { SelectorUnidad, type Unidad } from "@/components/plataforma/selector-unidad";
+import { PestanasMiPlan } from "@/components/plataforma/pestanas-mi-plan";
 import { VerEjemplos } from "@/components/plataforma/instrumentos/ver-ejemplos";
-import { abrirFinBot } from "@/lib/finbot/abrir";
 import { CATEGORIAS_CON_EJEMPLOS } from "@/lib/plataforma/instrumentos/catalogo";
 import { DESCRIPCION_PERFIL } from "@/lib/plataforma/perfil";
 import { DESCARGO } from "@/lib/plataforma/cartera";
-import { fecha, usd } from "@/lib/plataforma/formato";
-import type { IdPaso, PasoRecorrido } from "@/lib/plataforma/recorrido";
+import { ars, fecha, usd } from "@/lib/plataforma/formato";
+import { useDolarMep } from "@/hooks/use-dolar-mep";
 import { useRecorrido } from "@/hooks/use-recorrido";
 import { usePlan } from "@/lib/plataforma/store";
 import { hrefComparador } from "@/lib/plataforma/comparador/desde-cartera";
@@ -27,10 +28,8 @@ export function Dashboard() {
 
   if (cargando) {
     return (
-      <div className="space-y-4" aria-busy="true" aria-label="Cargando tu plan">
-        <Skeleton className="h-10 w-2/3" />
-        <Skeleton className="h-24 w-full" />
-        <Skeleton className="h-64 w-full" />
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <BrujulaCargando etiqueta="Cargando tu plan">Cargando tu plan…</BrujulaCargando>
       </div>
     );
   }
@@ -47,11 +46,17 @@ export function Dashboard() {
       </div>
     );
   }
-  if (!plan) return <SinPlan />;
+  if (!plan)
+    return (
+      <>
+        <PestanasMiPlan activa="plan" />
+        <SinPlan />
+      </>
+    );
   return <Cartera plan={plan} sinCuenta={sinCuenta} />;
 }
 
-function SinPlan() {
+export function SinPlan() {
   return (
     <div className="mx-auto flex min-h-[60vh] max-w-md flex-col justify-center">
       <h1 className="text-[2.75rem] font-black leading-none tracking-[-0.035em]">Todavía no armaste tu plan</h1>
@@ -85,6 +90,14 @@ function Cartera({ plan, sinCuenta }: { plan: Plan; sinCuenta: boolean }) {
   const [abiertas, setAbiertas] = useState<string[]>([]);
   const parteMayor = recorrido.pasos.find((p) => p.id === "cartera")?.accion;
 
+  // Las cifras arrancan en porcentaje: es lo que no depende de cuánta plata ponga.
+  // Con un monto cargado se pueden pasar a dólares, y a pesos si hay cotización.
+  const mep = useDolarMep();
+  const [unidad, setUnidad] = useState<Unidad>("pct");
+  const unidades: Unidad[] = capital > 0 ? (mep ? ["pct", "ars", "usd"] : ["pct", "usd"]) : ["pct"];
+  const enPesos = unidad === "ars" && mep !== null;
+  const monto = (dolares: number) => (enPesos && mep ? ars(dolares * mep) : usd(dolares));
+
   // Abrir a mano la parte más grande también cuenta como hecho ese paso.
   function cambiarAbiertas(valores: string[]) {
     setAbiertas(valores);
@@ -102,20 +115,32 @@ function Cartera({ plan, sinCuenta }: { plan: Plan; sinCuenta: boolean }) {
     });
   }
 
+  // Desde Inicio ("Ver esa parte") se llega con /dashboard#parte-<categoría>: esa parte se abre sola.
+  useEffect(() => {
+    const m = /^#parte-(.+)$/.exec(window.location.hash);
+    if (m && posiciones.some((p) => p.categoria === m[1])) abrirParte(m[1]);
+    // Solo al entrar: el link se lee una vez.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className="space-y-10">
-      <EncabezadoPagina titulo={`Perfil ${perfil.perfil.toLowerCase()}`} />
+      <div className="space-y-5">
+        <PestanasMiPlan activa="plan" />
+        <EncabezadoPagina titulo={`Perfil ${perfil.perfil.toLowerCase()}`} />
+      </div>
 
-      <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:gap-8">
-        <TuRecorrido recorrido={recorrido} onVerParte={abrirParte} />
-
+      <div>
         <section aria-labelledby="en-un-anio" className="min-w-0">
-          <h2 id="en-un-anio" className="text-lg font-extrabold">
-            {capital > 0 ? `En un año, con ${usd(capital)}, en dólares` : "En un año, en porcentaje"}
-          </h2>
-          <EscenariosCompactos analisis={analisis} capital={capital} className="mt-3" />
+          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+            <h2 id="en-un-anio" className="text-lg font-extrabold">
+              {unidad === "pct" || capital === 0 ? "En un año" : `En un año, con ${monto(capital)}`}
+            </h2>
+            <SelectorUnidad valor={unidad} opciones={unidades} onCambiar={setUnidad} />
+          </div>
+          <EscenariosCompactos analisis={analisis} capital={capital} unidad={unidad} mep={mep} destacado className="mt-3 md:grid-cols-2" />
           <p className="mt-2.5 text-sm text-muted-foreground">
-            {capital > 0 ? `En un mal año quedarías cerca de ${usd(capital * (1 + analisis.caida / 100))}. ` : ""}Es una estimación, no una promesa.
+            {enPesos && mep ? `Pasado a pesos al dólar de hoy (${ars(mep)}). ` : ""}Es una estimación, no una promesa.
           </p>
         </section>
       </div>
@@ -123,7 +148,7 @@ function Cartera({ plan, sinCuenta }: { plan: Plan; sinCuenta: boolean }) {
       {AUTH_CONFIGURADA && sinCuenta && (
         <aside className="vidrio flex flex-col gap-3 rounded-xl p-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm leading-snug">Tu plan está guardado solo en este navegador. Creá una cuenta para no perderlo y verlo desde cualquier dispositivo.</p>
-          <Button asChild className="shrink-0">
+          <Button asChild variant="outline" className="shrink-0">
             <Link href="/registro">Crear mi cuenta</Link>
           </Button>
         </aside>
@@ -149,9 +174,12 @@ function Cartera({ plan, sinCuenta }: { plan: Plan; sinCuenta: boolean }) {
       )}
 
       <section aria-labelledby="reparto">
-        <h2 id="reparto" className="text-lg font-extrabold">
-          Cómo se reparte tu plata
-        </h2>
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+          <h2 id="reparto" className="text-lg font-extrabold">
+            Cómo se reparte tu plata
+          </h2>
+          <SelectorUnidad valor={unidad} opciones={unidades} onCambiar={setUnidad} />
+        </div>
         <p className="mt-1 text-sm text-muted-foreground">Tocá cada parte para ver qué es, por qué está en tu plan y qué puede salir mal.</p>
         <div className="mt-4 flex h-3.5 w-full gap-[3px]" role="img" aria-label={posiciones.map((p) => `${p.nombre} ${p.porcentaje}%`).join(", ")}>
           {posiciones.map((p) => (
@@ -168,22 +196,26 @@ function Cartera({ plan, sinCuenta }: { plan: Plan; sinCuenta: boolean }) {
                   <span className="min-w-0 text-left text-base font-medium leading-snug">{p.nombre}</span>
                 </span>
                 <span className="mr-2 flex shrink-0 items-center gap-2">
-                  {capital > 0 && <span className="hidden text-sm text-muted-foreground sm:inline">{usd(p.montoInicial)}</span>}
+                  {capital > 0 && unidad !== "pct" && <span className="text-sm tabular-nums text-muted-foreground">{monto(p.montoInicial)}</span>}
                   <span className="text-lg font-black tabular-nums">{p.porcentaje}%</span>
                 </span>
               </AccordionTrigger>
               <AccordionContent className="space-y-4 pb-5 text-sm">
                 <Bloque titulo="Qué es">{p.queEs}</Bloque>
-                <Bloque titulo="Por qué está en tu plan">{p.porQueEnTuCartera}</Bloque>
-                <Bloque titulo="Su ventaja">{p.ventaja}</Bloque>
+                <Bloque titulo="Por qué está en tu plan">
+                  {p.porQueEnTuCartera} {p.ventaja}
+                </Bloque>
                 <QuePuedeSalirMal pie={`Cuánto sube y baja: ${CUANTO_SE_MUEVE[p.volatilidad]}`}>{p.queSalePuedeMal}</QuePuedeSalirMal>
                 <VerDondeConviene posicion={p} />
                 {CATEGORIAS_CON_EJEMPLOS.includes(p.categoria) ? (
                   <VerEjemplos categoria={p.categoria} perfil={perfil.perfil} />
                 ) : (
                   // Liquidez y alternativos: siguen los ejemplos genéricos del catálogo de FinBot.
-                  <div>
-                    <p className="mb-1.5 text-sm font-bold">Ejemplos para investigar</p>
+                  <details className="group">
+                    <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 text-sm font-bold [&::-webkit-details-marker]:hidden">
+                      Ejemplos para investigar
+                      <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180 motion-reduce:transition-none" aria-hidden />
+                    </summary>
                     <ul className="space-y-1.5">
                       {p.ejemplos.map((e) => (
                         <li key={e.nombre} className="text-sm leading-relaxed text-muted-foreground">
@@ -192,7 +224,7 @@ function Cartera({ plan, sinCuenta }: { plan: Plan; sinCuenta: boolean }) {
                       ))}
                     </ul>
                     <TextoLegal className="mt-2">Son ejemplos educativos, no recomendaciones de compra. Preguntale a FinBot para entenderlos mejor.</TextoLegal>
-                  </div>
+                  </details>
                 )}
               </AccordionContent>
             </AccordionItem>
@@ -211,7 +243,7 @@ function Cartera({ plan, sinCuenta }: { plan: Plan; sinCuenta: boolean }) {
             </p>
             <GraficoProyeccion datos={plan.proyeccion} />
             <TextoLegal>
-              Montos en dólares (USD), con supuestos ilustrativos. No descuentan inflación en dólares, impuestos ni comisiones del broker, y en un mal año
+              Montos en dólares (USD), con supuestos de ejemplo. No restan la inflación, los impuestos ni lo que cobra la app donde invertís, y en un mal año
               el resultado puede quedar por debajo de la zona sombreada.
             </TextoLegal>
           </div>
@@ -249,117 +281,6 @@ function Cartera({ plan, sinCuenta }: { plan: Plan; sinCuenta: boolean }) {
   );
 }
 
-type Recorrido = ReturnType<typeof useRecorrido>;
-
-/** El recorrido guiado: el paso que sigue, cuánto falta y la lista completa. Nada se bloquea. */
-function TuRecorrido({ recorrido, onVerParte }: { recorrido: Recorrido; onVerParte: (categoria: string) => void }) {
-  const { pasos, hechos, actual, cantidad, oculto, listo, marcar, setOculto } = recorrido;
-  const [anuncio, setAnuncio] = useState("");
-
-  // Hasta leer el avance guardado, un lugar vacío del mismo tamaño (sin saltos ni pasos equivocados).
-  if (!listo) return <div aria-hidden className="vidrio h-64 rounded-2xl" />;
-
-  if (oculto) {
-    return (
-      <div className="flex justify-start">
-        <Button type="button" variant="ghost" size="sm" onClick={() => setOculto(false)} className="text-muted-foreground">
-          Mostrar tu recorrido
-        </Button>
-      </div>
-    );
-  }
-
-  function hacer(paso: PasoRecorrido) {
-    marcar(paso.id);
-    const sigue = pasos.find((p) => p.id !== "perfil" && p.id !== paso.id && !hechos.includes(p.id));
-    setAnuncio(sigue ? `Sigue: ${sigue.corto}.` : "Terminaste el recorrido.");
-    if (paso.accion?.tipo === "finbot") abrirFinBot(paso.accion.pregunta);
-    if (paso.accion?.tipo === "parte") onVerParte(paso.accion.categoria);
-  }
-
-  const accion = actual?.accion;
-  const estadoDe = (id: IdPaso) => (id === "perfil" || hechos.includes(id) ? "hecho" : actual?.id === id ? "ahora" : "falta");
-  // Tocar un paso no significa haberlo cumplido: solo el perfil está hecho de verdad.
-  const rotulo = (id: IdPaso) => (id === "perfil" ? "Hecho" : estadoDe(id) === "hecho" ? "Lo viste" : estadoDe(id) === "ahora" ? "Ahora" : "");
-
-  return (
-    <section aria-labelledby="recorrido" className="bloque-azul min-w-0 rounded-2xl p-5 md:p-6">
-      <div className="flex items-center justify-between gap-4">
-        <p className="text-sm font-semibold tabular-nums">{actual ? `Paso ${pasos.indexOf(actual) + 1} de ${pasos.length}` : "Recorrido completo"}</p>
-        <button type="button" onClick={() => setOculto(true)} className="min-h-10 text-right text-sm underline underline-offset-2">
-          Ocultar
-        </button>
-      </div>
-
-      {/* Avance: un segmento por paso */}
-      <div className="mt-1 flex gap-1" aria-hidden>
-        {pasos.map((p) => (
-          <span key={p.id} className={`h-1.5 flex-1 rounded-full ${estadoDe(p.id) === "hecho" ? "bg-white" : estadoDe(p.id) === "ahora" ? "bg-white/60" : "bg-white/25"}`} />
-        ))}
-      </div>
-
-      {actual ? (
-        <>
-          <h2 id="recorrido" className="mt-4 text-[1.625rem] font-black leading-[1.05] tracking-[-0.025em]">
-            {actual.titulo}
-          </h2>
-          <p className="mt-2 max-w-2xl text-base leading-snug">{actual.texto}</p>
-          <div className="mt-4">
-            {accion?.tipo === "enlace" ? (
-              <Button asChild className="h-auto min-h-12 w-full whitespace-normal rounded-md py-2 text-base font-extrabold">
-                <Link href={accion.href} onClick={() => hacer(actual)}>
-                  {accion.etiqueta} <ArrowRight className="h-4 w-4" aria-hidden />
-                </Link>
-              </Button>
-            ) : accion?.tipo === "finbot" ? (
-              <Button type="button" onClick={() => hacer(actual)} className="h-auto min-h-12 w-full whitespace-normal rounded-md py-2 text-base font-extrabold">
-                <Bot className="h-4 w-4" aria-hidden />
-                {accion.etiqueta}
-              </Button>
-            ) : accion?.tipo === "parte" ? (
-              <Button type="button" onClick={() => hacer(actual)} className="h-auto min-h-12 w-full whitespace-normal rounded-md py-2 text-base font-extrabold">
-                {accion.etiqueta} <ArrowDown className="h-4 w-4" aria-hidden />
-              </Button>
-            ) : null}
-          </div>
-        </>
-      ) : (
-        <>
-          <h2 id="recorrido" className="mt-4 text-[1.625rem] font-black leading-[1.05] tracking-[-0.025em]">
-            Ya sabés lo básico para decidir
-          </h2>
-          <p className="mt-2 max-w-2xl text-base leading-snug">
-            No hace falta que inviertas hoy: decidir con calma también es decidir bien. Si cambia algo en tu vida, rehacé tu perfil.
-          </p>
-        </>
-      )}
-
-      <details className="group mt-3">
-        <summary className="flex min-h-10 cursor-pointer list-none items-center gap-1.5 text-sm font-medium [&::-webkit-details-marker]:hidden">
-          Ver todos los pasos
-          <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180 motion-reduce:transition-none" aria-hidden />
-        </summary>
-        <ol className="mt-2 space-y-2">
-          {pasos.map((p) => {
-            const e = estadoDe(p.id);
-            return (
-              <li key={p.id} className="flex items-center gap-3 text-sm">
-                <Punto className={e === "falta" ? "border border-white/60 bg-transparent" : "bg-white"} />
-                <span className={e === "ahora" ? "font-bold" : ""}>{p.corto}</span>
-                <span className="ml-auto shrink-0 text-sm">{rotulo(p.id)}</span>
-              </li>
-            );
-          })}
-        </ol>
-      </details>
-
-      <p role="status" aria-live="polite" className="sr-only">
-        {anuncio}
-      </p>
-    </section>
-  );
-}
-
 /** Bloque secundario plegado: lo importante queda arriba, lo demás a un toque. */
 function Plegable({ titulo, children }: { titulo: string; children: React.ReactNode }) {
   return (
@@ -378,8 +299,8 @@ function VerDondeConviene({ posicion }: { posicion: Posicion }) {
   const href = hrefComparador(posicion);
   if (!href) return null;
   return (
-    <div className="flex flex-col gap-2 vidrio rounded-lg p-4 sm:flex-row sm:items-center sm:justify-between">
-      <p className="text-sm leading-relaxed">
+    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <p className="text-sm leading-relaxed text-muted-foreground">
         Compará tasas de plazo fijo, billeteras y fondos en pesos
         {posicion.montoInicial > 0 ? ` para los ${usd(posicion.montoInicial)} de esta parte` : ""}.
       </p>

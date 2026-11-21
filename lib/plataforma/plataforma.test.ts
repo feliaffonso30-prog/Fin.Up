@@ -207,7 +207,7 @@ describe("generación de cartera", () => {
   });
 });
 
-describe("avisos (anti-humo)", () => {
+describe("avisos", () => {
   const titulos = (r: Respuestas) => generarPlan(r, FECHA).avisos.map((a) => a.titulo);
 
   it("avisa sobre el fondo de emergencia si no está completo", () => {
@@ -308,19 +308,19 @@ describe("recorrido guiado", () => {
   it("con la base cubierta, empieza por la parte más grande y deja comparar tasas para el final", () => {
     const plan = generarPlan(audaz, FECHA);
     const pasos = armarRecorrido(plan);
-    expect(ids(pasos)).toEqual(["perfil", "cartera", "ejemplos", "humo", "pesos"]);
+    expect(ids(pasos)).toEqual(["perfil", "cartera", "ejemplos", "estafas", "pesos"]);
     const accion = pasoActual(pasos, [])?.accion;
     const mayor = Math.max(...plan.posiciones.map((p) => p.porcentaje));
     expect(accion?.tipo).toBe("parte");
     if (accion?.tipo === "parte") expect(plan.posiciones.find((p) => p.categoria === accion.categoria)?.porcentaje).toBe(mayor);
   });
 
-  it("la lección anti-humo siempre va antes de comparar tasas", () => {
+  it("la lección sobre estafas siempre va antes de comparar tasas", () => {
     for (const r of todasLasCombinaciones()) {
       const orden = ids(armarRecorrido(generarPlan(r, FECHA)));
-      const humo = orden.indexOf("humo");
-      expect(humo).toBeGreaterThan(-1);
-      if (orden.includes("pesos")) expect(orden.indexOf("pesos")).toBeGreaterThan(humo);
+      const estafas = orden.indexOf("estafas");
+      expect(estafas).toBeGreaterThan(-1);
+      if (orden.includes("pesos")) expect(orden.indexOf("pesos")).toBeGreaterThan(estafas);
       expect(orden.length).toBeGreaterThanOrEqual(5);
       expect(orden.length).toBeLessThanOrEqual(6);
     }

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FinUp: la brújula que busca</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800;900&display=swap">
+<style>
+:root{--noche:radial-gradient(135% 88% at 94% -10%,#5361e0 0%,#3740ac 30%,#171c5e 62%,#0b0e30 100%);--gris:#d3d7f2;--tinta:#15172b;--tinta2:#3f4259;--papel:#e4e5ea;--ease-out:cubic-bezier(0.23,1,0.32,1)}
+*{box-sizing:border-box;margin:0}
+::selection{background:#5361e0;color:#fff}
+body{background:var(--papel);color:var(--tinta);font-family:"Schibsted Grotesk","Segoe UI",system-ui,Arial,sans-serif;font-size:16px;line-height:1.4;padding:0 16px 64px}
+.ancho{max-width:1040px;margin:0 auto}
+.cabeza{padding:20px 0 12px}
+h1{font-size:30px;line-height:1.08;font-weight:900;letter-spacing:-.03em;text-wrap:balance}
+.bajada{margin-top:6px;color:var(--tinta2);max-width:76ch}
+.controles{display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:12px}
+.modo{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.modo>span{font-size:14px;font-weight:700;color:var(--tinta2)}
+.chip{border:0;background:#fff;color:var(--tinta);font:inherit;font-weight:700;min-height:44px;padding:8px 16px;border-radius:12px;cursor:pointer;transition:transform .12s var(--ease-out)}
+.chip:active{transform:scale(.97)}
+.chip[aria-pressed=true]{background:var(--tinta);color:#fff}
+.chip:focus-visible{outline:3px solid #5361e0;outline-offset:2px}
+.lamina{margin-top:20px;border-radius:24px;overflow:hidden;background:#0b0e30;background-image:var(--noche);color:#fff}
+.hero{padding:56px 28px 48px;display:flex;flex-direction:column;align-items:center;gap:20px;min-height:420px;justify-content:center;text-align:center}
+.estado{font-size:18px;font-weight:600}
+.lado{padding:22px 28px 24px;display:flex;flex-wrap:wrap;gap:18px 32px;align-items:center;background:rgba(11,14,48,.55)}
+.tamanos{display:flex;align-items:flex-end;gap:20px}
+.tamanos figure{margin:0;text-align:center}
+.tamanos figcaption{font-size:12px;color:var(--gris);margin-top:5px}
+.linea{display:inline-flex;align-items:center;gap:10px;font-size:15px;color:var(--gris)}
+.lectura{display:grid;gap:5px;margin-top:12px;font-size:15px;color:var(--tinta2);max-width:76ch}
+.lectura b{color:var(--tinta)}
+svg{display:block;flex:none;overflow:visible}
+.m-aguja,.m-aro{transform-box:view-box;transform-origin:32px 32px}
+/* Con movimiento reducido no gira nada: el aro late con suavidad. */
+@keyframes pulso{from{opacity:.45}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.cargando .m-aro{animation:pulso 1.4s ease-in-out infinite alternate}.chip{transition:none}}
+</style>
+</head>
+<body>
+<div class="ancho">
+  <div class="cabeza">
+    <h1>La brújula que busca: aguja y aro juntos</h1>
+    <p class="bajada">Mientras carga, la brújula gira despacio hasta que una de sus cuatro puntas apunta a tu cursor, como si lo estuviera buscando. El aro acompaña a la estrella con un pequeño retraso, pero las puntas nunca se salen de sus cortes. Sin cursor (en el celular), busca sola. Mové el mouse por la página.</p>
+    <div class="controles">
+      <div class="modo" role="group" aria-label="Estado"><span>Estado</span>
+        <button class="chip" type="button" data-modo="cargando" aria-pressed="true">Cargando</button>
+        <button class="chip" type="button" data-modo="listo" aria-pressed="false">Listo</button>
+      </div>
+      <div class="modo" role="group" aria-label="Cursor"><span>Cursor</span>
+        <button class="chip" type="button" data-cursor="si" aria-pressed="true">Sigue al cursor</button>
+        <button class="chip" type="button" data-cursor="no" aria-pressed="false">Sin cursor (celular)</button>
+      </div>
+    </div>
+  </div>
+  <div class="lamina">
+    <div class="hero"><span data-brujula="168"></span><p class="estado js-estado" role="status">Armando tu plan…</p></div>
+    <div class="lado">
+      <div class="tamanos">
+        <figure><span data-brujula="64"></span><figcaption>64</figcaption></figure>
+        <figure><span data-brujula="40"></span><figcaption>40</figcaption></figure>
+        <figure><span data-brujula="24"></span><figcaption>24</figcaption></figure>
+      </div>
+      <span class="linea"><span data-brujula="20"></span><span class="js-linea">Actualizando tasas…</span></span>
+    </div>
+  </div>
+  <div class="lectura">
+    <p><b>Cómo se mueve:</b> gira con inercia, se pasa apenas y corrige, como una aguja de verdad. Aunque el cursor quede quieto, sigue oscilando un poco: así se nota que está cargando.</p>
+    <p><b>Al terminar:</b> se acomoda desde donde esté hasta la posición del logo, sin saltos.</p>
+    <p><b>Riesgo:</b> una brújula que sigue al cursor puede sentirse juguetona si gira rápido; por eso es lenta. En pantallas con muchos indicadores a la vez, todos girarían juntos.</p>
+  </div>
+</div>
+<script>
+const B = "#fff", L = "#8d99ff", F = "#171c5e";
+const cara = (pts, f) => `<polygon points="${pts}" fill="${f}"/>`;
+const estrella = (r, w, f) => { const p = 32 - w, q = 32 + w; return cara(`32,${32 - r} ${q},${p} ${32 + r},32 ${q},${q} 32,${32 + r} ${p},${q} ${32 - r},32 ${p},${p}`, f); };
+const diagonales = (d, b, f) => { const A = 32 - d, Z = 32 + d; return cara(`${Z},${A} ${32 + b},32 ${Z},${Z} 32,${32 + b} ${A},${Z} ${32 - b},32 ${A},${A} 32,${32 - b}`, f); };
+const arcos = (r, sw, a1, f) => {
+  const pt = (a) => `${(32 + r * Math.sin(a * Math.PI / 180)).toFixed(2)} ${(32 - r * Math.cos(a * Math.PI / 180)).toFixed(2)}`;
+  return [0, 90, 180, 270].map((g) => `<path transform="rotate(${g} 32 32)" d="M${pt(a1)}A${r} ${r} 0 0 1 ${pt(90 - a1)}" fill="none" stroke="${f}" stroke-width="${sw}" stroke-linecap="round"/>`).join("");
+};
+// La estrella completa (puntas largas y cortas) gira como una sola pieza; el aro la acompaña.
+const logo = (chico) => chico
+  ? `<g class="m-aro">${arcos(22, 5, 24, L)}</g><g class="m-aguja">${diagonales(11, 8.5, L)}${estrella(31, 6, B)}</g><circle cx="32" cy="32" r="8" fill="${B}"/><circle cx="32" cy="32" r="3.4" fill="${F}"/>`
+  : `<g class="m-aro">${arcos(22.5, 2.4, 13, L)}</g><g class="m-aguja">${diagonales(10, 5.8, L)}${estrella(31, 3.6, B)}</g><circle cx="32" cy="32" r="5.2" fill="${B}"/><circle cx="32" cy="32" r="2.1" fill="${F}"/>`;
+
+// ---- Movimiento ----
+// Resorte lento y algo subamortiguado: llega, se pasa apenas y corrige. Solo transform, directo sobre cada pieza.
+const RIGIDEZ = 5.5, FRENO = 2.9;       // 1/s² y 1/s: período de unos 2,7 s
+const RETRASO_ARO = 4.5, HOLGURA = 7;   // el aro sigue a la estrella; nunca se separa más de 7° (los cortes dan 13°)
+const EASE_OUT = "cubic-bezier(0.23, 1, 0.32, 1)";
+const reducir = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const cursor = { x: null, y: null, activo: true };
+window.addEventListener("pointermove", (e) => { if (e.pointerType === "mouse") { cursor.x = e.clientX; cursor.y = e.clientY; } }, { passive: true });
+
+function crear(nodo) {
+  const t = Number(nodo.dataset.brujula);
+  nodo.innerHTML = `<svg class="cargando" width="${t}" height="${t}" viewBox="0 0 64 64" aria-hidden="true">${logo(t < 32)}</svg>`;
+  const svg = nodo.firstChild, aguja = svg.querySelector(".m-aguja"), aro = svg.querySelector(".m-aro");
+  let ang = 0, vel = 0, angAro = 0, antes = 0, cuadro = 0, fase = Math.random() * 6;
+
+  function destino(seg) {
+    // Vaivén propio: mantiene vivo el indicador aunque el cursor esté quieto.
+    const vaiven = 5 * Math.sin(seg * 1.5 + fase) + 2.5 * Math.sin(seg * 3.4 + fase * 2);
+    if (!cursor.activo || cursor.x === null) return 22 * Math.sin(seg * 0.75 + fase) + 9 * Math.sin(seg * 1.9 + fase) + vaiven * 0.4;
+    const r = svg.getBoundingClientRect();
+    const haciaCursor = Math.atan2(cursor.x - (r.left + r.width / 2), -(cursor.y - (r.top + r.height / 2))) * 180 / Math.PI;
+    // Cualquiera de las cuatro puntas sirve: se elige el cuarto de vuelta más cercano a donde ya está.
+    return haciaCursor + Math.round((ang - haciaCursor) / 90) * 90 + vaiven;
+  }
+  function paso(ahora) {
+    const dt = Math.min((ahora - (antes || ahora)) / 1000, 0.05); antes = ahora;
+    vel += (RIGIDEZ * (destino(ahora / 1000) - ang) - FRENO * vel) * dt;
+    ang += vel * dt;
+    angAro += (ang - angAro) * (1 - Math.exp(-RETRASO_ARO * dt));
+    angAro = Math.max(ang - HOLGURA, Math.min(ang + HOLGURA, angAro));
+    aguja.style.transform = `rotate(${ang.toFixed(2)}deg)`;
+    aro.style.transform = `rotate(${angAro.toFixed(2)}deg)`;
+    cuadro = requestAnimationFrame(paso);
+  }
+  return {
+    cargar() {
+      if (cuadro || svg.classList.contains("cargando") && cuadro) return;
+      svg.classList.add("cargando"); svg.getAnimations({ subtree: true }).forEach((a) => a.cancel());
+      if (reducir()) return;
+      antes = 0; vel = 0; ang = ang % 90; angAro = ang; cuadro = requestAnimationFrame(paso);
+    },
+    listo() {
+      cancelAnimationFrame(cuadro); cuadro = 0; svg.classList.remove("cargando");
+      if (reducir()) return;
+      // Cada pieza llega al cuarto de vuelta más cercano (ahí el dibujo es idéntico al logo quieto).
+      [[aguja, ang], [aro, angAro]].forEach(([el, a]) => {
+        const fin = Math.round(a / 90) * 90;
+        el.style.transform = `rotate(${fin}deg)`;
+        el.animate([{ transform: `rotate(${a}deg)` }, { transform: `rotate(${fin}deg)` }], { duration: 700, easing: EASE_OUT });
+      });
+      ang = angAro = Math.round(ang / 90) * 90;
+    },
+    leer: () => ({ ang, angAro }),
+  };
+}
+const brujulas = [...document.querySelectorAll("[data-brujula]")].map(crear);
+brujulas.forEach((b) => b.cargar());
+window.brujulas = brujulas; window.cursorDemo = cursor;
+
+const grupo = (sel, alElegir) => {
+  const bs = [...document.querySelectorAll(sel)];
+  bs.forEach((b) => b.addEventListener("click", () => { bs.forEach((x) => x.setAttribute("aria-pressed", String(x === b))); alElegir(b); }));
+};
+grupo("[data-modo]", (b) => {
+  const cargando = b.dataset.modo === "cargando";
+  brujulas.forEach((x) => (cargando ? x.cargar() : x.listo()));
+  document.querySelector(".js-estado").textContent = cargando ? "Armando tu plan…" : "Tu plan está listo.";
+  document.querySelector(".js-linea").textContent = cargando ? "Actualizando tasas…" : "Tasas actualizadas.";
+});
+grupo("[data-cursor]", (b) => (cursor.activo = b.dataset.cursor === "si"));
+</script>
+</body>
+</html>

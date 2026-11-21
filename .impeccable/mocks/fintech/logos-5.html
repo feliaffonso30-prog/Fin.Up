@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FinUp: logos, quinta ronda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800;900&display=swap">
+<style>
+:root{--noche:radial-gradient(135% 88% at 94% -10%,#5361e0 0%,#3740ac 30%,#171c5e 62%,#0b0e30 100%);--gris:#d3d7f2;--curva:cubic-bezier(0.23,1,0.32,1)}
+*{box-sizing:border-box;margin:0}
+body{background:#e4e5ea;color:#15172b;font-family:"Schibsted Grotesk","Segoe UI",system-ui,Arial,sans-serif;font-size:16px;line-height:1.4;padding:0 16px 64px}
+.ancho{max-width:1120px;margin:0 auto}
+.cabeza{position:sticky;top:0;z-index:5;background:#e4e5ea;padding:20px 0 12px;box-shadow:0 10px 14px -14px rgba(21,23,43,.6)}
+h1{font-size:30px;line-height:1.08;font-weight:900;letter-spacing:-.03em}
+.bajada{margin-top:6px;font-size:16px;color:#3f4259;max-width:74ch}
+.controles{display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:12px}
+.modo{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.modo>span{font-size:14px;font-weight:700;color:#3f4259}
+.chip{border:0;background:#fff;color:#15172b;font:inherit;font-weight:700;min-height:44px;padding:8px 16px;border-radius:12px;cursor:pointer;transition:transform .12s var(--curva)}
+.chip:active{transform:scale(.97)}
+.chip[aria-pressed=true]{background:#15172b;color:#fff}
+.chip:focus-visible{outline:3px solid #5361e0;outline-offset:2px}
+.familia{margin-top:34px;font-size:15px;font-weight:800;color:#3f4259}
+.nota-familia{margin-top:2px;font-size:14px;color:#3f4259;max-width:80ch}
+.opcion{margin-top:14px}
+.opcion h2{font-size:26px;font-weight:900;letter-spacing:-.025em}
+.opcion>p{margin-top:3px;color:#3f4259;max-width:72ch}
+.lamina{margin-top:12px;border-radius:24px;overflow:hidden;background:#0b0e30;background-image:var(--noche);color:#fff;display:grid;grid-template-columns:1.25fr 1fr}
+.hero{padding:30px 28px;display:flex;flex-direction:column;justify-content:center;gap:14px;min-height:220px}
+.estado{font-size:15px;color:var(--gris)}
+.lado{padding:22px 24px;display:flex;flex-direction:column;gap:18px;justify-content:center;background:rgba(11,14,48,.55)}
+.sello{display:flex;align-items:center;gap:.22em;font-weight:900;letter-spacing:-.04em;line-height:1}
+.atras .sello{flex-direction:row-reverse}
+.hero .sello{align-self:flex-start}
+.sello svg{display:block;flex:none;overflow:visible}
+.tamanos{display:flex;align-items:flex-end;gap:16px}
+.tamanos figure{margin:0;text-align:center}
+.tamanos figcaption{font-size:12px;color:var(--gris);margin-top:5px}
+.icono{display:block;border-radius:22%}
+.barra-app{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.09);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);font-size:14px}
+.apps{display:flex;gap:12px;align-items:flex-end}
+.apps i{display:block;width:44px;height:44px;border-radius:22%}
+.apps span{display:block;text-align:center;font-size:11px;color:#fff;margin-top:3px}
+.apps div{width:48px}
+.lectura{display:grid;grid-template-columns:1fr 1fr;gap:6px 22px;margin-top:10px;font-size:15px;color:#3f4259}
+.lectura b{color:#15172b}
+
+/* ---- Movimiento: solo transform y opacity ---- */
+.vivo *{transform-box:view-box}
+.vivo{overflow:visible}
+
+/* El rosetón: dos juegos de círculos giran en sentidos opuestos y al final se alinean */
+.m-ra,.m-rb{transform-origin:32px 32px}
+.cargando .m-ra{animation:giro 9s linear infinite}
+.cargando .m-rb{animation:giro-inv 9s linear infinite}
+.revelar .m-ra{animation:ra-fin .9s var(--curva) both}
+.revelar .m-rb{animation:rb-fin .9s var(--curva) both}
+@keyframes giro{to{transform:rotate(90deg)}}
+@keyframes giro-inv{to{transform:rotate(-90deg)}}
+@keyframes ra-fin{from{transform:rotate(32deg)}to{transform:none}}
+@keyframes rb-fin{from{transform:rotate(-32deg)}to{transform:none}}
+
+/* La S de un trazo: un hilo fino la recorre, como quien verifica */
+.cargando .m-hilo2{animation:barre 2.4s ease-in-out infinite alternate}
+.revelar .m-hilo2{animation:hilo2-fin .6s var(--curva) both}
+@keyframes barre{from{transform:translateX(-14px)}to{transform:translateX(14px)}}
+@keyframes hilo2-fin{0%{transform:translateX(12px)}55%{transform:translateX(-2px)}100%{transform:none}}
+
+/* El hilo de seguridad: el hilo recorre el billete y se clava en su lugar */
+.cargando .m-hilo{animation:barrido 2.6s ease-in-out infinite alternate}
+.revelar .m-hilo{animation:hilo-fin .6s var(--curva) both}
+@keyframes barrido{from{transform:translateX(-30px)}to{transform:translateX(10px)}}
+@keyframes hilo-fin{0%{transform:translateX(-16px)}60%{transform:translateX(2px)}100%{transform:none}}
+
+/* La f de grabado: las líneas vibran separadas y se alinean al mostrar el resultado */
+.cargando .m-g1{animation:g1 1.8s ease-in-out infinite alternate}
+.cargando .m-g3{animation:g3 1.8s ease-in-out infinite alternate}
+.revelar .m-g1{animation:g1-fin .55s var(--curva) both}
+.revelar .m-g3{animation:g3-fin .55s var(--curva) both}
+@keyframes g1{from{transform:translateX(-3px)}to{transform:translateX(3px)}}
+@keyframes g3{from{transform:translateX(3px)}to{transform:translateX(-3px)}}
+@keyframes g1-fin{from{transform:translateX(-5px)}to{transform:none}}
+@keyframes g3-fin{from{transform:translateX(5px)}to{transform:none}}
+
+@media (prefers-reduced-motion:reduce){.vivo *{animation:none!important}.chip{transition:none}}
+@media (max-width:760px){.lamina{grid-template-columns:1fr}.hero{min-height:170px;padding:24px 20px}.lectura{grid-template-columns:1fr}.hero .sello{font-size:54px!important}}
+</style>
+</head>
+<body>
+<div class="ancho">
+  <div class="cabeza">
+    <h1>Logos, quinta ronda: plata fina</h1>
+    <p class="bajada">Una exploración de prueba y error: ¿cómo sugerir plata de manera elegante y fina, sin monedas, flechas ni brillos? Cuatro ideas que usan el lenguaje de los billetes. Se mueven mientras la app carga y hacen un gesto al mostrar tu resultado.</p>
+    <div class="controles">
+      <div class="modo" role="group" aria-label="Estado"><span>Estado</span>
+        <button class="chip" type="button" data-modo="cargando" aria-pressed="true">Cargando</button>
+        <button class="chip" type="button" data-modo="revelar" aria-pressed="false">Mostrar el resultado</button>
+      </div>
+      <div class="modo" role="group" aria-label="Posición del símbolo"><span>Símbolo</span>
+        <button class="chip" type="button" data-pos="adelante" aria-pressed="true">Adelante del nombre</button>
+        <button class="chip" type="button" data-pos="atras" aria-pressed="false">Atrás del nombre</button>
+      </div>
+    </div>
+  </div>
+  <div id="opciones"></div>
+</div>
+<script>
+const LAV = "#8d99ff", LAV2 = "#d3d7ff";
+
+// 1. El rosetón: círculos superpuestos, como la trama de un billete
+const roseton = (chico) => {
+  const n = chico ? 3 : 4, r = chico ? 13 : 12, d = chico ? 11 : 12, sw = chico ? 3.6 : 1.8;
+  const juego = (desde, color, cls) => `<g class="${cls}">` + Array.from({ length: n }, (_, k) => {
+    const a = (desde + (k * 360) / n) * Math.PI / 180;
+    return `<circle cx="${(32 + d * Math.cos(a)).toFixed(2)}" cy="${(32 + d * Math.sin(a)).toFixed(2)}" r="${r}" fill="none" stroke="${color}" stroke-width="${sw}"/>`;
+  }).join("") + `</g>`;
+  return juego(0, "#fff", "m-ra") + juego(180 / n, LAV2, "m-rb");
+};
+
+// 2. La S de un trazo: la esencia del signo $, con un hilo fino
+const ese = (chico) =>
+  `<line class="m-hilo2" x1="32" y1="${chico ? 3 : 4}" x2="32" y2="${chico ? 61 : 60}" stroke="${LAV}" stroke-width="${chico ? 4 : 1.8}" stroke-linecap="round"/>` +
+  `<path d="M43 20C43 12 21 11 21 22C21 34 43 30 43 42C43 53 21 52 21 44" fill="none" stroke="#fff" stroke-width="${chico ? 9 : 5}" stroke-linecap="round"/>`;
+
+// 3. El hilo de seguridad: un billete reducido a su contorno, con el hilo que lo verifica
+const hilo = (chico) => {
+  const id = chico ? "cl-bill-c" : "cl-bill";
+  const y = chico ? 15 : 17, h = chico ? 34 : 30;
+  return `<defs><clipPath id="${id}"><rect x="5" y="${y}" width="54" height="${h}" rx="${chico ? 9 : 7}"/></clipPath></defs>` +
+    `<rect x="${chico ? 7 : 6.5}" y="${chico ? 17 : 18.5}" width="${chico ? 50 : 51}" height="${chico ? 30 : 27}" rx="${chico ? 8 : 6}" fill="none" stroke="#fff" stroke-width="${chico ? 5 : 3}"/>` +
+    `<g clip-path="url(#${id})"><g class="m-hilo"><rect x="${chico ? 39 : 41}" y="10" width="${chico ? 5 : 3}" height="44" fill="${LAV}"/></g></g>` +
+    (chico ? "" : `<circle cx="22" cy="32" r="6.5" fill="none" stroke="${LAV2}" stroke-width="2"/>`);
+};
+
+// 4. La f de grabado: la f hecha con líneas paralelas, como el grabado de un billete
+const grabado = (chico) => {
+  const trazo = (dx, col, cls) => `<g class="${cls}"><path transform="translate(${dx} 0)" d="M44 15C36 11 27 14 27 25V55M16 31H41" fill="none" stroke="${col}" stroke-width="${chico ? 4.5 : 2}" stroke-linecap="round" stroke-linejoin="round"/></g>`;
+  return chico ? trazo(-3.5, LAV, "m-g1") + trazo(3.5, "#fff", "m-g3")
+               : trazo(-4.5, LAV, "m-g1") + trazo(0, "#fff", "m-g2") + trazo(4.5, LAV2, "m-g3");
+};
+
+const OPCIONES = [
+  { familia: "Plata fina, sin monedas", nota: "Ninguna usa moneda, billete a la vista ni símbolo ostentoso. Toman prestado el lenguaje de la seguridad de los billetes: tramas finas, hilos, grabado. Líneas delgadas, mucho aire y un solo gesto." },
+  { id: "roseton", nombre: "El rosetón", dibujo: roseton,
+    idea: "Círculos que se cruzan como la trama que protege un billete. Mientras carga, dos juegos giran despacio en sentidos opuestos y la trama cambia; al mostrar tu resultado se alinean y quedan quietos.",
+    dice: "Una trama fina y cuidada: seguridad que se nota sin gritarlo.",
+    riesgo: "Con líneas tan finas desaparece en chico, y ahí queda una versión de tres círculos. También puede leerse como flor o como símbolo de bienestar." },
+  { id: "ese", nombre: "La S de un trazo", dibujo: ese,
+    idea: "La esencia del signo $: una S de un solo trazo y un hilo muy fino que la recorre, como quien verifica. Al mostrar tu resultado el hilo queda en el centro.",
+    dice: "Plata, dicho en voz baja: sin barras ni brillos.",
+    riesgo: "Es la más literal y la más vista: muchas fintech y apps de pagos usan un $ o una S. También liga el logo a «ganancia»." },
+  { id: "hilo", nombre: "El hilo de seguridad", dibujo: hilo,
+    idea: "Un billete reducido a su contorno, con el hilo de seguridad que lo recorre para verificarlo. Mientras carga el hilo barre de lado a lado; al mostrar tu resultado se clava en su lugar.",
+    dice: "Verificado: el detalle que hace que un billete sea de confianza.",
+    riesgo: "Puede leerse como tarjeta, ticket o billetera. Si el billete se nota demasiado, se acerca a lo literal." },
+  { id: "grabado", nombre: "La f de grabado", dibujo: grabado,
+    idea: "La f de finup dibujada con líneas paralelas, como el grabado de un billete. Mientras carga las líneas vibran un poco separadas; al mostrar tu resultado se alinean.",
+    dice: "Una letra trabajada con paciencia, como algo que vale.",
+    riesgo: "Las líneas paralelas se funden en chico, y ahí queda una f gruesa. Puede leerse como efecto de eco o vibración." },
+];
+
+const svg = (o, t, vivo) => `<svg ${vivo ? 'class="vivo js-vivo cargando"' : ""} width="${t}" height="${t}" viewBox="0 0 64 64" aria-hidden="true">${o.dibujo(false, vivo)}</svg>`;
+const icono = (o, t) => `<svg class="icono" width="${t}" height="${t}" viewBox="0 0 64 64" role="img" aria-label="Ícono"><rect width="64" height="64" fill="#171c5e"/><g transform="translate(8 8) scale(.75)">${o.dibujo(t <= 20, false)}</g></svg>`;
+const sello = (o, fs, vivo) => `<span class="sello" style="font-size:${fs}px" role="img" aria-label="finup">${svg(o, Math.round(fs * 1.12), vivo)}<span>finup</span></span>`;
+
+document.getElementById("opciones").innerHTML = OPCIONES.map((o) => o.familia ? `<h2 class="familia">${o.familia}</h2><p class="nota-familia">${o.nota}</p>` : `
+  <section class="opcion">
+    <h2>${o.nombre}</h2>
+    <p>${o.idea}</p>
+    <div class="lamina">
+      <div class="hero">${sello(o, 76, true)}<p class="estado js-estado">Armando tu plan…</p></div>
+      <div class="lado">
+        <div class="tamanos">
+          <figure>${icono(o, 64)}<figcaption>Ícono</figcaption></figure>
+          <figure>${icono(o, 32)}<figcaption>32 px</figcaption></figure>
+          <figure>${icono(o, 16)}<figcaption>Pestaña</figcaption></figure>
+        </div>
+        <div class="barra-app">${sello(o, 22, false)}<span>Ingresar</span></div>
+        <div class="apps">
+          <div><i style="background:#e9e4d8"></i><span>Notas</span></div>
+          <div>${icono(o, 44)}<span>FinUp</span></div>
+          <div><i style="background:#2f6d4f"></i><span>Mapas</span></div>
+          <div><i style="background:#b8452f"></i><span>Música</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="lectura"><p><b>Qué dice:</b> ${o.dice}</p><p><b>Riesgo:</b> ${o.riesgo}</p></div>
+  </section>`).join("");
+
+const botones = [...document.querySelectorAll("[data-modo]")];
+botones.forEach((b) => b.addEventListener("click", () => {
+  botones.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  const modo = b.dataset.modo;
+  document.querySelectorAll(".js-vivo").forEach((n) => { n.classList.remove("cargando", "revelar"); void n.getBoundingClientRect(); n.classList.add(modo); });
+  document.querySelectorAll(".js-estado").forEach((p) => (p.textContent = modo === "cargando" ? "Armando tu plan…" : "Tu resultado está listo."));
+}));
+const pos = [...document.querySelectorAll("[data-pos]")];
+pos.forEach((b) => b.addEventListener("click", () => {
+  pos.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  document.body.classList.toggle("atras", b.dataset.pos === "atras");
+}));
+</script>
+</body>
+</html>

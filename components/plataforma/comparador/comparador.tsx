@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ChevronDown } from "lucide-react";
+import Link from "next/link";
+import { ArrowLeft, ArrowRight, ListFilter } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -55,6 +56,10 @@ interface Props {
   /** ?usd= monto de una parte de la cartera ("Ver dónde conviene"); se pasa a pesos al MEP. */
   usdUrl?: string;
   tabUrl?: string;
+  /** ?dias= el plazo elegido, para no perderlo al ir y volver del detalle. */
+  diasUrl?: string;
+  /** "resumen": la respuesta corta. "detalle": tasas y todas las entidades, en su propia pantalla. */
+  vista?: "resumen" | "detalle";
 }
 
 function montoInicial(montoUrl: string | undefined, usdUrl: string | undefined, mep: DolarMep | null): { monto: number; origen: Origen } {
@@ -65,14 +70,14 @@ function montoInicial(montoUrl: string | undefined, usdUrl: string | undefined, 
   return { monto: MONTO_EJEMPLO, origen: "ejemplo" };
 }
 
-export function Comparador({ datos, fci, montoUrl, usdUrl, tabUrl }: Props) {
+export function Comparador({ datos, fci, montoUrl, usdUrl, tabUrl, diasUrl, vista = "resumen" }: Props) {
   const { plan } = usePlan();
   const mep = datos.dolarMep.datos;
 
   const [inicial] = useState(() => montoInicial(montoUrl, usdUrl, mep));
   const [texto, setTexto] = useState(() => formatearMonto(inicial.monto));
   const [origen, setOrigen] = useState<Origen>(inicial.origen);
-  const [dias, setDias] = useState<number>(30);
+  const [dias, setDias] = useState<number>(() => ((PLAZOS as readonly number[]).includes(Number(diasUrl)) ? Number(diasUrl) : 30));
   const [esCliente, setEsCliente] = useState(false);
   const [tab, setTab] = useState<Tab>(() => ((TABS as readonly string[]).includes(tabUrl ?? "") ? (tabUrl as Tab) : "todo"));
   const usdDeCartera = validarMonto(usdUrl ?? "");
@@ -90,10 +95,32 @@ export function Comparador({ datos, fci, montoUrl, usdUrl, tabUrl }: Props) {
   const monto = validado.ok ? validado.monto : null;
   const consulta = useMemo<Consulta | null>(() => (monto !== null ? { monto, dias, esCliente } : null), [monto, dias, esCliente]);
   const inflacion = datos.inflacion.datos;
+  const enDetalle = vista === "detalle";
+  // El monto y el plazo viajan en el link, para que el resumen y el detalle muestren lo mismo.
+  const parametros = new URLSearchParams({ ...(monto !== null ? { monto: String(monto) } : {}), dias: String(dias) }).toString();
+  const notaInflacion = (
+    <div className="space-y-2">
+      <p className="text-sm leading-snug text-muted-foreground">
+        {inflacion ? `Comparamos contra la última inflación mensual: ${pct(inflacion.mensual * 100)} (${mesAnio(inflacion.fecha)}, INDEC).` : "Sin dato de inflación por ahora: no podemos decir si le gana."}
+        {plan && ` Tu perfil es ${plan.perfil.perfil.toLowerCase()}: compará el riesgo de cada opción con lo que estás dispuesto a tolerar.`}
+      </p>
+      <Disclaimer />
+    </div>
+  );
 
   return (
     <div className="space-y-8">
-      <EncabezadoPagina titulo="¿Dónde dejar tus pesos?">Elegí cuánta plata y para cuándo. Te mostramos cuánto rendiría y si le gana a la inflación.</EncabezadoPagina>
+      {enDetalle ? (
+        <>
+          <Link href={`/comparador?${parametros}`} className="inline-flex min-h-10 items-center gap-2 text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
+            <ArrowLeft className="h-4 w-4" aria-hidden />
+            Volver a Tus pesos
+          </Link>
+          <EncabezadoPagina titulo="Tasas y todas las entidades">El detalle completo, banco por banco, para el monto y el plazo que elijas.</EncabezadoPagina>
+        </>
+      ) : (
+        <EncabezadoPagina titulo="¿Dónde dejar tus pesos?">Elegí cuánta plata y para cuándo. Te mostramos cuánto rendiría y si le gana a la inflación.</EncabezadoPagina>
+      )}
 
       <div className="vidrio rounded-xl p-4 md:p-5">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -144,7 +171,7 @@ export function Comparador({ datos, fci, montoUrl, usdUrl, tabUrl }: Props) {
             <p className="text-error" role="alert">
               {validado.error}
             </p>
-          ) : origen === "plan" && mep ? (
+          ) : enDetalle ? null : origen === "plan" && mep ? (
             <p className="text-muted-foreground">
               Es la parte de tu plan para tener disponible ({usd(liquidezUsd)}), pasada a pesos al dólar MEP ({ars(mep.compra)}). Podés cambiarlo.
             </p>
@@ -162,23 +189,8 @@ export function Comparador({ datos, fci, montoUrl, usdUrl, tabUrl }: Props) {
         </div>
       </div>
 
-      <RespuestaPorTipo plazoFijo={datos.plazoFijo} uva={datos.uva} billeteras={datos.billeteras} fci={fci} consulta={consulta} inflacion={inflacion} />
-
-      <div className="space-y-2">
-        <p className="text-sm leading-snug text-muted-foreground">
-          {inflacion ? `Comparamos contra la última inflación mensual: ${pct(inflacion.mensual * 100)} (${mesAnio(inflacion.fecha)}, INDEC).` : "Sin dato de inflación por ahora: no podemos decir si le gana."}
-          {plan && ` Tu perfil es ${plan.perfil.perfil.toLowerCase()}: compará el riesgo de cada opción con lo que estás dispuesto a tolerar.`}
-        </p>
-        <Disclaimer />
-      </div>
-
-      <details className="group border-y border-border">
-        <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 py-4 font-display text-lg font-extrabold [&::-webkit-details-marker]:hidden">
-          Ver el detalle: tasas y todas las entidades
-          <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180 motion-reduce:transition-none" aria-hidden />
-        </summary>
-
-        <div className="space-y-4 pb-5">
+      {enDetalle ? (
+        <>
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
             <Switch id="cliente" checked={esCliente} onCheckedChange={setEsCliente} />
             <Label htmlFor="cliente" className="font-normal">
@@ -212,8 +224,29 @@ export function Comparador({ datos, fci, montoUrl, usdUrl, tabUrl }: Props) {
               <TabFci fci={fci} consulta={consulta} inflacion={inflacion} />
             </TabsContent>
           </Tabs>
-        </div>
-      </details>
+
+          {notaInflacion}
+        </>
+      ) : (
+        <>
+          <RespuestaPorTipo plazoFijo={datos.plazoFijo} uva={datos.uva} billeteras={datos.billeteras} fci={fci} consulta={consulta} inflacion={inflacion} />
+
+          {notaInflacion}
+
+          {/* El detalle vive en su propia pantalla: acá solo se ofrece la entrada. */}
+          <Link
+            href={`/comparador/detalle?${parametros}${tab !== "todo" ? `&tab=${tab}` : ""}`}
+            className="group flex min-h-16 items-center gap-4 border-y border-border py-4 transition-colors hover:bg-white/5"
+          >
+            <ListFilter className="h-5 w-5 shrink-0 text-accent" aria-hidden />
+            <span className="min-w-0 flex-1">
+              <span className="block font-display text-base font-bold leading-snug">Tasas y todas las entidades</span>
+              <span className="mt-0.5 block text-sm leading-relaxed text-muted-foreground">El detalle completo, banco por banco.</span>
+            </span>
+            <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" aria-hidden />
+          </Link>
+        </>
+      )}
     </div>
   );
 }

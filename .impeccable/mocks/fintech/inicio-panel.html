@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FinUp: boceto del Inicio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800;900&display=swap">
+<style>
+:root{--fondo:#0b0e30;--noche:radial-gradient(135% 88% at 94% -10%,#5361e0 0%,#3740ac 30%,#171c5e 62%,#0b0e30 100%);--azul:linear-gradient(150deg,#4d5eff,#3140d6);--vidrio:rgba(255,255,255,.09);--borde:rgba(255,255,255,.14);--apagado:#d3d7f2;--lavanda:#8d99ff;--atencion:#d3d7ff;--tinta:#15172b;--tinta2:#3f4259;--papel:#e4e5ea;--ease-out:cubic-bezier(0.23,1,0.32,1)}
+*{box-sizing:border-box;margin:0}
+::selection{background:#5361e0;color:#fff}
+body{background:var(--papel);color:var(--tinta);font-family:"Schibsted Grotesk","Segoe UI",system-ui,Arial,sans-serif;font-size:16px;line-height:1.4;padding:0 16px 64px}
+.ancho{max-width:1400px;margin:0 auto}
+.cabeza{padding:20px 0 4px}
+.cabeza h1{font-size:30px;line-height:1.08;font-weight:900;letter-spacing:-.03em;text-wrap:balance}
+.bajada{margin-top:6px;color:var(--tinta2);max-width:78ch}
+.mesa{display:grid;grid-template-columns:390px minmax(0,1fr);gap:28px;align-items:start;margin-top:22px}
+.rotulo{font-size:15px;font-weight:800;color:var(--tinta2);margin-bottom:10px}
+.notas{margin-top:26px;display:grid;gap:6px;max-width:80ch;color:var(--tinta2);font-size:15px}
+.notas b{color:var(--tinta)}
+
+/* ---- La app (mismos valores que app/globals.css) ---- */
+.app{background:var(--fondo);background-image:var(--noche);color:#fff;border-radius:28px;overflow:hidden;position:relative}
+.app a{color:inherit;text-decoration:none}
+.app svg{display:block;flex:none}
+.marca{display:inline-flex;align-items:center;gap:.22em;font-size:24px;font-weight:900;letter-spacing:-.04em;line-height:1}
+.titulo{font-weight:900;line-height:1;letter-spacing:-.035em;text-wrap:balance}
+.contexto{margin-top:10px;font-size:16px;color:var(--apagado)}
+.contexto b{color:#fff;font-weight:700}
+.paso{background-image:var(--azul);border-radius:24px;padding:20px;box-shadow:0 14px 30px -18px rgba(6,10,50,.9)}
+.paso .cuenta{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
+.barra{display:flex;gap:4px;margin-top:6px}
+.barra i{height:6px;flex:1;border-radius:99px;background:rgba(255,255,255,.25)}
+.barra i.hecho{background:#fff}.barra i.ahora{background:rgba(255,255,255,.6)}
+.paso h2{margin-top:16px;font-size:26px;font-weight:900;line-height:1.05;letter-spacing:-.025em;text-wrap:balance}
+.paso p{margin-top:8px;font-size:16px;line-height:1.35}
+.cta{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:18px;min-height:56px;border-radius:16px;background:#fff;color:#0b0e30!important;font-size:17px;font-weight:800;transition:transform .16s var(--ease-out)}
+.cta:active{transform:scale(.97)}
+.seccion{font-size:18px;font-weight:800;letter-spacing:-.01em}
+.cifras{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.cifras div{border-radius:18px;padding:14px;background:var(--vidrio);box-shadow:inset 0 0 0 1px var(--borde)}
+.cifras .mal{background:rgba(150,160,255,.22);box-shadow:inset 0 0 0 1px rgba(200,206,255,.45)}
+.cifras dt{font-size:14px;font-weight:600}
+.cifras dd{margin-top:2px;font-size:30px;font-weight:900;line-height:1.1;letter-spacing:-.03em}
+.cifras .mal dd{color:var(--atencion)}
+.nota{margin-top:10px;font-size:14px;color:var(--apagado)}
+.enlace{display:inline-flex;align-items:center;gap:6px;min-height:44px;font-size:15px;font-weight:700;text-decoration:underline!important;text-underline-offset:4px}
+.filas{border-top:1px solid var(--borde)}
+.fila{display:flex;align-items:center;gap:14px;min-height:68px;padding:12px 0;border-bottom:1px solid var(--borde)}
+.fila .ic{color:var(--lavanda)}
+.fila span{flex:1;min-width:0}
+.fila b{display:block;font-size:16px;font-weight:700}
+.fila small{display:block;margin-top:1px;font-size:14px;color:var(--apagado)}
+.fila .fl{color:var(--apagado)}
+.legal{font-size:12px;color:var(--apagado)}
+
+/* Celular */
+.cel{width:390px;min-height:844px;padding-bottom:84px}
+.cel header{display:flex;align-items:center;justify-content:space-between;height:64px;padding:0 16px}
+.cel header a{font-size:15px;font-weight:500}
+.cel main{padding:6px 16px 0;display:grid;gap:28px}
+.cel .titulo{font-size:36px}
+.barra-abajo{position:absolute;inset:auto 0 0 0;height:66px;display:grid;grid-template-columns:repeat(5,1fr);align-items:center;background:#171c5e;border-top:1px solid var(--borde)}
+.barra-abajo a{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:500;color:var(--apagado)}
+.barra-abajo a.activo{color:#fff;font-weight:800}
+.barra-abajo .finbot{margin:0 3px;height:40px;border-radius:99px;background:#fff;color:#0b0e30;font-size:12px;font-weight:800;justify-content:center}
+
+/* Escritorio */
+.esc{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:760px}
+.esc aside{border-right:1px solid var(--borde);padding:24px 16px;display:flex;flex-direction:column;gap:4px}
+.esc aside .marca{padding:0 12px 20px}
+.esc aside a.item{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border-radius:12px;font-size:16px;color:var(--apagado)}
+.esc aside a.item.activo{background:rgba(255,255,255,.12);color:#fff;font-weight:700}
+.esc aside .finbot{margin-top:16px;display:flex;align-items:center;justify-content:center;height:44px;border-radius:14px;background:#fff;color:#0b0e30;font-weight:800;font-size:15px}
+.esc aside .legal{margin-top:auto;padding:0 12px}
+.esc main{padding:44px 40px 48px;max-width:980px}
+.esc .titulo{font-size:48px}
+.esc .dos{display:grid;grid-template-columns:1.2fr 1fr;gap:28px;margin-top:30px;align-items:start}
+.esc .paso{padding:28px}
+.esc .paso h2{font-size:30px}
+.esc .cta{max-width:320px}
+.esc .cifras dd{font-size:26px;white-space:nowrap}
+.esc .filas{margin-top:34px;display:grid;grid-template-columns:repeat(3,1fr);gap:0 28px;border-top:0}
+.esc .fila{border-top:1px solid var(--borde)}
+@media (max-width:1100px){.mesa{grid-template-columns:1fr}.esc{display:none}.rotulo.e{display:none}}
+@media (prefers-reduced-motion:reduce){.cta{transition:none}}
+</style>
+</head>
+<body>
+<div class="ancho">
+  <div class="cabeza">
+    <h1>Boceto del Inicio: lo primero que ve quien ya tiene su plan</h1>
+    <p class="bajada">Tres bloques y una sola acción. El recorrido ("tu siguiente paso") se muda acá desde Mi plan; Mi plan queda solo para entender el reparto. El menú pasa a Inicio, Mi plan, FinBot, Tus pesos y Aprender; Ejemplos se abre desde acá, desde Aprender y desde Mi plan.</p>
+  </div>
+
+  <div class="mesa">
+    <div>
+      <p class="rotulo">Celular</p>
+      <div class="app cel">
+        <header><span class="marca" id="marca-cel"></span><a href="#">Ingresar</a></header>
+        <main>
+          <div>
+            <h1 class="titulo">Seguimos donde quedaste</h1>
+            <p class="contexto">Tu plan: <b>perfil moderado</b></p>
+          </div>
+
+          <section class="paso" aria-labelledby="p1">
+            <p class="cuenta">Paso 2 de 5</p>
+            <div class="barra" aria-hidden="true"><i class="hecho"></i><i class="ahora"></i><i></i><i></i><i></i></div>
+            <h2 id="p1">Mirá la parte más grande de tu plan</h2>
+            <p>Casi la mitad va a préstamos a gobiernos y empresas. Te contamos por qué y qué puede salir mal.</p>
+            <a class="cta" href="#">Ver esa parte <span data-ic="flecha"></span></a>
+          </section>
+
+          <section aria-labelledby="c1">
+            <h2 class="seccion" id="c1">Tu plan en un año, con USD 1.000</h2>
+            <dl class="cifras"><div><dt>Año normal</dt><dd>+29 a 69</dd></div><div class="mal"><dt>Mal año</dt><dd>−121</dd></div></dl>
+            <p class="nota">Es una estimación, no una promesa.</p>
+            <a class="enlace" href="#">Ver mi plan completo</a>
+          </section>
+
+          <nav class="filas" aria-label="Otras secciones">
+            <a class="fila" href="#"><i class="ic" data-ic="pesos"></i><span><b>Tus pesos</b><small>Dónde dejar la plata que usás todos los días</small></span><i class="fl" data-ic="flecha"></i></a>
+            <a class="fila" href="#"><i class="ic" data-ic="ejemplos"></i><span><b>Ejemplos</b><small>Casos reales para entender cada parte del plan</small></span><i class="fl" data-ic="flecha"></i></a>
+            <a class="fila" href="#"><i class="ic" data-ic="aprender"></i><span><b>Aprender</b><small>Lo esencial, en pasos cortos</small></span><i class="fl" data-ic="flecha"></i></a>
+          </nav>
+          <p class="legal">Contenido educativo, no es asesoramiento financiero.</p>
+        </main>
+        <nav class="barra-abajo" aria-label="Principal">
+          <a class="activo" href="#"><i data-ic="inicio"></i>Inicio</a>
+          <a href="#"><i data-ic="plan"></i>Mi plan</a>
+          <a class="finbot" href="#">FinBot</a>
+          <a href="#"><i data-ic="pesos"></i>Tus pesos</a>
+          <a href="#"><i data-ic="aprender"></i>Aprender</a>
+        </nav>
+      </div>
+    </div>
+
+    <div>
+      <p class="rotulo e">Escritorio</p>
+      <div class="app esc">
+        <aside>
+          <span class="marca" id="marca-esc"></span>
+          <a class="item activo" href="#"><i data-ic="inicio"></i>Inicio</a>
+          <a class="item" href="#"><i data-ic="plan"></i>Mi plan</a>
+          <a class="item" href="#"><i data-ic="pesos"></i>Tus pesos</a>
+          <a class="item" href="#"><i data-ic="aprender"></i>Aprender</a>
+          <a class="finbot" href="#">Preguntale a FinBot</a>
+          <p class="legal">Versión beta. Contenido educativo, no es asesoramiento financiero.</p>
+        </aside>
+        <main>
+          <h1 class="titulo">Seguimos donde quedaste</h1>
+          <p class="contexto">Tu plan: <b>perfil moderado</b></p>
+          <div class="dos">
+            <section class="paso" aria-labelledby="p2">
+              <p class="cuenta">Paso 2 de 5</p>
+              <div class="barra" aria-hidden="true"><i class="hecho"></i><i class="ahora"></i><i></i><i></i><i></i></div>
+              <h2 id="p2">Mirá la parte más grande de tu plan</h2>
+              <p>Casi la mitad va a préstamos a gobiernos y empresas. Te contamos por qué y qué puede salir mal.</p>
+              <a class="cta" href="#">Ver esa parte <span data-ic="flecha"></span></a>
+            </section>
+            <section aria-labelledby="c2">
+              <h2 class="seccion" id="c2">Tu plan en un año, con USD 1.000</h2>
+              <dl class="cifras"><div><dt>Año normal</dt><dd>+29 a 69</dd></div><div class="mal"><dt>Mal año</dt><dd>−121</dd></div></dl>
+              <p class="nota">Es una estimación, no una promesa.</p>
+              <a class="enlace" href="#">Ver mi plan completo</a>
+            </section>
+          </div>
+          <nav class="filas" aria-label="Otras secciones">
+            <a class="fila" href="#"><i class="ic" data-ic="pesos"></i><span><b>Tus pesos</b><small>Dónde dejar la plata de todos los días</small></span><i class="fl" data-ic="flecha"></i></a>
+            <a class="fila" href="#"><i class="ic" data-ic="ejemplos"></i><span><b>Ejemplos</b><small>Casos reales de cada parte del plan</small></span><i class="fl" data-ic="flecha"></i></a>
+            <a class="fila" href="#"><i class="ic" data-ic="aprender"></i><span><b>Aprender</b><small>Lo esencial, en pasos cortos</small></span><i class="fl" data-ic="flecha"></i></a>
+          </nav>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <div class="notas">
+    <p><b>Qué hay:</b> un título, el paso que sigue (único bloque azul y único botón blanco), las dos cifras del año y tres accesos en fila, sin cajas.</p>
+    <p><b>Qué no hay:</b> el reparto por categorías, el gráfico, porcentajes, tasas, siglas ni un segundo botón del mismo peso.</p>
+    <p><b>Datos de ejemplo:</b> el paso, el perfil y las cifras son de muestra; en la app salen del plan de cada persona.</p>
+    <p><b>Para decidir:</b> el título ("Seguimos donde quedaste"), y si "Ejemplos" queda como acceso en esta pantalla aunque salga del menú.</p>
+  </div>
+</div>
+<script>
+const trazo = (d, t = 20) => `<svg width="${t}" height="${t}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const IC = {
+  inicio: '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/>',
+  plan: '<path d="M21 12a9 9 0 1 1-9-9v9z"/><path d="M21 12A9 9 0 0 0 12 3"/>',
+  pesos: '<path d="M3 7h15a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z"/><path d="M3 7V6a3 3 0 0 1 3-3h10"/><path d="M16 14h2"/>',
+  ejemplos: '<path d="M5 4v16"/><path d="M10 4v16"/><path d="m15 5 4 14"/>',
+  aprender: '<path d="M12 6c-2-1.5-5-2-8-2v14c3 0 6 .5 8 2 2-1.5 5-2 8-2V4c-3 0-6 .5-8 2z"/><path d="M12 6v14"/>',
+  flecha: '<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>',
+};
+document.querySelectorAll("[data-ic]").forEach((n) => (n.innerHTML = trazo(IC[n.dataset.ic], n.dataset.ic === "flecha" ? 18 : 20)));
+
+// La brújula del logo (dibujo grueso, el mismo de components/plataforma/brujula.tsx).
+const arco = "M40.95 11.9A22 22 0 0 1 52.1 23.05";
+const brujula = `<svg width="27" height="27" viewBox="0 0 64 64" aria-hidden="true" style="overflow:visible"><g fill="none" stroke="#8d99ff" stroke-width="5" stroke-linecap="round">${[0, 90, 180, 270].map((g) => `<path d="${arco}" transform="rotate(${g} 32 32)"/>`).join("")}</g><polygon points="43,21 40.5,32 43,43 32,40.5 21,43 23.5,32 21,21 32,23.5" fill="#8d99ff"/><polygon points="32,1 38,26 63,32 38,38 32,63 26,38 1,32 26,26" fill="#fff"/><circle cx="32" cy="32" r="8" fill="#fff"/><circle cx="32" cy="32" r="3.4" fill="#0b0e30"/></svg>`;
+document.querySelectorAll(".marca").forEach((n) => (n.innerHTML = brujula + "finup"));
+</script>
+</body>
+</html>

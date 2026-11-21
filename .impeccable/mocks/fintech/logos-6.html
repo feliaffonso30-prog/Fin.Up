@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FinUp: logos, sexta ronda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800;900&display=swap">
+<style>
+:root{--noche:radial-gradient(135% 88% at 94% -10%,#5361e0 0%,#3740ac 30%,#171c5e 62%,#0b0e30 100%);--gris:#d3d7f2;--curva:cubic-bezier(0.23,1,0.32,1)}
+*{box-sizing:border-box;margin:0}
+body{background:#e4e5ea;color:#15172b;font-family:"Schibsted Grotesk","Segoe UI",system-ui,Arial,sans-serif;font-size:16px;line-height:1.4;padding:0 16px 64px}
+.ancho{max-width:1120px;margin:0 auto}
+.cabeza{position:sticky;top:0;z-index:5;background:#e4e5ea;padding:20px 0 12px;box-shadow:0 10px 14px -14px rgba(21,23,43,.6)}
+h1{font-size:30px;line-height:1.08;font-weight:900;letter-spacing:-.03em}
+.bajada{margin-top:6px;font-size:16px;color:#3f4259;max-width:74ch}
+.controles{display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:12px}
+.modo{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.modo>span{font-size:14px;font-weight:700;color:#3f4259}
+.chip{border:0;background:#fff;color:#15172b;font:inherit;font-weight:700;min-height:44px;padding:8px 16px;border-radius:12px;cursor:pointer;transition:transform .12s var(--curva)}
+.chip:active{transform:scale(.97)}
+.chip[aria-pressed=true]{background:#15172b;color:#fff}
+.chip:focus-visible{outline:3px solid #5361e0;outline-offset:2px}
+.familia{margin-top:34px;font-size:15px;font-weight:800;color:#3f4259}
+.nota-familia{margin-top:2px;font-size:14px;color:#3f4259;max-width:80ch}
+.opcion{margin-top:14px}
+.opcion h2{font-size:26px;font-weight:900;letter-spacing:-.025em}
+.opcion>p{margin-top:3px;color:#3f4259;max-width:72ch}
+.lamina{margin-top:12px;border-radius:24px;overflow:hidden;background:#0b0e30;background-image:var(--noche);color:#fff;display:grid;grid-template-columns:1.25fr 1fr}
+.hero{padding:30px 28px;display:flex;flex-direction:column;justify-content:center;gap:14px;min-height:220px}
+.estado{font-size:15px;color:var(--gris)}
+.lado{padding:22px 24px;display:flex;flex-direction:column;gap:18px;justify-content:center;background:rgba(11,14,48,.55)}
+.sello{display:flex;align-items:center;gap:.22em;font-weight:900;letter-spacing:-.04em;line-height:1}
+.atras .sello{flex-direction:row-reverse}
+.hero .sello{align-self:flex-start}
+.sello svg{display:block;flex:none;overflow:visible}
+.tamanos{display:flex;align-items:flex-end;gap:16px}
+.tamanos figure{margin:0;text-align:center}
+.tamanos figcaption{font-size:12px;color:var(--gris);margin-top:5px}
+.icono{display:block;border-radius:22%}
+.barra-app{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.09);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);font-size:14px}
+.apps{display:flex;gap:12px;align-items:flex-end}
+.apps i{display:block;width:44px;height:44px;border-radius:22%}
+.apps span{display:block;text-align:center;font-size:11px;color:#fff;margin-top:3px}
+.apps div{width:48px}
+.lectura{display:grid;grid-template-columns:1fr 1fr;gap:6px 22px;margin-top:10px;font-size:15px;color:#3f4259}
+.lectura b{color:#15172b}
+
+/* ---- Movimiento: solo transform y opacity ---- */
+.vivo *{transform-box:view-box}
+.vivo{overflow:visible}
+
+/* Movimiento (criterios de Emil Kowalski):
+   - Bucle de carga: CSS (corre fuera del hilo principal), solo transform y opacity.
+     Giro constante = linear; vaivén en pantalla = ease-in-out fuerte.
+   - Resultado: WAAPI. Arranca desde la posición actual (sin saltos) y llega con ease-out fuerte, sin rebote.
+   - Tono firme: nada de overshoot. Una sola entrada por símbolo. */
+:root{--ease-out:cubic-bezier(0.23,1,0.32,1);--ease-in-out:cubic-bezier(0.77,0,0.175,1)}
+.vivo *{transform-box:view-box}
+
+/* Todas las piezas giran/oscilan sobre el centro del lienzo (64x64) */
+.m-ra,.m-rb,.m-pa,.m-pb,.m-e{transform-origin:32px 32px}
+.m-brazo{transform-origin:33px 17px}
+.cargando .m-ra{animation:giro 10s linear infinite}
+.cargando .m-rb{animation:giro-inv 10s linear infinite}
+.cargando .m-pa{animation:pa 3.2s var(--ease-in-out) infinite alternate}
+.cargando .m-pb{animation:pb 3.2s var(--ease-in-out) infinite alternate}
+.cargando .m-brazo{animation:brazo 2.8s var(--ease-in-out) infinite alternate}
+.cargando .m-pliegue{animation:pliegue 2.8s var(--ease-in-out) infinite alternate}
+.cargando .m-e{animation:giro 6s linear infinite}
+@keyframes giro{to{transform:rotate(90deg)}}
+@keyframes giro-inv{to{transform:rotate(-90deg)}}
+@keyframes pa{from{transform:rotate(-5deg)}to{transform:rotate(-1deg)}}
+@keyframes pb{from{transform:rotate(5deg)}to{transform:rotate(1deg)}}
+@keyframes brazo{from{transform:scaleX(1)}to{transform:scaleX(.6)}}
+@keyframes pliegue{from{opacity:1}to{opacity:.6}}
+
+@media (prefers-reduced-motion:reduce){.vivo *{animation:none!important}.cargando .m-pliegue{animation:pliegue 2.8s ease-in-out infinite alternate!important}.chip{transition:none}}
+@media (max-width:760px){.lamina{grid-template-columns:1fr}.hero{min-height:170px;padding:24px 20px}.lectura{grid-template-columns:1fr}.hero .sello{font-size:54px!important}}
+</style>
+</head>
+<body>
+<div class="ancho">
+  <div class="cabeza">
+    <h1>Logos, sexta ronda: plata fina, con movimiento afinado</h1>
+    <p class="bajada">Una exploración de prueba y error: ¿cómo sugerir plata de manera elegante y fina, sin monedas, flechas ni brillos? Cuatro ideas, ahora con más cuerpo y movimiento afinado. Se mueven mientras la app carga y hacen un gesto al mostrar tu resultado.</p>
+    <div class="controles">
+      <div class="modo" role="group" aria-label="Estado"><span>Estado</span>
+        <button class="chip" type="button" data-modo="cargando" aria-pressed="true">Cargando</button>
+        <button class="chip" type="button" data-modo="revelar" aria-pressed="false">Mostrar el resultado</button>
+      </div>
+      <div class="modo" role="group" aria-label="Posición del símbolo"><span>Símbolo</span>
+        <button class="chip" type="button" data-pos="adelante" aria-pressed="true">Adelante del nombre</button>
+        <button class="chip" type="button" data-pos="atras" aria-pressed="false">Atrás del nombre</button>
+      </div>
+    </div>
+  </div>
+  <div id="opciones"></div>
+</div>
+<script>
+const LAV = "#8d99ff", LAV2 = "#d3d7ff";
+
+// A. Moiré de peines: dos juegos de rayas que interfieren, como la trama impresa de un billete
+const moire = (chico) => {
+  const n = chico ? 3 : 6, paso = chico ? 18 : 9, sw = chico ? 7 : 4, r = chico ? 28 : 26;
+  const peine = (col, cls) => `<g class="${cls}">` + Array.from({ length: n }, (_, k) => {
+    const x = 32 + (k - (n - 1) / 2) * paso;
+    return `<line x1="${x}" y1="0" x2="${x}" y2="64" stroke="${col}" stroke-width="${sw}"/>`;
+  }).join("") + `</g>`;
+  const id = chico ? "cl-moire-c" : "cl-moire";
+  return `<defs><clipPath id="${id}"><circle cx="32" cy="32" r="${r}"/></clipPath></defs><g clip-path="url(#${id})">${peine(LAV, "m-pb")}${peine("#fff", "m-pa")}</g>`;
+};
+
+// B. La f de cinta doblada: una sola cinta de papel plegada; los dos lados del papel son la paleta
+const cinta = () =>
+  `<rect x="22" y="18" width="11" height="38" fill="#fff"/>` +
+  `<g class="m-brazo"><rect x="33" y="12" width="19" height="11" fill="${LAV}"/></g>` +
+  `<polygon class="m-pliegue" points="22,23 33,12 33,23" fill="${LAV2}"/>` +
+  `<rect x="13" y="32" width="30" height="11" fill="${LAV}"/>`;
+
+// E. Estrella de dos cuadrados: un cuadrado fijo y otro que gira, como los rosetones geométricos de las esquinas
+const estrella = (chico) => {
+  const sw = chico ? 6 : 4.5, l = chico ? 32 : 36, o = 32 - l / 2;
+  return `<rect x="${o}" y="${o}" width="${l}" height="${l}" fill="none" stroke="#fff" stroke-width="${sw}" stroke-linejoin="round"/>` +
+    `<g class="m-e"><rect x="${o}" y="${o}" width="${l}" height="${l}" fill="none" stroke="${LAV}" stroke-width="${sw}" stroke-linejoin="round" transform="rotate(45 32 32)"/></g>`;
+};
+
+// R. Rosetón corregido: 3 círculos, lentes con masa, recortado en un cuadrado de bordes suaves (parche de papel moneda)
+const roseton = (chico) => {
+  const r = 16, d = 9, sw = chico ? 5 : 4;
+  const juego = (desde, color, cls, w) => `<g class="${cls}">` + [0, 1, 2].map((k) => {
+    const a = (desde + k * 120) * Math.PI / 180;
+    return `<circle cx="${(32 + d * Math.cos(a)).toFixed(2)}" cy="${(32 + d * Math.sin(a)).toFixed(2)}" r="${r}" fill="${LAV}" fill-opacity=".12" stroke="${color}" stroke-width="${w}"/>`;
+  }).join("") + `</g>`;
+  const id = chico ? "cl-ros-c" : "cl-ros";
+  return `<defs><clipPath id="${id}"><rect x="8" y="8" width="48" height="48" rx="14"/></clipPath></defs><g clip-path="url(#${id})">` +
+    (chico ? juego(90, "#fff", "m-ra", sw) : juego(90, "#fff", "m-ra", sw) + juego(150, LAV2, "m-rb", 2.2)) + `</g>`;
+};
+
+const OPCIONES = [
+  { familia: "Plata fina, segunda vuelta", nota: "Cuatro propuestas con más cuerpo: las rondas anteriores tenían líneas muy finas junto a un nombre en negrita, y se veían frágiles. Aquí todo tiene trazo firme y algo de masa. Se mueven con una curva suave y sin rebote." },
+  { id: "moire", nombre: "Moiré de peines", dibujo: moire,
+    idea: "Dos juegos de rayas que interfieren y dibujan bandas, como la trama impresa de un billete. Mientras carga, los juegos se inclinan y las bandas se desplazan; al mostrar tu resultado las rayas coinciden y las bandas se calman.",
+    dice: "Un detalle de seguridad: algo que se mira de cerca y se ve bien trabajado.",
+    riesgo: "En 16 px queda como disco rayado (versión chica de 3 rayas). En reposo, al coincidir las rayas, pierde el efecto que le da carácter." },
+  { id: "cinta", nombre: "La f de cinta doblada", dibujo: cinta,
+    idea: "Una f hecha con una sola cinta de papel plegada; los dos lados del papel son blanco y lavanda. Mientras carga el brazo se recoge y se extiende; al mostrar tu resultado queda extendido.",
+    dice: "Una f firme y construida: un papel doblado con cuidado.",
+    riesgo: "Hay muchas f en el mercado (Flipboard, Facebook, Fiverr). Y es una letra: no dice «plata», solo dice finup." },
+  { id: "estrella", nombre: "Estrella de dos cuadrados", dibujo: estrella,
+    idea: "Un cuadrado fijo y otro que gira por encima, como los rosetones geométricos de las esquinas de un billete. Mientras carga gira despacio; al mostrar tu resultado se traba a 45° y forma la estrella.",
+    dice: "Geometría seria y exacta: orden, sin adornos.",
+    riesgo: "La estrella de ocho puntas se parece a símbolos religiosos (Rub el Hizb); conviene tenerlo presente según el mercado. Es pariente del rosetón." },
+  { id: "roseton", nombre: "Rosetón corregido", dibujo: roseton,
+    idea: "El rosetón de la ronda anterior, rehecho para sobrevivir en chico: tres círculos con trazo más grueso, lentes con algo de masa y recortado en un parche cuadrado de bordes suaves, que lo acerca al papel moneda y lo aleja de una flor.",
+    dice: "Una trama de seguridad, recortada como un parche de billete.",
+    riesgo: "Sigue siendo el más cercano a «banco antiguo». En pestaña pasa a ser una mancha con tres lóbulos." },
+];
+
+const svg = (o, t, vivo) => `<svg ${vivo ? 'class="vivo js-vivo cargando"' : ""} width="${t}" height="${t}" viewBox="0 0 64 64" aria-hidden="true">${o.dibujo(false, vivo)}</svg>`;
+const icono = (o, t) => `<svg class="icono" width="${t}" height="${t}" viewBox="0 0 64 64" role="img" aria-label="Ícono"><rect width="64" height="64" fill="#171c5e"/><g transform="translate(8 8) scale(.75)">${o.dibujo(t <= 20, false)}</g></svg>`;
+const sello = (o, fs, vivo) => `<span class="sello" style="font-size:${fs}px" role="img" aria-label="finup">${svg(o, Math.round(fs * 1.12), vivo)}<span>finup</span></span>`;
+
+document.getElementById("opciones").innerHTML = OPCIONES.map((o) => o.familia ? `<h2 class="familia">${o.familia}</h2><p class="nota-familia">${o.nota}</p>` : `
+  <section class="opcion">
+    <h2>${o.nombre}</h2>
+    <p>${o.idea}</p>
+    <div class="lamina">
+      <div class="hero">${sello(o, 76, true)}<p class="estado js-estado">Armando tu plan…</p></div>
+      <div class="lado">
+        <div class="tamanos">
+          <figure>${icono(o, 64)}<figcaption>Ícono</figcaption></figure>
+          <figure>${icono(o, 32)}<figcaption>32 px</figcaption></figure>
+          <figure>${icono(o, 16)}<figcaption>Pestaña</figcaption></figure>
+        </div>
+        <div class="barra-app">${sello(o, 22, false)}<span>Ingresar</span></div>
+        <div class="apps">
+          <div><i style="background:#e9e4d8"></i><span>Notas</span></div>
+          <div>${icono(o, 44)}<span>FinUp</span></div>
+          <div><i style="background:#2f6d4f"></i><span>Mapas</span></div>
+          <div><i style="background:#b8452f"></i><span>Música</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="lectura"><p><b>Qué dice:</b> ${o.dice}</p><p><b>Riesgo:</b> ${o.riesgo}</p></div>
+  </section>`).join("");
+
+// Resultado: cada pieza que se estaba moviendo congela su posición actual y llega al reposo con ease-out fuerte.
+// Así el gesto sirve aunque el resultado llegue a mitad de un ciclo (interrumpible, sin saltos).
+const EASE_OUT = "cubic-bezier(0.23, 1, 0.32, 1)";
+const reducir = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function revelar(svg) {
+  svg.querySelectorAll("*").forEach((el) => {
+    const actual = getComputedStyle(el).transform;
+    el.getAnimations().forEach((a) => a.cancel());
+    if (!actual || actual === "none") return;
+    if (reducir()) return;
+    // WAAPI: de la posición congelada al reposo. Las piezas de acento llegan un poco después (30-40 ms).
+    const demora = el.dataset.llega ? Number(el.dataset.llega) : 0;
+    el.animate([{ transform: actual }, { transform: "none" }], { duration: 480, delay: demora, easing: EASE_OUT, fill: "backwards" });
+  });
+}
+const botones = [...document.querySelectorAll("[data-modo]")];
+botones.forEach((b) => b.addEventListener("click", () => {
+  botones.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  const modo = b.dataset.modo;
+  document.querySelectorAll(".js-vivo").forEach((n) => {
+    if (modo === "cargando") { n.getAnimations({ subtree: true }).forEach((a) => a.cancel()); n.classList.remove("revelar"); n.classList.add("cargando"); }
+    else if (n.classList.contains("cargando")) { revelar(n); n.classList.remove("cargando"); n.classList.add("revelar"); }
+  });
+  document.querySelectorAll(".js-estado").forEach((p) => (p.textContent = modo === "cargando" ? "Armando tu plan…" : "Tu resultado está listo."));
+}));
+const pos = [...document.querySelectorAll("[data-pos]")];
+pos.forEach((b) => b.addEventListener("click", () => {
+  pos.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  document.body.classList.toggle("atras", b.dataset.pos === "atras");
+}));
+</script>
+</body>
+</html>

@@ -1,5 +1,6 @@
 import { AlertTriangle, CircleAlert, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Brujula } from "@/components/plataforma/brujula";
 import type { Categoria } from "@/lib/plataforma/tipos";
 import { cn } from "@/lib/utils";
 
@@ -11,9 +12,14 @@ export function Punto({ className }: { className?: string }) {
   return <span aria-hidden className={cn("inline-block h-2.5 w-2.5 shrink-0 rounded-[3px]", className)} />;
 }
 
-/** La marca escrita. Provisoria hasta tener el logo nuevo. */
+/** El logo: la brújula y el nombre. El símbolo acompaña el tamaño del texto. */
 export function Marca({ className }: { className?: string }) {
-  return <span className={cn("font-display text-2xl font-black tracking-[-0.04em] text-foreground", className)}>finup</span>;
+  return (
+    <span className={cn("inline-flex items-center gap-[0.22em] font-display text-2xl font-black leading-none tracking-[-0.04em] text-foreground", className)}>
+      <Brujula size="1.12em" grueso />
+      finup
+    </span>
+  );
 }
 
 /** Encabezado de cada pantalla: título y bajada. */
@@ -62,7 +68,7 @@ export function Aviso({ nivel, titulo, children, role, compacto, className }: Pr
   );
 }
 
-/** El bloque de "qué puede salir mal": el corazón del anti-humo, siempre con el mismo aspecto. */
+/** El bloque de "qué puede salir mal": el corazón del producto, siempre con el mismo aspecto. */
 export function QuePuedeSalirMal({
   titulo = "Qué puede salir mal",
   children,
@@ -78,7 +84,7 @@ export function QuePuedeSalirMal({
     <div className={cn("vidrio-mal rounded-lg p-4", className)}>
       <p className="mb-1 flex items-center gap-2 text-sm font-bold text-atencion">{titulo}</p>
       <div className="text-sm leading-relaxed text-atencion-texto/90">{children}</div>
-      {pie && <p className="mt-2 text-xs text-atencion-texto/75">{pie}</p>}
+      {pie && <p className="mt-2 text-sm text-atencion-texto/80">{pie}</p>}
     </div>
   );
 }

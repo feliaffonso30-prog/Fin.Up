@@ -1,25 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { Bot, ChevronDown, Search } from "lucide-react";
+import { useEffect } from "react";
+import Link from "next/link";
+import { ArrowRight, BookA, Bot, ChevronDown, Library } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { abrirFinBot } from "@/lib/finbot/abrir";
-import { GLOSARIO } from "@/lib/finbot/knowledge";
 import { LECCIONES } from "@/lib/plataforma/lecciones";
 import { EncabezadoPagina, Punto } from "@/components/plataforma/primitivas";
 
-const normalizar = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
-
 export function Aprender() {
-  const [busqueda, setBusqueda] = useState("");
-
-  const conceptos = useMemo(() => {
-    const q = normalizar(busqueda);
-    if (!q) return GLOSARIO;
-    return GLOSARIO.filter((c) => [c.termino, ...c.sinonimos, c.simple].some((t) => normalizar(t).includes(q)));
-  }, [busqueda]);
-
   // Si llega con /aprender#<lección> (por ejemplo, desde el recorrido), abre esa lección y la muestra.
   useEffect(() => {
     const el = document.getElementById(decodeURIComponent(window.location.hash.slice(1)));
@@ -31,7 +20,7 @@ export function Aprender() {
 
   return (
     <div className="space-y-10">
-      <EncabezadoPagina titulo="Finanzas sin humo">
+      <EncabezadoPagina titulo="Aprendé a tu ritmo">
         Lo esencial, en {LECCIONES.length} pasos cortos y en orden. Si algo no queda claro, preguntale a FinBot.
       </EncabezadoPagina>
 
@@ -74,39 +63,28 @@ export function Aprender() {
         </ol>
       </section>
 
-      <section aria-labelledby="glosario" className="space-y-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <h2 id="glosario" className="text-xl font-semibold">Glosario</h2>
-          <div className="relative w-full sm:w-72">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
-            <Input value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Buscar un término…" aria-label="Buscar en el glosario" className="pl-9" />
-          </div>
-        </div>
-
-        {conceptos.length === 0 ? (
-          <p className="rounded-xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-            No encontramos "{busqueda}". Probá con otra palabra o preguntale a FinBot.
-          </p>
-        ) : (
-          <div className="grid gap-3 md:grid-cols-2">
-            {conceptos.map((c) => (
-              <div key={c.termino} className="rounded-xl border border-border bg-secondary/30 p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <h3 className="text-sm font-semibold">{c.termino}</h3>
-                  {c.riesgo !== "—" && (
-                    <span className="shrink-0 rounded-full border border-border px-2 py-0.5 text-legal text-muted-foreground">Riesgo: {c.riesgo.toLowerCase()}</span>
-                  )}
-                </div>
-                <p className="mt-1.5 text-xs leading-relaxed text-foreground/85">{c.simple}</p>
-                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                  <span className="font-medium text-enlace">Ejemplo: </span>
-                  {c.ejemplo}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
+      {/* Ejemplos y el glosario viven en sus propias pantallas: acá solo se ofrece la entrada. */}
+      <div>
+      <Link href="/instrumentos" className="group flex min-h-16 items-center gap-4 border-t border-border py-4 transition-colors hover:bg-white/5">
+        <Library className="h-5 w-5 shrink-0 text-accent" aria-hidden />
+        <span className="min-w-0 flex-1">
+          <span className="block font-display text-base font-bold leading-snug">Ejemplos reales</span>
+          <span className="mt-0.5 block text-sm leading-relaxed text-muted-foreground">Casos concretos para entender cada parte de un plan.</span>
+        </span>
+        <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" aria-hidden />
+      </Link>
+      <Link
+        href="/aprender/glosario"
+        className="group flex min-h-16 items-center gap-4 border-y border-border py-4 transition-colors hover:bg-white/5"
+      >
+        <BookA className="h-5 w-5 shrink-0 text-accent" aria-hidden />
+        <span className="min-w-0 flex-1">
+          <span className="block font-display text-base font-bold leading-snug">Glosario</span>
+          <span className="mt-0.5 block text-sm leading-relaxed text-muted-foreground">¿Una palabra que no entendiste? Buscala acá.</span>
+        </span>
+        <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" aria-hidden />
+      </Link>
+      </div>
     </div>
   );
 }

@@ -83,7 +83,7 @@ const CONTENIDO: Record<Categoria, Contenido> = {
     queEs: "Préstamos que le hacés al Estado o a empresas: te devuelven tu plata más intereses en fechas pactadas.",
     ventaja: "Ingresos más previsibles y menos sobresaltos que las acciones.",
     queSalePuedeMal:
-      "Si quien emitió el bono no paga (default), perdés parte o todo. Además, si suben las tasas el precio del bono baja, y en pesos la inflación puede dejar el rendimiento por debajo de los precios.",
+      "Si no te devuelven el préstamo (default), perdés parte o todo. Si lo vendés antes de tiempo, puede valer menos. Y en pesos, la inflación puede comerse lo que rinde.",
     volatilidad: "Baja",
   },
   variable: {
@@ -108,7 +108,7 @@ const CONTENIDO: Record<Categoria, Contenido> = {
     queEs: "Plata disponible casi al instante que rinde algo mientras tanto.",
     ventaja: "Es tu colchón: podés usarla sin vender nada con pérdida.",
     queSalePuedeMal:
-      "Rinde poco y, si la inflación es alta, puede perder poder de compra. En un FCI el rendimiento no está garantizado.",
+      "Rinde poco y, si la inflación es alta, tu plata compra cada vez menos. En un fondo (FCI), lo que rinde puede cambiar.",
     volatilidad: "Muy baja",
   },
   alternativo: {
@@ -124,12 +124,12 @@ const CONTENIDO: Record<Categoria, Contenido> = {
 function porQue(cat: Categoria, pct: number, perfil: PerfilRiesgo, r: Respuestas): string {
   switch (cat) {
     case "fija":
-      if (perfil === "Conservador") return `Es la base de tu plan (${pct}%) porque priorizás no tener sobresaltos: te da ingresos más previsibles.`;
-      if (perfil === "Moderado") return `Un ${pct}% en renta fija amortigua los golpes cuando las acciones caen.`;
+      if (perfil === "Conservador") return `Es la base de tu plan (${pct}%) porque priorizás no tener sobresaltos.`;
+      if (perfil === "Moderado") return `Un ${pct}% en préstamos amortigua los golpes cuando las acciones caen.`;
       return `Solo un ${pct}%: alcanza para tener un amortiguador sin frenar demasiado el crecimiento.`;
     case "variable":
       if (perfil === "Conservador") return `Una parte chica (${pct}%) para que tu plata no pierda contra la inflación a largo plazo.`;
-      if (perfil === "Moderado") return `Es el motor de crecimiento (${pct}%): con tu horizonte podés aguantar las subas y bajas.`;
+      if (perfil === "Moderado") return `Es el motor de crecimiento (${pct}%): con el tiempo que tenés por delante podés aguantar las subas y bajas.`;
       return `Es el centro de tu estrategia (${pct}%): buscás crecer a largo plazo y aceptás caídas fuertes en el camino.`;
     case "dividendos":
       if (r.objetivo === "Generar ingresos") return `Como tu objetivo es generar ingresos, le damos un ${pct}% a empresas que reparten ganancias de forma periódica.`;

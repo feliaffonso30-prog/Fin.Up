@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FinUp: logos, cuarta ronda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800;900&display=swap">
+<style>
+:root{--noche:radial-gradient(135% 88% at 94% -10%,#5361e0 0%,#3740ac 30%,#171c5e 62%,#0b0e30 100%);--gris:#d3d7f2;--curva:cubic-bezier(0.23,1,0.32,1)}
+*{box-sizing:border-box;margin:0}
+body{background:#e4e5ea;color:#15172b;font-family:"Schibsted Grotesk","Segoe UI",system-ui,Arial,sans-serif;font-size:16px;line-height:1.4;padding:0 16px 64px}
+.ancho{max-width:1120px;margin:0 auto}
+.cabeza{position:sticky;top:0;z-index:5;background:#e4e5ea;padding:20px 0 12px;box-shadow:0 10px 14px -14px rgba(21,23,43,.6)}
+h1{font-size:30px;line-height:1.08;font-weight:900;letter-spacing:-.03em}
+.bajada{margin-top:6px;font-size:16px;color:#3f4259;max-width:74ch}
+.controles{display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:12px}
+.modo{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.modo>span{font-size:14px;font-weight:700;color:#3f4259}
+.chip{border:0;background:#fff;color:#15172b;font:inherit;font-weight:700;min-height:44px;padding:8px 16px;border-radius:12px;cursor:pointer;transition:transform .12s var(--curva)}
+.chip:active{transform:scale(.97)}
+.chip[aria-pressed=true]{background:#15172b;color:#fff}
+.chip:focus-visible{outline:3px solid #5361e0;outline-offset:2px}
+.familia{margin-top:34px;font-size:15px;font-weight:800;color:#3f4259}
+.nota-familia{margin-top:2px;font-size:14px;color:#3f4259;max-width:80ch}
+.opcion{margin-top:14px}
+.opcion h2{font-size:26px;font-weight:900;letter-spacing:-.025em}
+.opcion>p{margin-top:3px;color:#3f4259;max-width:72ch}
+.lamina{margin-top:12px;border-radius:24px;overflow:hidden;background:#0b0e30;background-image:var(--noche);color:#fff;display:grid;grid-template-columns:1.25fr 1fr}
+.hero{padding:30px 28px;display:flex;flex-direction:column;justify-content:center;gap:14px;min-height:220px}
+.estado{font-size:15px;color:var(--gris)}
+.lado{padding:22px 24px;display:flex;flex-direction:column;gap:18px;justify-content:center;background:rgba(11,14,48,.55)}
+.sello{display:flex;align-items:center;gap:.22em;font-weight:900;letter-spacing:-.04em;line-height:1}
+.atras .sello{flex-direction:row-reverse}
+.hero .sello{align-self:flex-start}
+.sello svg{display:block;flex:none;overflow:visible}
+.tamanos{display:flex;align-items:flex-end;gap:16px}
+.tamanos figure{margin:0;text-align:center}
+.tamanos figcaption{font-size:12px;color:var(--gris);margin-top:5px}
+.icono{display:block;border-radius:22%}
+.barra-app{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.09);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);font-size:14px}
+.apps{display:flex;gap:12px;align-items:flex-end}
+.apps i{display:block;width:44px;height:44px;border-radius:22%}
+.apps span{display:block;text-align:center;font-size:11px;color:#fff;margin-top:3px}
+.apps div{width:48px}
+.lectura{display:grid;grid-template-columns:1fr 1fr;gap:6px 22px;margin-top:10px;font-size:15px;color:#3f4259}
+.lectura b{color:#15172b}
+
+/* ---- Movimiento: solo transform y opacity ---- */
+.vivo *{transform-box:view-box}
+.vivo{overflow:visible}
+
+/* La pieza que cierra: la pieza se acerca y se aleja, pero nunca llega mientras carga */
+.m-cuerpo{transform-origin:32px 32px}
+.cargando .m-pieza{animation:pieza 1.5s ease-in-out infinite alternate}
+.revelar .m-pieza{animation:pieza-fin .5s var(--curva) both}
+.revelar .m-cuerpo{animation:clic .5s var(--curva) both}
+@keyframes pieza{from{transform:translateX(11px)}to{transform:translateX(4px)}}
+@keyframes pieza-fin{0%{transform:translateX(6px)}55%{transform:translateX(-1.5px)}80%{transform:translateX(.5px)}100%{transform:none}}
+@keyframes clic{0%{transform:none}55%{transform:scale(1.035)}100%{transform:none}}
+
+/* El anillo que se cierra: el punto da vueltas y al final encaja en el hueco */
+.m-orbita{transform-origin:32px 32px}
+.cargando .m-orbita{animation:orbita 2.2s linear infinite}
+.revelar .m-orbita{animation:orbita-fin .65s var(--curva) both}
+.revelar .m-anillo{transform-origin:32px 32px;animation:clic .65s var(--curva) both}
+@keyframes orbita{to{transform:rotate(360deg)}}
+@keyframes orbita-fin{from{transform:rotate(-210deg)}to{transform:none}}
+
+/* El nivel de ojo: la burbuja busca el centro */
+.cargando .m-ojo{animation:vaga 3.6s ease-in-out infinite}
+.revelar .m-ojo{animation:vaga-fin .6s var(--curva) both}
+@keyframes vaga{0%{transform:translate(-9px,3px)}25%{transform:translate(-3px,-9px)}50%{transform:translate(9px,-2px)}75%{transform:translate(3px,9px)}100%{transform:translate(-9px,3px)}}
+@keyframes vaga-fin{0%{transform:translate(8px,6px)}45%{transform:translate(-2px,-1.5px)}75%{transform:translate(.6px,.4px)}100%{transform:none}}
+
+/* Referencia: El encastre (ronda 3) */
+.m-encastre{transform-origin:32px 32px}
+.cargando .m-pa{animation:pa 1.8s ease-in-out infinite alternate}
+.cargando .m-pb{animation:pb 1.8s ease-in-out infinite alternate}
+.revelar .m-pa{animation:pa-fin .42s var(--curva) both}
+.revelar .m-pb{animation:pb-fin .42s var(--curva) both}
+.revelar .m-encastre{animation:clic .42s var(--curva) both}
+@keyframes pa{from{transform:none}to{transform:translateY(-5px)}}
+@keyframes pb{from{transform:none}to{transform:translateY(5px)}}
+@keyframes pa-fin{from{transform:translateY(-5px)}to{transform:none}}
+@keyframes pb-fin{from{transform:translateY(5px)}to{transform:none}}
+
+/* Referencia: El abanico (ronda 2) */
+.vivo .cuna{transform-box:fill-box}
+.cuna.arriba{transform-origin:left bottom}.cuna.abajo{transform-origin:left top}
+.cargando .cuna{animation:respira 1.4s ease-in-out infinite alternate}
+.revelar .cuna{animation:abre .6s var(--curva) both}
+@keyframes respira{from{transform:scaleY(0)}to{transform:scaleY(.6)}}
+@keyframes abre{from{transform:scaleY(0)}to{transform:none}}
+
+@media (prefers-reduced-motion:reduce){.vivo *{animation:none!important}.chip{transition:none}}
+@media (max-width:760px){.lamina{grid-template-columns:1fr}.hero{min-height:170px;padding:24px 20px}.lectura{grid-template-columns:1fr}.hero .sello{font-size:54px!important}}
+</style>
+</head>
+<body>
+<div class="ancho">
+  <div class="cabeza">
+    <h1>Logos, cuarta ronda</h1>
+    <p class="bajada">Pensados para «Seguridad y progreso»: ninguno sube, ninguno lleva flecha. Se mueven sin parar mientras la app carga y hacen un gesto corto al mostrar tu resultado. Cambiá el estado y probá el símbolo adelante o atrás del nombre.</p>
+    <div class="controles">
+      <div class="modo" role="group" aria-label="Estado"><span>Estado</span>
+        <button class="chip" type="button" data-modo="cargando" aria-pressed="true">Cargando</button>
+        <button class="chip" type="button" data-modo="revelar" aria-pressed="false">Mostrar el resultado</button>
+      </div>
+      <div class="modo" role="group" aria-label="Posición del símbolo"><span>Símbolo</span>
+        <button class="chip" type="button" data-pos="adelante" aria-pressed="true">Adelante del nombre</button>
+        <button class="chip" type="button" data-pos="atras" aria-pressed="false">Atrás del nombre</button>
+      </div>
+    </div>
+  </div>
+  <div id="opciones"></div>
+</div>
+<script>
+const LAV = "#8d99ff", LAV2 = "#d3d7ff";
+
+// 1. La pieza que cierra: una L blanca y una pieza lavanda que cierra el cuadrado
+const pieza = (chico) =>
+  `<g class="m-cuerpo"><path d="M10 10H26V34H54V54H10Z" fill="#fff" stroke="#fff" stroke-width="4" stroke-linejoin="round"/>` +
+  `<g class="m-pieza"><rect x="34" y="10" width="20" height="20" rx="3" fill="${LAV}" stroke="${LAV}" stroke-width="4" stroke-linejoin="round"/></g></g>`;
+
+// 2. El anillo que se cierra: anillo con hueco a la derecha y un punto que lo cierra
+const anillo = (chico) => {
+  const a = chico ? 34 : 28, r = 22;
+  const x = (32 + r * Math.cos(a * Math.PI / 180)).toFixed(2), y = (r * Math.sin(a * Math.PI / 180)).toFixed(2);
+  return `<g class="m-anillo"><path d="M${x} ${(32 + +y).toFixed(2)}A${r} ${r} 0 1 1 ${x} ${(32 - y).toFixed(2)}" fill="none" stroke="#fff" stroke-width="${chico ? 8 : 7}" stroke-linecap="round"/></g>` +
+    `<g class="m-orbita"><circle cx="54" cy="32" r="${chico ? 6 : 5}" fill="${LAV}"/></g>`;
+};
+
+// 3. El nivel de ojo: nivel redondo con la burbuja al centro
+const ojo = (chico) =>
+  `<circle cx="32" cy="32" r="${chico ? 22 : 24}" fill="none" stroke="#fff" stroke-width="${chico ? 7 : 4.5}"/>` +
+  (chico ? "" : `<circle cx="32" cy="32" r="10" fill="none" stroke="${LAV}" stroke-width="2"/>`) +
+  `<circle class="m-ojo" cx="32" cy="32" r="${chico ? 8 : 6}" fill="${LAV2}"/>`;
+
+// Referencia: El encastre (ronda 3)
+const encastre = () => `<g class="m-encastre"><path class="m-pa" d="M8 8H39V31H23V56H8Z" fill="#fff"/><path class="m-pb" d="M56 56H25V33H41V8H56Z" fill="${LAV}"/></g>`;
+
+// Referencia: El abanico (ronda 2)
+const abanico = () => `<circle cx="12" cy="32" r="5" fill="#fff"/>` +
+  `<path class="cuna arriba" d="M18 30L56 14L56 30Z" fill="#fff"/>` +
+  `<path class="cuna abajo" d="M18 34L56 34L56 50Z" fill="${LAV}"/>`;
+
+const OPCIONES = [
+  { familia: "Ideas nuevas", nota: "Nacen de «Seguridad y progreso»: algo que se arma, se cierra o queda a nivel. Ninguna sube." },
+  { id: "pieza", nombre: "La pieza que cierra", dibujo: pieza,
+    idea: "Un cuadrado al que le falta una pieza. Mientras carga, la pieza se acerca y se aleja buscando su lugar; al mostrar tu resultado encaja con un clic. No sube ni baja: solo cierra.",
+    dice: "Tu plan se arma pieza por pieza y queda firme.",
+    riesgo: "Un cuadrado con una esquina distinta recuerda a íconos de juegos de bloques. Hay que revisar parecidos antes de elegirlo." },
+  { id: "anillo", nombre: "El anillo que se cierra", dibujo: anillo,
+    idea: "Un anillo con un hueco y un punto que da vueltas mientras carga. Al mostrar tu resultado el punto encaja en el hueco y el anillo queda cerrado.",
+    dice: "Un círculo completo: nada queda abierto ni a medias.",
+    riesgo: "Puede leerse como botón de encendido o como símbolo de carga, y se parece a los anillos de las apps de fitness." },
+  { id: "ojo", nombre: "El nivel de ojo", dibujo: ojo,
+    idea: "Un nivel redondo, como el de un trípode: la burbuja busca el centro mientras carga y queda justo en el medio al mostrar tu resultado.",
+    dice: "A nivel y en el centro: firme, sin inclinarse hacia ningún lado.",
+    riesgo: "Un círculo dentro de otro se lee como una mira o un blanco, y se parece al logo de alguna cadena de tiendas muy conocida. A 16 px el círculo interior desaparece." },
+  { familia: "Referencias de rondas anteriores", nota: "Para compararlas lado a lado con las nuevas. Se mantienen tal cual estaban." },
+  { id: "encastre", nombre: "El encastre (ronda 3)", dibujo: encastre,
+    idea: "Dos piezas idénticas, una blanca y una lavanda, que se buscan. Al mostrar tu resultado encajan con un clic y forman un cuadrado.",
+    dice: "Dos piezas que encajan: una no cierra sin la otra.",
+    riesgo: "Tiene un aire a juego de bloques." },
+  { id: "abanico", nombre: "El abanico (ronda 2)", dibujo: abanico,
+    idea: "Desde un punto se abre un rango: arriba lo que puede ganar, abajo lo que puede perder. Respira mientras carga y se abre del todo al mostrar tu resultado.",
+    dice: "El futuro es un rango, no una línea.",
+    riesgo: "En chico puede parecer un megáfono o un botón de «atrás»." },
+];
+
+const svg = (o, t, vivo) => `<svg ${vivo ? 'class="vivo js-vivo cargando"' : ""} width="${t}" height="${t}" viewBox="0 0 64 64" aria-hidden="true">${o.dibujo(false, vivo)}</svg>`;
+const icono = (o, t) => `<svg class="icono" width="${t}" height="${t}" viewBox="0 0 64 64" role="img" aria-label="Ícono"><rect width="64" height="64" fill="#171c5e"/><g transform="translate(8 8) scale(.75)">${o.dibujo(t <= 20, false)}</g></svg>`;
+const sello = (o, fs, vivo) => `<span class="sello" style="font-size:${fs}px" role="img" aria-label="finup">${svg(o, Math.round(fs * 1.12), vivo)}<span>finup</span></span>`;
+
+document.getElementById("opciones").innerHTML = OPCIONES.map((o) => o.familia ? `<h2 class="familia">${o.familia}</h2><p class="nota-familia">${o.nota}</p>` : `
+  <section class="opcion">
+    <h2>${o.nombre}</h2>
+    <p>${o.idea}</p>
+    <div class="lamina">
+      <div class="hero">${sello(o, 76, true)}<p class="estado js-estado">Armando tu plan…</p></div>
+      <div class="lado">
+        <div class="tamanos">
+          <figure>${icono(o, 64)}<figcaption>Ícono</figcaption></figure>
+          <figure>${icono(o, 32)}<figcaption>32 px</figcaption></figure>
+          <figure>${icono(o, 16)}<figcaption>Pestaña</figcaption></figure>
+        </div>
+        <div class="barra-app">${sello(o, 22, false)}<span>Ingresar</span></div>
+        <div class="apps">
+          <div><i style="background:#e9e4d8"></i><span>Notas</span></div>
+          <div>${icono(o, 44)}<span>FinUp</span></div>
+          <div><i style="background:#2f6d4f"></i><span>Mapas</span></div>
+          <div><i style="background:#b8452f"></i><span>Música</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="lectura"><p><b>Qué dice:</b> ${o.dice}</p><p><b>Riesgo:</b> ${o.riesgo}</p></div>
+  </section>`).join("");
+
+const botones = [...document.querySelectorAll("[data-modo]")];
+botones.forEach((b) => b.addEventListener("click", () => {
+  botones.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  const modo = b.dataset.modo;
+  document.querySelectorAll(".js-vivo").forEach((n) => { n.classList.remove("cargando", "revelar"); void n.getBoundingClientRect(); n.classList.add(modo); });
+  document.querySelectorAll(".js-estado").forEach((p) => (p.textContent = modo === "cargando" ? "Armando tu plan…" : "Tu resultado está listo."));
+}));
+const pos = [...document.querySelectorAll("[data-pos]")];
+pos.forEach((b) => b.addEventListener("click", () => {
+  pos.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  document.body.classList.toggle("atras", b.dataset.pos === "atras");
+}));
+</script>
+</body>
+</html>

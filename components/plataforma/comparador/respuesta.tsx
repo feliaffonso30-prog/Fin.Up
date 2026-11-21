@@ -1,17 +1,17 @@
 "use client";
 
 import { Suspense, use, useMemo } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ExternalLink } from "lucide-react";
 import { QuePuedeSalirMal } from "@/components/plataforma/primitivas";
 import { compararTodo, type FilaComparacion as Fila } from "@/lib/plataforma/comparador/cotizar";
 import { EDUCATIVO } from "@/lib/plataforma/comparador/textos";
 import type { Alternativa, Consulta, Inflacion, Liquidez, TipoAlternativa } from "@/lib/plataforma/comparador/tipos";
 import { ars } from "@/lib/plataforma/formato";
-import { BadgeRiesgo, BotonEntidad } from "./insignias";
+import { BadgeRiesgo } from "./insignias";
 import type { Fuente } from "./pestanas";
 
 // La respuesta corta de Tus pesos: por cada tipo, cuánto ganarías, si le gana a la inflación
-// y cuándo podés sacar la plata. Sin tasas: esas quedan en "Ver el detalle".
+// y cuándo podés sacar la plata. Sin tasas ni notas: eso vive en la pantalla de detalle.
 // El orden es fijo por tipo, no un ranking: el comparador no recomienda ninguno.
 
 const NOMBRE: Record<TipoAlternativa, string> = {
@@ -81,7 +81,9 @@ function Tarjetas({ consulta, inflacion, plazoFijo, uva, billeteras, fondos }: O
 function Tarjeta({ fila }: { fila: Fila }) {
   const { tipo, mejor, cargando, motivo } = fila;
   const e = EDUCATIVO[tipo];
-  const nombre = mejor?.alternativa.tipo.startsWith("fci") ? mejor.alternativa.producto : mejor?.alternativa.entidad;
+  const a = mejor?.alternativa;
+  // En un fondo importa el nombre del fondo y quién lo administra.
+  const nombre = a?.tipo.startsWith("fci") ? `${a.producto} (${a.entidad})` : a?.entidad;
 
   return (
     <article className="vidrio flex h-full flex-col rounded-xl p-4">
@@ -108,18 +110,26 @@ function Tarjeta({ fila }: { fila: Fila }) {
             </Dato>
           </dl>
 
+          {/* Solo quién rinde más hoy. El link aparece únicamente si la entidad tiene uno. */}
           <div className="mt-3 border-t border-border pt-3">
             <p className="text-sm leading-snug">
               <span className="text-muted-foreground">La que más rinde hoy: </span>
-              <span className="font-semibold">{nombre}</span>
+              {a?.url ? (
+                <a
+                  href={a.url}
+                  target="_blank"
+                  rel={a.esReferido ? "noopener noreferrer sponsored" : "noopener noreferrer"}
+                  aria-label={`${nombre}: ir al sitio de la entidad (se abre en otra pestaña)`}
+                  className="inline-flex items-center gap-1 font-semibold underline underline-offset-4"
+                >
+                  {nombre}
+                  <ExternalLink className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                </a>
+              ) : (
+                <span className="font-semibold">{nombre}</span>
+              )}
             </p>
-            {tipo.startsWith("fci") && <p className="text-sm text-muted-foreground">{mejor.alternativa.entidad}</p>}
-            {mejor.notas.map((n) => (
-              <p key={n} className="mt-1 text-legal leading-snug text-muted-foreground">
-                {n}
-              </p>
-            ))}
-            <BotonEntidad alternativa={mejor.alternativa} className="mt-2" />
+            {a?.url && a.esReferido && <p className="mt-1 text-legal text-muted-foreground">Link de referido</p>}
           </div>
         </>
       )}

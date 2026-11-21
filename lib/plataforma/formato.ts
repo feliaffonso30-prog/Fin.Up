@@ -54,3 +54,9 @@ export const pct = (n: number, decimales = 1) =>
 
 // "−12%" o "+2,9%": con el signo menos real, para las cifras grandes
 export const pctConSigno = (n: number, decimales = 1) => `${signo(n)}${pct(Math.abs(n), decimales)}`;
+
+// AAAA-MM-DD de hoy en Argentina (para fechas de carga y cálculos de días).
+export const hoyArgentina = (ahora = new Date()) => ahora.toLocaleDateString("sv-SE", { timeZone: "America/Argentina/Buenos_Aires" });
+
+// "2026-11-21T17:32:00Z" → "14:32" (hora argentina)
+export const hora = (iso: string) => fecha(iso).split(" ")[1] ?? "";

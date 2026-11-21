@@ -13,13 +13,13 @@ import { AUTH_CONFIGURADA } from "@/lib/supabase/config";
 
 const EJEMPLO = ejemploDePortada();
 
-// La portada: muestra lo bueno y lo malo antes de pedir nada. Quien ya tiene un plan sigue a Mi plan.
+// La portada: muestra lo bueno y lo malo antes de pedir nada. Quien ya tiene un plan sigue a su Inicio.
 export function Inicio() {
   const router = useRouter();
   const { plan } = usePlan();
 
   useEffect(() => {
-    if (plan) router.replace("/dashboard");
+    if (plan) router.replace("/inicio");
   }, [plan, router]);
 
   return (

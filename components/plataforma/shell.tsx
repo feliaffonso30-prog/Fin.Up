@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, ChartPie, Library, LogOut, Wallet } from "lucide-react";
+import { BookOpen, Briefcase, ChartPie, House, LogOut, Wallet } from "lucide-react";
 import { FinBotChat } from "@/components/finbot/finbot-chat";
 import { Button } from "@/components/ui/button";
 import { Marca } from "@/components/plataforma/primitivas";
@@ -14,14 +14,22 @@ import { cn } from "@/lib/utils";
 
 // Cuatro secciones, nombradas por lo que la persona quiere hacer, no por la herramienta.
 // "Rehacer mi perfil" es una acción: vive en Mi plan, no en el menú.
+// Ejemplos no va en el menú: se entra desde Inicio, desde Aprender y desde cada parte de Mi plan.
+// "Lo que tenés" (Plus) va junto a Mi plan: lo sugerido y lo real, uno al lado del otro.
+// En el celular no entra en la barra inferior: vive como pestaña dentro de Mi plan.
 const NAV = [
+  { href: "/inicio", etiqueta: "Inicio", Icono: House },
   { href: "/dashboard", etiqueta: "Mi plan", Icono: ChartPie },
+  { href: "/cartera", etiqueta: "Lo que tenés", Icono: Briefcase, soloEscritorio: true },
   { href: "/comparador", etiqueta: "Tus pesos", Icono: Wallet },
-  { href: "/instrumentos", etiqueta: "Ejemplos", Icono: Library },
   { href: "/aprender", etiqueta: "Aprender", Icono: BookOpen },
 ];
+const NAV_CELULAR = NAV.filter((item) => !item.soloEscritorio);
 
 const esActivo = (pathname: string, href: string) => pathname === href || pathname.startsWith(href + "/");
+// En el celular, "Mi plan" queda marcada también en "Lo que tenés" (es su pestaña).
+const esActivoCelular = (pathname: string, href: string) =>
+  esActivo(pathname, href) || (href === "/dashboard" && esActivo(pathname, "/cartera"));
 
 /** Cerrar sesión: solo existe con cuenta. La pantalla de cuenta llega con el paso 4 de la hoja de ruta. */
 function BotonSalir({ compacto, sinCuenta }: { compacto?: boolean; sinCuenta: boolean }) {
@@ -64,7 +72,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen text-foreground md:grid md:grid-cols-[220px_1fr]">
       {/* Barra lateral (escritorio) */}
       <aside className="sticky top-0 hidden h-screen flex-col border-r border-border p-4 md:flex">
-        <Link href="/dashboard" className="mb-6 block px-3 pt-2" aria-label="FinUp, ir a Mi plan">
+        <Link href="/inicio" className="mb-6 block px-3 pt-2" aria-label="FinUp, ir al inicio">
           <Marca />
         </Link>
         <nav className="flex flex-col gap-1" aria-label="Principal">
@@ -100,7 +108,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
       <div className="min-w-0">
         {/* Barra superior (celular): solo marca y cuenta; la navegación va abajo, al alcance del pulgar */}
         <header className="flex h-16 items-center justify-between px-4 md:hidden">
-          <Link href="/dashboard" className="flex items-center" aria-label="FinUp, ir a Mi plan">
+          <Link href="/inicio" className="flex items-center" aria-label="FinUp, ir al inicio">
             <Marca />
           </Link>
           <div className="flex items-center gap-1">
@@ -117,9 +125,9 @@ export function Shell({ children }: { children: React.ReactNode }) {
         className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-popover pb-[env(safe-area-inset-bottom)] md:hidden"
       >
         <ul className="mx-auto grid h-16 max-w-md grid-cols-5 items-stretch">
-          {NAV.slice(0, 2).map((item) => (
+          {NAV_CELULAR.slice(0, 2).map((item) => (
             <li key={item.href}>
-              <PestanaInferior {...item} activo={esActivo(pathname, item.href)} />
+              <PestanaInferior {...item} activo={esActivoCelular(pathname, item.href)} />
             </li>
           ))}
           <li className="flex items-center justify-center px-0.5">
@@ -131,9 +139,9 @@ export function Shell({ children }: { children: React.ReactNode }) {
               FinBot
             </button>
           </li>
-          {NAV.slice(2).map((item) => (
+          {NAV_CELULAR.slice(2).map((item) => (
             <li key={item.href}>
-              <PestanaInferior {...item} activo={esActivo(pathname, item.href)} />
+              <PestanaInferior {...item} activo={esActivoCelular(pathname, item.href)} />
             </li>
           ))}
         </ul>

@@ -1,6 +1,6 @@
 # FinUp · Plataforma
 
-Plataforma de inteligencia financiera personalizada para jóvenes y principiantes de Argentina. Posicionamiento "anti-humo": ayuda a decidir **antes** de invertir, explica el porqué de cada recomendación y qué puede salir mal. No es asesor financiero, no opera ni integra brokers (límite intencional del MVP).
+Plataforma de inteligencia financiera personalizada para jóvenes y principiantes de Argentina. Posicionamiento "seguridad y progreso" (ver `PRODUCT.md`; ya no "anti-humo"): ayuda a decidir **antes** de invertir, explica el porqué de cada recomendación y qué puede salir mal. No es asesor financiero, no opera ni integra brokers (límite intencional del MVP).
 
 Fundadores: Felipe Affonso y Lorenzo Colángelo. Idioma de la app y del código de dominio: español rioplatense (voseo).
 
@@ -32,6 +32,12 @@ Next.js 16 (App Router) · React 19 · Tailwind 4 + shadcn/ui · Supabase · Gem
   - `lib/plataforma/comparador/` → dominio puro: normalizar (JSON de ArgentinaDatos → `Alternativa`), cotizar (ranking por monto/plazo/cliente), textos legales y educativos, `enlaces.ts` (mapa entidad → link, con `esReferido`).
   - `lib/comparador/fuentes.ts` → descarga + `unstable_cache` + respaldo (`respaldo.ts`). Al cambiar la normalización, subir `VERSION_CACHE`. Los FCI (`/fci/fondos`, ~30 MB) no se esperan en la página: llegan por streaming.
   - Desde la cartera, `liquidez` y `fija` llevan al comparador con `?usd=` (se pasa a ARS con el dólar MEP).
+- **Lo que tenés** (`/cartera`, función Plus en vista previa): la persona anota lo que ya invirtió y ve cuánto vale hoy, cuánto ganó o perdió y cómo se compara con su plan. En el celular es una pestaña de Mi plan (`pestanas-mi-plan.tsx`), no un lugar de la barra inferior.
+  - `lib/plataforma/cartera-real/` → dominio puro: `tipos.ts` (schema zod de `Tenencia`), `activos.ts` (qué se puede anotar, `SIMBOLOS_PERMITIDOS`), `valuar.ts` (valuación, pesos por categoría, `compararConPlan`, textos que describen y nunca dicen qué hacer). Tests en `cartera-real.test.ts`.
+  - Valuación: CEDEARs estimados desde el activo original en Nueva York ÷ ratio; cripto a precio de mercado; plazo fijo y "rinde a diario" calculados con la TNA cargada; acciones argentinas, bonos, ONs y "otro" con el valor que carga la persona (sin licencia BYMA no hay precio en vivo). Siempre se muestra método, fuente y hora.
+  - `/api/precios?simbolos=` → precios en USD (Yahoo, vía `market.ts`) + dólar MEP, solo para `SIMBOLOS_PERMITIDOS` (nada de `.BA` ni `^`), caché de 60 s. `hooks/use-precios.ts` consulta cada minuto con la pestaña visible.
+  - Guardado: `hooks/use-cartera-real.ts`, por ahora solo en `localStorage` (`finup:cartera-real:v1`). Falta la tabla en Supabase con RLS.
+  - Plus: `lib/plataforma/funciones.ts` (`puedeUsar`, `VISTA_PREVIA_PLUS = true` mientras no haya cobro).
 - **Biblioteca de instrumentos** (`/instrumentos` y `/instrumentos/[ticker]`, fichas estáticas): CEDEARs, acciones del panel líder, bonos y ONs, como ejemplos EDUCATIVOS por categoría de la cartera.
   - `lib/plataforma/instrumentos/` → `datos.ts` (lista curada, versionada en el repo; `LISTA_EN_BORRADOR` muestra un aviso), `tipos.ts` (schema zod), `catalogo.ts` (carga validada por ítem, filtros, `ejemplosPara(categoria, perfil)`), `textos.ts` (textos legales), `glosario.ts`.
   - "Ver ejemplos" en la cartera para `variable`, `dividendos` y `fija`; ordena por el riesgo propio del perfil. Los tests exigen 3-5 ejemplos en todas las combinaciones, nada de riesgo alto para Conservador y ningún texto del tipo "comprá" / "te recomendamos".
