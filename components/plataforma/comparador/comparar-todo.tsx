@@ -9,15 +9,20 @@ import { inflacionDelPeriodo } from "@/lib/plataforma/finanzas";
 import { ars } from "@/lib/plataforma/formato";
 import { compararTodo, type FilaComparacion as Fila } from "@/lib/plataforma/comparador/cotizar";
 import type { Alternativa, Consulta, Cotizacion, Inflacion, TipoAlternativa } from "@/lib/plataforma/comparador/tipos";
-import { BadgeLiquidez, BadgeRiesgo, BadgeTasaReal, BotonEntidad, tasa } from "./insignias";
+import { EDUCATIVO, plazoEnPalabras } from "@/lib/plataforma/comparador/textos";
+import { BadgeLiquidez, BadgeRiesgo, BadgeTasaReal, BotonEntidad, LeyendaTasas, tasa } from "./insignias";
 import type { Fuente } from "./pestanas";
 
-const NOMBRE_CORTO: Record<TipoAlternativa, string> = {
+/**
+ * Solo para el eje del gráfico, que no parte el texto en renglones: versión corta y sin siglas de
+ * `EDUCATIVO[tipo].titulo`. En la tabla y en el tooltip va el título completo.
+ */
+const NOMBRE_EJE: Record<TipoAlternativa, string> = {
   "plazo-fijo": "Plazo fijo",
-  uva: "Plazo fijo UVA",
+  uva: "Sigue a la inflación",
   billetera: "Billetera",
-  "fci-mm": "FCI money market",
-  "fci-rf": "FCI renta fija",
+  "fci-mm": "Fondo corto plazo",
+  "fci-rf": "Fondo Estado y empresas",
 };
 
 interface Props {
@@ -70,8 +75,8 @@ function Vista({
   return (
     <div className="space-y-6">
       <p className="text-sm leading-relaxed text-muted-foreground">
-        La opción de mayor ganancia estimada de cada tipo, para {ars(consulta.monto)} a {consulta.dias} días. Cada tipo tiene riesgos y
-        liquidez distintos: compará los tres datos, no solo la ganancia.
+        La opción con más ganancia estimada de cada tipo, para {ars(consulta.monto)} a {plazoEnPalabras(consulta.dias)}. Cada tipo tiene un
+        riesgo distinto y un momento distinto para sacar la plata: mirá las tres cosas, no solo la ganancia.
       </p>
 
       <Grafico filas={filas} perdidaPorInflacion={perdidaPorInflacion} dias={consulta.dias} />
@@ -92,7 +97,8 @@ function Grafico({ filas, perdidaPorInflacion, dias }: { filas: Fila[]; perdidaP
   const datos = filas
     .filter((f): f is Fila & { mejor: Cotizacion } => !!f.mejor)
     .map((f) => ({
-      tipo: NOMBRE_CORTO[f.tipo],
+      tipo: NOMBRE_EJE[f.tipo],
+      titulo: EDUCATIVO[f.tipo].titulo,
       ganancia: Math.round(f.mejor.ganancia),
       opcion: f.mejor.alternativa.tipo.startsWith("fci") ? f.mejor.alternativa.producto : f.mejor.alternativa.entidad,
       tna: f.mejor.tna,
@@ -105,7 +111,7 @@ function Grafico({ filas, perdidaPorInflacion, dias }: { filas: Fila[]; perdidaP
   return (
     <figure className="space-y-2 rounded-xl border border-border bg-card p-4">
       <figcaption className="space-y-0.5">
-        <p className="text-sm font-semibold">Ganancia estimada en {dias} días</p>
+        <p className="text-sm font-semibold">Ganancia estimada en {plazoEnPalabras(dias)}</p>
         {perdidaPorInflacion !== null && (
           <p className="text-xs text-muted-foreground">
             La línea marca lo que la inflación se come en ese plazo ({ars(perdidaPorInflacion)}): las barras que la pasan le ganan.
@@ -124,10 +130,10 @@ function Grafico({ filas, perdidaPorInflacion, dias }: { filas: Fila[]; perdidaP
               if (!d) return null;
               return (
                 <div className="rounded-lg border border-border bg-popover px-3 py-2 text-xs shadow-lg">
-                  <p className="font-semibold">{d.tipo}</p>
+                  <p className="font-semibold">{d.titulo}</p>
                   <p className="text-muted-foreground">{d.opcion}</p>
                   <p className="mt-1">
-                    {ars(d.ganancia)} · TNA {d.esUva ? "UVA + " : ""}
+                    {ars(d.ganancia)} · Tasa anual: {d.esUva ? "Inflación + " : ""}
                     {tasa(d.tna)}
                   </p>
                 </div>
@@ -161,7 +167,7 @@ function Grafico({ filas, perdidaPorInflacion, dias }: { filas: Fila[]; perdidaP
 
 function Opcion({ f }: { f: Fila }) {
   if (f.cargando) return <span className="text-xs text-muted-foreground">Cargando fondos…</span>;
-  if (!f.mejor) return <span className="text-xs text-muted-foreground">No disponible: {f.motivo}</span>;
+  if (!f.mejor) return <span className="text-xs text-muted-foreground">{f.motivoSimple ?? `No disponible: ${f.motivo}`}</span>;
   const a = f.mejor.alternativa;
   return (
     <div className="space-y-0.5">
@@ -176,19 +182,20 @@ function Opcion({ f }: { f: Fila }) {
   );
 }
 
-const tnaTexto = (c: Cotizacion) => (c.alternativa.capitalizacion === "uva" ? `UVA + ${tasa(c.tna)}` : tasa(c.tna));
+const tnaTexto = (c: Cotizacion) => (c.alternativa.capitalizacion === "uva" ? `Inflación + ${tasa(c.tna)}` : tasa(c.tna));
 
 function Resumen({ filas, dias }: { filas: Fila[]; dias: number }) {
   return (
     <>
+      <LeyendaTasas conMensual={false} conUva={filas.some((f) => f.mejor?.alternativa.capitalizacion === "uva")} />
       <div className="hidden overflow-hidden rounded-xl border border-border lg:block">
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
               <TableHead>Tipo</TableHead>
-              <TableHead>La que más rinde</TableHead>
+              <TableHead>La que más paga</TableHead>
               <TableHead className="text-right">Tasa anual (TNA)</TableHead>
-              <TableHead className="text-right">Ganancia en {dias} días</TableHead>
+              <TableHead className="text-right">Ganancia en {plazoEnPalabras(dias)}</TableHead>
               <TableHead className="text-center">¿Le gana a la inflación?</TableHead>
               <TableHead className="w-32">
                 <span className="sr-only">Link</span>
@@ -199,7 +206,7 @@ function Resumen({ filas, dias }: { filas: Fila[]; dias: number }) {
             {filas.map((f) => (
               <TableRow key={f.tipo} className="align-top">
                 <TableCell className="whitespace-normal">
-                  <p className="font-medium">{NOMBRE_CORTO[f.tipo]}</p>
+                  <p className="font-medium">{EDUCATIVO[f.tipo].titulo}</p>
                   {f.mejor && (
                     <div className="mt-1.5 flex flex-col items-start gap-1">
                       <BadgeLiquidez liquidez={f.mejor.alternativa.liquidez} />
@@ -231,7 +238,7 @@ function Resumen({ filas, dias }: { filas: Fila[]; dias: number }) {
       <ul className="space-y-3 lg:hidden">
         {filas.map((f) => (
           <li key={f.tipo} className="space-y-2 rounded-xl border border-border bg-card p-4">
-            <p className="text-base font-extrabold">{NOMBRE_CORTO[f.tipo]}</p>
+            <p className="text-base font-extrabold">{EDUCATIVO[f.tipo].titulo}</p>
             <Opcion f={f} />
             {f.mejor && (
               <>
@@ -241,7 +248,7 @@ function Resumen({ filas, dias }: { filas: Fila[]; dias: number }) {
                     <dd className="font-semibold">{tnaTexto(f.mejor)}</dd>
                   </div>
                   <div>
-                    <dt className="text-legal text-muted-foreground">Ganancia en {dias} días</dt>
+                    <dt className="text-legal text-muted-foreground">Ganancia en {plazoEnPalabras(dias)}</dt>
                     <dd className="font-semibold text-cifra">{ars(f.mejor.ganancia)}</dd>
                   </div>
                 </dl>
@@ -257,8 +264,8 @@ function Resumen({ filas, dias }: { filas: Fila[]; dias: number }) {
         ))}
       </ul>
       <p className="text-legal leading-snug text-muted-foreground/80">
-        UVA: estimado con la última inflación. Fondos: rendimiento de los últimos 30 días, que puede no repetirse. Tasa real:{" "}
-        rendimiento mensual comparado con la última inflación mensual.
+        Plazo fijo que sigue a la inflación: calculado con la inflación del último mes. Fondos: lo que pagaron el último mes, que puede no
+        repetirse. «Le gana a la inflación»: comparamos lo que paga en un mes con cuánto subieron los precios el último mes.
       </p>
     </>
   );

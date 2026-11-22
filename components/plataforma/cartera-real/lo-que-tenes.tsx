@@ -13,22 +13,26 @@ import { AnotarTenencia } from "@/components/plataforma/cartera-real/anotar-tene
 import { useCarteraReal } from "@/hooks/use-cartera-real";
 import { usePrecios } from "@/hooks/use-precios";
 import { abrirFinBot } from "@/lib/finbot/abrir";
-import { NOMBRE_CORTO_CATEGORIA, simboloMercado } from "@/lib/plataforma/cartera-real/activos";
-import type { MetodoValuacion, Tenencia, TenenciaValuada, Valuacion } from "@/lib/plataforma/cartera-real/tipos";
+import { GraficoEvolucion, GraficoGanancias, GraficoReparto, type UnidadMonto } from "@/components/plataforma/cartera-real/graficos";
+import { ResumenMovimiento } from "@/components/plataforma/cartera-real/resumen-movimiento";
+import { useEvolucionHistorica, useFotosDiarias } from "@/hooks/use-evolucion";
+import { NOMBRE_CORTO_CATEGORIA, simbolosPrecio } from "@/lib/plataforma/cartera-real/activos";
+import { conPuntoDeHoy } from "@/lib/plataforma/cartera-real/evolucion";
+import { resumirMovimiento } from "@/lib/plataforma/cartera-real/resumen";
+import type { DiferenciaPlan, MetodoValuacion, Tenencia, TenenciaValuada, Valuacion } from "@/lib/plataforma/cartera-real/tipos";
 import { compararConPlan, describirDiferencia, resultado, UMBRAL_PARECIDO, valuar } from "@/lib/plataforma/cartera-real/valuar";
 import { validarMonto } from "@/lib/plataforma/finanzas";
 import { ars, fecha, hora, hoyArgentina, pct, usd } from "@/lib/plataforma/formato";
 import { usePlan } from "@/lib/plataforma/store";
-import type { Categoria, Plan } from "@/lib/plataforma/tipos";
+import type { Categoria, PerfilRiesgo, Plan } from "@/lib/plataforma/tipos";
 import { cn } from "@/lib/utils";
 
-type UnidadMonto = "ars" | "usd";
-
+/** Debajo de cada inversión: qué tan exacto es el valor, en simple. */
 const ETIQUETA_METODO: Record<MetodoValuacion, string> = {
-  mercado: "Precio de mercado",
-  "estimado-subyacente": "Estimado",
-  calculado: "Calculado",
-  manual: "Lo cargaste vos",
+  mercado: "Precio de hoy",
+  "estimado-subyacente": "Precio aproximado",
+  calculado: "Con la tasa que cargaste",
+  manual: "Valor que cargaste",
 };
 
 /** "+$ 12.000" o "−USD 30", con el signo menos real y el mismo tamaño para subas y bajas. */
@@ -42,7 +46,7 @@ const pctSigno = (n: number) => `${n < 0 ? "−" : "+"}${pct(Math.abs(n))}`;
 export function LoQueTenes() {
   const { tenencias, cargando, agregar, actualizar, quitar } = useCarteraReal();
   const { plan } = usePlan();
-  const simbolos = useMemo(() => tenencias.map((t) => simboloMercado(t)).filter((s): s is string => s !== null), [tenencias]);
+  const simbolos = useMemo(() => tenencias.flatMap((t) => simbolosPrecio(t)), [tenencias]);
   const precios = usePrecios(simbolos);
   const [anotando, setAnotando] = useState(false);
 
@@ -95,7 +99,7 @@ export function LoQueTenes() {
               Plus · vista previa
             </span>
           </div>
-          {tenencias.length > 0 && <p className="max-w-2xl text-base text-muted-foreground">Lo que ya invertiste, en un solo lugar. Se actualiza solo cada minuto.</p>}
+          {tenencias.length > 0 && <p className="max-w-2xl text-base text-muted-foreground">Lo que ya invertiste, en un solo lugar.</p>}
         </header>
       </div>
 
@@ -155,20 +159,23 @@ function ConTenencias({ tenencias, mep, precios, plan, onAnotar, onActualizar, o
   const [unidad, setUnidad] = useState<UnidadMonto>("ars");
   const hoy = hoyArgentina();
   const v = useMemo(() => valuar(tenencias, precios.precios, mep, hoy), [tenencias, precios.precios, mep, hoy]);
+  const moneda = unidad === "ars" ? "ARS" : "USD";
   const total = unidad === "ars" ? v.totalArs : v.totalUsd;
   const costo = unidad === "ars" ? v.costoArs : v.costoUsd;
-  const res = resultado(v, unidad === "ars" ? "ARS" : "USD");
+  const res = resultado(v, moneda);
   const monto = (n: number) => (unidad === "ars" ? ars(n) : usd(n));
-  const dia = unidad === "ars" ? v.variacionDiaUsd * mep : v.variacionDiaUsd;
-  const hayMercado = v.tenencias.some((t) => t.metodo === "mercado" || t.metodo === "estimado-subyacente");
-  const estaAbajo = res.monto < 0 || dia < 0;
+  const resumen = useMemo(() => resumirMovimiento(v, moneda, mep, hoy), [v, moneda, mep, hoy]);
+  const historica = useEvolucionHistorica(tenencias, hoy);
+  const fotos = useFotosDiarias(v, hoy);
+  const puntosHistoricos = useMemo(() => ({ ...historica, puntos: conPuntoDeHoy(historica.puntos, v, hoy) }), [historica, v, hoy]);
+  const reparto = repartoContraPlan(v, plan);
 
   return (
     <>
-      <section aria-labelledby="hoy-vale" className="space-y-3">
+      <section aria-labelledby="tu-plata" className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-          <h2 id="hoy-vale" className="text-lg font-extrabold">
-            Hoy vale unos
+          <h2 id="tu-plata" className="text-lg font-extrabold">
+            Tu plata hoy
           </h2>
           <SelectorUnidad valor={unidad} opciones={["ars", "usd"]} onCambiar={(u) => u !== "pct" && setUnidad(u)} />
         </div>
@@ -176,54 +183,83 @@ function ConTenencias({ tenencias, mep, precios, plan, onAnotar, onActualizar, o
           {monto(total)}
         </p>
         <div className="space-y-1 text-base">
-          <p className="text-muted-foreground">Pusiste {monto(costo)}</p>
-          <p>
-            <span className="font-bold">{conSigno(res.monto, unidad)}</span>
-            {res.pct !== null && <span className="font-bold"> ({pctSigno(res.pct)})</span>}{" "}
-            <span className="text-muted-foreground">{res.monto < 0 ? "abajo desde que empezaste" : "desde que empezaste"}</span>
-          </p>
-          {hayMercado && (
-            <p className="text-sm text-muted-foreground">
-              Hoy: {conSigno(dia, unidad)} {dia < 0 ? "abajo" : ""}
+          <p className="font-bold">{fraseResultado(res, costo, monto)}</p>
+          {reparto && (
+            <p>
+              <a href="#comparado" className="font-medium text-enlace underline-offset-4 hover:underline">
+                {reparto.parecido ? "Se parece a tu plan" : `No se parece del todo a tu plan ${reparto.perfil.toLowerCase()}`}
+              </a>
             </p>
           )}
         </div>
         <EstadoActualizacion precios={precios} incompleta={v.incompleta} />
-        {estaAbajo && (
-          <p className="vidrio-mal max-w-2xl rounded-lg p-3 text-sm leading-relaxed text-atencion-texto/90">
-            Que esté abajo no quiere decir que perdiste: la pérdida se vuelve real si vendés en ese momento. Que suba y baje de un día para otro es normal.
-          </p>
-        )}
-        {unidad === "usd" && <TextoLegal>Lo que pusiste en pesos se pasa a dólares con el dólar MEP del día en que lo anotaste.</TextoLegal>}
+        <MensajeCalma totalAbajo={res.monto < 0} diaAbajo={resumen.movimientoDia < 0} />
       </section>
 
-      <section aria-labelledby="que-tenes" className="space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      <ResumenMovimiento resumen={resumen} />
+
+      <GraficoEvolucion historica={puntosHistoricos} fotos={fotos} unidad={unidad} />
+
+      <section aria-labelledby="que-tenes" className="space-y-5">
+        <GraficoGanancias tenencias={v.tenencias} unidad={unidad} />
+        <div className="space-y-3">
           <h2 id="que-tenes" className="text-lg font-extrabold">
             Qué tenés
           </h2>
-          <Button variant="outline" size="sm" onClick={onAnotar}>
+          <ul className="border-t border-border">
+            {v.tenencias.map((tv) => (
+              <FilaTenencia key={tv.tenencia.id} tv={tv} unidad={unidad} onActualizar={onActualizar} onQuitar={onQuitar} />
+            ))}
+          </ul>
+          <Button size="cta" onClick={onAnotar}>
             <Plus className="h-4 w-4" aria-hidden />
-            Anotar otra
+            Anotar otra inversión
           </Button>
         </div>
-        <ul className="border-t border-border">
-          {v.tenencias.map((tv) => (
-            <FilaTenencia key={tv.tenencia.id} tv={tv} unidad={unidad} onActualizar={onActualizar} onQuitar={onQuitar} />
-          ))}
-        </ul>
       </section>
 
-      <ComparadoConPlan valuacion={v} plan={plan} />
+      <ComparadoConPlan reparto={reparto} hayPlan={plan !== null} />
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         <TextoLegal>
-          Es una foto aproximada para que entiendas lo que tenés, no tu saldo oficial: ese lo ves en la app donde invertiste. No incluye comisiones, impuestos ni dividendos.
-          Los CEDEARs se estiman con el precio del activo original en Nueva York y el dólar MEP: en BYMA el precio puede ser distinto. Los precios pueden tener demora.
+          Es una foto aproximada, no tu saldo oficial (ese lo ves en la app donde invertiste). Contenido educativo, no es asesoramiento financiero. Lo que anotás se
+          guarda solo en este navegador: si lo borrás o cambiás de dispositivo, se pierde.
         </TextoLegal>
-        <TextoLegal>Guardado solo en este navegador. Contenido educativo, no es asesoramiento financiero.</TextoLegal>
+        <details className="group text-sm">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center gap-1.5 font-medium text-enlace [&::-webkit-details-marker]:hidden">
+            Cómo calculamos esto
+            <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180 motion-reduce:transition-none" aria-hidden />
+          </summary>
+          <ul className="max-w-2xl list-disc space-y-1.5 pl-5 text-muted-foreground">
+            <li>Las acciones, los bonos y los CEDEARs usan el precio de BYMA (la bolsa de Buenos Aires), que puede tener unos minutos de demora. Si no lo tenemos, un CEDEAR se calcula con el precio de la empresa en EE.UU. y el dólar MEP de hoy.</li>
+            <li>La cripto usa su precio en dólares. El plazo fijo y las cuentas que rinden se calculan con la tasa que cargaste.</li>
+            <li>Si no cargaste a qué precio compraste, usamos el precio de cierre del día que pusiste.</li>
+            <li>Para pasar de pesos a dólares usamos el dólar MEP (el que se compra de forma legal a través de la bolsa): el del día que invertiste para lo que pusiste, y el de hoy para lo que vale.</li>
+            <li>No incluye comisiones, impuestos ni dividendos.</li>
+          </ul>
+        </details>
       </div>
     </>
+  );
+}
+
+/** "Vale $ 12.000 más (+5%) que lo que pusiste" o "Vale $ 8.000 menos (−4%)…": todavía no es plata cobrada. */
+function fraseResultado(res: { monto: number; pct: number | null }, costo: number, monto: (n: number) => string): string {
+  const p = res.pct !== null ? ` (${pctSigno(res.pct)})` : "";
+  if (res.pct !== null && Math.abs(res.pct) < 0.5) return `Está más o menos igual a lo que pusiste (${monto(costo)}).`;
+  if (res.monto >= 0) return `Vale ${monto(res.monto)} más${p} que lo que pusiste.`;
+  return `Vale ${monto(Math.abs(res.monto))} menos${p} que lo que pusiste.`;
+}
+
+/** Con calma y sin decir qué hacer: distinto si bajó solo el día o si el total está abajo. */
+function MensajeCalma({ totalAbajo, diaAbajo }: { totalAbajo: boolean; diaAbajo: boolean }) {
+  if (!totalAbajo && !diaAbajo) return null;
+  return (
+    <Aviso nivel="atencion" compacto className="max-w-2xl">
+      {totalAbajo
+        ? "Por ahora vale menos de lo que pusiste. Es una diferencia que todavía se puede mover para cualquier lado."
+        : "Bajó en el día. Que los precios suban y bajen de un día para otro es normal, sobre todo en acciones y cripto."}
+    </Aviso>
   );
 }
 
@@ -232,10 +268,10 @@ function EstadoActualizacion({ precios, incompleta }: { precios: ReturnType<type
     <div className="space-y-2">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <TextoLegal>
-          {precios.consultado ? `Actualizado ${hora(precios.consultado)}` : "Sin actualizar todavía"} · se actualiza solo cada minuto · los precios pueden tener demora
+          {precios.consultado ? `Actualizado ${hora(precios.consultado)}` : "Sin actualizar todavía"}
         </TextoLegal>
-        <button type="button" onClick={precios.recargar} className="flex min-h-9 items-center gap-1 text-legal font-medium text-enlace hover:underline">
-          <RefreshCw className="h-3 w-3" aria-hidden />
+        <button type="button" onClick={precios.recargar} className="flex min-h-11 items-center gap-1.5 text-legal font-medium text-enlace hover:underline">
+          <RefreshCw className="h-3.5 w-3.5" aria-hidden />
           Actualizar ahora
         </button>
       </div>
@@ -294,14 +330,18 @@ function FilaTenencia({
         </summary>
         <div className="space-y-3 pb-5 pl-6 text-sm">
           <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
-            <dt className="text-muted-foreground">Pusiste</dt>
-            <dd>{t.invertido.moneda === "ARS" ? ars(t.invertido.monto) : usd(t.invertido.monto)}</dd>
+            <dt className="text-muted-foreground">{t.costoEstimado ? "Punto de partida" : "Pusiste"}</dt>
+            <dd>
+              {t.invertido.moneda === "ARS" ? ars(t.invertido.monto) : usd(t.invertido.monto)}
+              {t.costoEstimado && <span className="block text-muted-foreground">No sabíamos el precio de compra: contamos desde el día que lo anotaste.</span>}
+              {t.costoDesdeCierre && <span className="block text-muted-foreground">Con el precio de cierre del día que compraste.</span>}
+            </dd>
             {t.cantidad !== null && (
               <>
                 <dt className="text-muted-foreground">Cantidad</dt>
                 <dd>
                   {t.cantidad.toLocaleString("es-AR", { maximumFractionDigits: 6 })}
-                  {t.cantidadEstimada ? " (estimada con el precio del día en que lo anotaste)" : ""}
+                  {t.cantidadEstimada ? " (aproximada, con el precio del día que invertiste)" : ""}
                 </dd>
               </>
             )}
@@ -316,11 +356,10 @@ function FilaTenencia({
             <dt className="text-muted-foreground">Parte del plan</dt>
             <dd>{NOMBRE_CORTO_CATEGORIA[t.categoria]}</dd>
           </dl>
-          <p className="text-muted-foreground">
-            {tv.fuente}
-            {tv.metodo === "estimado-subyacente" && ": en BYMA el precio puede ser distinto, porque también se mueve con el dólar."}
-            {tv.metodo === "calculado" && ". Si la tasa cambió, el valor real puede ser otro."}
-          </p>
+          {tv.metodo === "estimado-subyacente" && (
+            <p className="text-muted-foreground">Precio aproximado: lo sacamos del precio de la empresa en EE.UU. y del dólar de hoy. En tu app puede verse un poco distinto.</p>
+          )}
+          {tv.metodo === "calculado" && <p className="text-muted-foreground">Si la tasa cambió, el valor real puede ser otro.</p>}
           {t.tipo === "manual" && <ActualizarValor tenencia={t} onActualizar={onActualizar} />}
           {confirmar ? (
             <div className="flex flex-wrap items-center gap-2">
@@ -333,7 +372,7 @@ function FilaTenencia({
               </Button>
             </div>
           ) : (
-            <button type="button" onClick={() => setConfirmar(true)} className="min-h-9 text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
+            <button type="button" onClick={() => setConfirmar(true)} className="min-h-11 text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
               Sacar de la lista
             </button>
           )}
@@ -348,25 +387,30 @@ function ActualizarValor({ tenencia, onActualizar }: { tenencia: Tenencia; onAct
   const [texto, setTexto] = useState("");
   const [error, setError] = useState<string | null>(null);
   const id = `valor-${tenencia.id}`;
+  // Si la anotó por cantidad, pide el precio de UNA y calcula el total.
+  const porUnidad = tenencia.cantidad !== null;
 
   function guardar() {
     const v = validarMonto(texto);
     if (!v.ok) return setError(v.error);
     setError(null);
     setTexto("");
-    onActualizar({ ...tenencia, valorManual: { monto: v.monto, moneda, fecha: hoyArgentina() } });
+    const total = porUnidad && tenencia.cantidad !== null ? v.monto * tenencia.cantidad : v.monto;
+    onActualizar({ ...tenencia, valorManual: { monto: total, moneda, fecha: hoyArgentina() } });
   }
 
   return (
     <div className="space-y-1.5">
-      <p className="text-muted-foreground">{CUANDO_ACTUALIZAR}</p>
+      <p className="text-muted-foreground">
+        {porUnidad ? "Para esto no hay precio en vivo: actualizá el precio de cada unidad con lo que ves en tu app." : CUANDO_ACTUALIZAR}
+      </p>
       <label htmlFor={id} className="sr-only">
-        Valor de hoy en {moneda === "ARS" ? "pesos" : "dólares"}
+        {porUnidad ? "Precio de hoy de cada unidad" : "Valor de hoy"} en {moneda === "ARS" ? "pesos" : "dólares"}
       </label>
       <div className="flex gap-2">
         <div className="relative flex-1">
           <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 font-bold">{moneda === "ARS" ? "$" : "US$"}</span>
-          <Input id={id} inputMode="decimal" autoComplete="off" value={texto} onChange={(e) => setTexto(e.target.value)} placeholder="Valor de hoy" className={cn("h-10 rounded-md", moneda === "ARS" ? "pl-7" : "pl-11")} />
+          <Input id={id} inputMode="decimal" autoComplete="off" value={texto} onChange={(e) => setTexto(e.target.value)} placeholder={porUnidad ? "Precio de hoy por unidad" : "Valor de hoy"} className={cn("h-10 rounded-md", moneda === "ARS" ? "pl-7" : "pl-11")} />
         </div>
         <Button size="sm" variant="outline" onClick={guardar}>
           Actualizar
@@ -379,22 +423,20 @@ function ActualizarValor({ tenencia, onActualizar }: { tenencia: Tenencia; onAct
 
 const ORDEN: Categoria[] = ["fija", "variable", "dividendos", "liquidez", "alternativo"];
 
-function Barra({ titulo, pesos }: { titulo: string; pesos: Record<Categoria, number> }) {
-  const partes = ORDEN.filter((c) => pesos[c] > 0);
-  return (
-    <div className="space-y-1.5">
-      <p className="text-sm font-bold">{titulo}</p>
-      <div className="flex h-3.5 w-full gap-[3px]" role="img" aria-label={`${titulo}: ${partes.map((c) => `${NOMBRE_CORTO_CATEGORIA[c]} ${pesos[c]}%`).join(", ")}`}>
-        {partes.map((c) => (
-          <div key={c} style={{ width: `${pesos[c]}%` }} className={cn(COLOR_CATEGORIA[c], "h-full min-w-1 rounded-[5px]")} />
-        ))}
-      </div>
-    </div>
-  );
+type Reparto = { delPlan: Record<Categoria, number>; tuyo: Record<Categoria, number>; perfil: PerfilRiesgo; parecido: boolean; importantes: DiferenciaPlan[] };
+
+/** Lo que tenés contra el plan, ya calculado (se usa arriba, en una línea, y abajo, en detalle). */
+function repartoContraPlan(v: Valuacion, plan: Plan | null): Reparto | null {
+  if (!plan || v.totalUsd <= 0) return null;
+  const delPlan = Object.fromEntries(ORDEN.map((c) => [c, plan.posiciones.find((p) => p.categoria === c)?.porcentaje ?? 0])) as Record<Categoria, number>;
+  const importantes = compararConPlan(v.pesos, delPlan)
+    .filter((d) => Math.abs(d.diferencia) >= UMBRAL_PARECIDO)
+    .slice(0, 3);
+  return { delPlan, tuyo: v.pesos, perfil: plan.perfil.perfil, parecido: importantes.length === 0, importantes };
 }
 
-function ComparadoConPlan({ valuacion, plan }: { valuacion: Valuacion; plan: Plan | null }) {
-  if (!plan) {
+function ComparadoConPlan({ reparto, hayPlan }: { reparto: Reparto | null; hayPlan: boolean }) {
+  if (!hayPlan) {
     return (
       <section aria-labelledby="comparado" className="space-y-2">
         <h2 id="comparado" className="text-lg font-extrabold">
@@ -409,31 +451,21 @@ function ComparadoConPlan({ valuacion, plan }: { valuacion: Valuacion; plan: Pla
       </section>
     );
   }
-  if (valuacion.totalUsd <= 0) return null;
-
-  const delPlan = Object.fromEntries(ORDEN.map((c) => [c, plan.posiciones.find((p) => p.categoria === c)?.porcentaje ?? 0])) as Record<Categoria, number>;
-  const diferencias = compararConPlan(valuacion.pesos, delPlan);
-  const importantes = diferencias.filter((d) => Math.abs(d.diferencia) >= UMBRAL_PARECIDO).slice(0, 3);
-  const perfil = plan.perfil.perfil;
+  if (!reparto) return null;
+  const { delPlan, tuyo, perfil, parecido, importantes } = reparto;
+  const pregunta = parecido
+    ? `Comparé lo que tengo con mi plan sugerido (perfil ${perfil.toLowerCase()}) y se parecen. ¿Qué significa eso y qué puede salir mal igual?`
+    : `Comparé lo que tengo con mi plan sugerido (perfil ${perfil.toLowerCase()}) y no se parecen del todo: ${importantes
+        .map((d) => `${NOMBRE_CORTO_CATEGORIA[d.categoria]} ${d.planPct}% en el plan y ${d.tuyoPct}% lo mío`)
+        .join("; ")}. ¿Por qué importa esa diferencia y qué puede salir mal? No me digas qué hacer.`;
 
   return (
     <section aria-labelledby="comparado" className="space-y-4">
-      <h2 id="comparado" className="text-lg font-extrabold">
+      <h2 id="comparado" className="scroll-mt-6 text-lg font-extrabold">
         Comparado con tu plan
       </h2>
-      <div className="space-y-3">
-        <Barra titulo={`Tu plan sugerido (perfil ${perfil.toLowerCase()})`} pesos={delPlan} />
-        <Barra titulo="Lo que tenés" pesos={valuacion.pesos} />
-      </div>
-      <ul className="flex flex-wrap gap-x-4 gap-y-1.5 text-sm text-muted-foreground" aria-label="Referencias">
-        {ORDEN.filter((c) => delPlan[c] > 0 || valuacion.pesos[c] > 0).map((c) => (
-          <li key={c} className="flex items-center gap-1.5">
-            <Punto className={COLOR_CATEGORIA[c]} />
-            {NOMBRE_CORTO_CATEGORIA[c]}: {delPlan[c]}% → {valuacion.pesos[c]}%
-          </li>
-        ))}
-      </ul>
-      {importantes.length === 0 ? (
+      <GraficoReparto plan={delPlan} tuyo={tuyo} perfil={perfil} />
+      {parecido ? (
         <p className="text-base">Lo que tenés se parece bastante a tu plan.</p>
       ) : (
         <ul className="space-y-2">
@@ -445,11 +477,7 @@ function ComparadoConPlan({ valuacion, plan }: { valuacion: Valuacion; plan: Pla
           ))}
         </ul>
       )}
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => abrirFinBot("Comparé lo que tengo con mi plan sugerido y no se parecen. ¿Por qué importa esa diferencia y qué puede salir mal?")}
-      >
+      <Button variant="outline" onClick={() => abrirFinBot(pregunta)}>
         <MessageCircle className="h-4 w-4" aria-hidden />
         Preguntale a FinBot por qué importa
       </Button>

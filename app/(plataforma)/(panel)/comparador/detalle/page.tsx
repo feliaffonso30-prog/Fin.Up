@@ -3,7 +3,7 @@ import { Comparador } from "@/components/plataforma/comparador/comparador";
 import { obtenerBilleteras, obtenerDolarMep, obtenerFci, obtenerInflacion, obtenerPlazoFijo, obtenerUva } from "@/lib/comparador/fuentes";
 
 export const metadata: Metadata = {
-  title: "Tasas y entidades | FinUp",
+  title: "Todas las opciones | FinUp",
   robots: { index: false },
 };
 

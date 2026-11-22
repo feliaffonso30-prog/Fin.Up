@@ -10,10 +10,9 @@ import { inflacionDeEquilibrioUva } from "@/lib/plataforma/finanzas";
 import { pct } from "@/lib/plataforma/formato";
 import { cotizarTodas, mejorPorTipo, type Orden } from "@/lib/plataforma/comparador/cotizar";
 import { FUENTES } from "@/lib/plataforma/comparador/normalizar";
-import { EDUCATIVO } from "@/lib/plataforma/comparador/textos";
+import { EDUCATIVO, plazoEnPalabras } from "@/lib/plataforma/comparador/textos";
 import type { Alternativa, Consulta, Cotizacion, Inflacion, TipoAlternativa } from "@/lib/plataforma/comparador/tipos";
 import { FuenteDato } from "./avisos";
-import { tasa } from "./insignias";
 import { TablaAlternativas } from "./tabla-alternativas";
 
 export type Fuente = ResultadoFuente<Alternativa[]>;
@@ -34,6 +33,7 @@ export function Explicacion({ tipo, abierta = false }: { tipo: TipoAlternativa; 
       <summary className="cursor-pointer list-none text-sm">
         <span className="font-semibold">{e.titulo}:</span> <span className="text-muted-foreground">{e.queEs}</span>{" "}
         <span className="whitespace-nowrap text-xs text-enlace group-open:hidden">Ver ventajas y riesgos</span>
+        <span className="mt-1 block text-legal text-muted-foreground">En el banco: {e.enElBanco}</span>
       </summary>
       <div className="mt-3 space-y-2 text-xs leading-relaxed">
         <p>
@@ -44,10 +44,10 @@ export function Explicacion({ tipo, abierta = false }: { tipo: TipoAlternativa; 
           <span className="font-semibold text-atencion">Qué puede salir mal: </span>
           <span className="text-atencion-texto/90">{e.riesgos}</span>
         </p>
-        {e.cuandoConviene && (
+        {e.cuandoPagaMas && (
           <p>
-            <span className="font-semibold text-info">Cuándo suele convenir: </span>
-            <span className="text-foreground/85">{e.cuandoConviene}</span>
+            <span className="font-semibold text-info">Cuándo tiende a pagar más: </span>
+            <span className="text-foreground/85">{e.cuandoPagaMas}</span>
           </p>
         )}
       </div>
@@ -61,24 +61,32 @@ function PanelRanking({
   orden,
   conProducto,
   sinDatos,
+  conLeyenda,
 }: {
   consulta: Consulta | null;
   cotizaciones: Cotizacion[];
   orden: string;
   conProducto?: boolean;
   sinDatos?: string;
+  conLeyenda?: boolean;
 }) {
   if (!consulta) {
     return (
       <p className="rounded-xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-        Ingresá un monto mayor a cero para ver el ranking y la ganancia estimada.
+        Ingresá un monto mayor a cero para ver las opciones ordenadas y cuánto ganarías.
       </p>
     );
   }
   return (
     <div className="space-y-2">
       <p className="text-xs text-muted-foreground">{orden}</p>
-      <TablaAlternativas cotizaciones={cotizaciones} dias={consulta.dias} conProducto={conProducto} sinDatos={sinDatos} />
+      <TablaAlternativas
+        cotizaciones={cotizaciones}
+        dias={consulta.dias}
+        conProducto={conProducto}
+        sinDatos={sinDatos}
+        conLeyenda={conLeyenda}
+      />
     </div>
   );
 }
@@ -107,7 +115,7 @@ export function TabPlazoFijo({ plazoFijo, ...comun }: Comun & { plazoFijo: Fuent
       <PanelRanking
         consulta={comun.consulta}
         cotizaciones={cotizaciones}
-        orden="Ordenado de mayor a menor ganancia estimada. TNA para tu plazo, según lo que informa cada banco."
+        orden="Ordenado de mayor a menor ganancia estimada. La tasa es la que informa cada banco para tu plazo."
       />
       <FuenteDato fuente={FUENTES.plazoFijo} resultado={plazoFijo} fechaDato={fechaMasNueva(plazoFijo.datos)} />
     </div>
@@ -130,19 +138,20 @@ export function TabUva({ uva, plazoFijo, ...comun }: Comun & { uva: Fuente; plaz
   if (consulta && minimo !== null && consulta.dias < minimo) {
     comparacion = (
       <>
-        Para {consulta.dias} días no hay plazo fijo UVA precancelable: el plazo mínimo es de {minimo} días. Elegí un plazo de{" "}
-        {minimo} días o más arriba para compararlo.
+        Para {plazoEnPalabras(consulta.dias)} no hay plazo fijo que sigue a la inflación y te deje sacar la plata antes: el plazo mínimo
+        es de {plazoEnPalabras(minimo)}. Elegí un plazo de {minimo} días o más arriba para compararlo.
       </>
     );
   } else if (consulta && mejorUva && mejorTradicional) {
     const equilibrio = inflacionDeEquilibrioUva(mejorTradicional.tna, mejorUva.tna, consulta.dias);
     comparacion = (
       <>
-        A {consulta.dias} días, el UVA de mayor rendimiento ({mejorUva.alternativa.entidad}) rinde más que el plazo fijo tradicional de mayor
-        tasa ({mejorTradicional.alternativa.entidad}, TNA {tasa(mejorTradicional.tna)}) si la inflación mensual promedio de esos meses
-        supera <strong className="text-foreground">{pct(equilibrio * 100, 2)}</strong>
-        {inflacion ? `. La última inflación informada fue ${pct(inflacion.mensual * 100)}` : ""}. Nadie sabe cuál será la inflación futura:
-        es la apuesta que hacés al elegir uno u otro.
+        Si los precios suben más de <strong className="text-foreground">{pct(equilibrio * 100, 2)}</strong> por mes en promedio, el plazo
+        fijo que sigue a la inflación termina pagando más que el común. Si suben menos, paga más el común. Nadie sabe cuánto van a subir.
+        <span className="mt-1.5 block text-muted-foreground">
+          Comparamos el que más paga de cada uno a {plazoEnPalabras(consulta.dias)}: {mejorUva.alternativa.entidad} y{" "}
+          {mejorTradicional.alternativa.entidad}.{inflacion ? ` El último mes los precios subieron ${pct(inflacion.mensual * 100)}.` : ""}
+        </span>
       </>
     );
   }
@@ -156,14 +165,14 @@ export function TabUva({ uva, plazoFijo, ...comun }: Comun & { uva: Fuente; plaz
       <PanelRanking
         consulta={consulta}
         cotizaciones={cotizaciones}
-        orden="Ganancia estimada suponiendo que la inflación se mantiene igual a la del último mes. La TNA se suma al ajuste por UVA."
+        orden="Ganancia estimada suponiendo que los precios siguen subiendo como el último mes. La tasa se suma a lo que suben los precios."
       />
       <FuenteDato fuente={FUENTES.uva} resultado={uva} fechaDato={fechaMasNueva(uva.datos)} />
     </div>
   );
 }
 
-// ---------- Billeteras (+ FCI money market de rescate inmediato) ----------
+// ---------- Billeteras (+ FCI money market que se pueden sacar en el día) ----------
 
 export function TabBilleteras({ billeteras, fci, ...comun }: Comun & { billeteras: Fuente; fci: Promise<Fuente> }) {
   const cotizaciones = useCotizaciones(billeteras.datos, comun);
@@ -173,18 +182,19 @@ export function TabBilleteras({ billeteras, fci, ...comun }: Comun & { billetera
       <PanelRanking
         consulta={comun.consulta}
         cotizaciones={cotizaciones}
-        orden="Cuentas remuneradas en pesos, de mayor a menor ganancia estimada. La plata está disponible en el momento."
+        orden="Billeteras y cuentas que rinden en pesos, de mayor a menor ganancia estimada. Podés usar la plata en el momento."
         sinDatos="No hay billeteras con rendimiento en pesos informado en este momento."
       />
       <FuenteDato fuente={FUENTES.billeteras} resultado={billeteras} fechaDato={fechaMasNueva(billeteras.datos)} />
 
       <section className="space-y-3 border-t border-border pt-5">
         <div className="space-y-1">
-          <h3 className="text-base font-semibold">Fondos money market con rescate inmediato</h3>
+          <h3 className="text-base font-semibold">Fondos para plata de corto plazo que podés sacar en el día</h3>
           <p className="text-xs leading-relaxed text-muted-foreground">
-            Pocas billeteras informan su tasa de forma pública. Muchas invierten tu saldo en fondos como estos, que también se pueden
-            rescatar en el día: sirven para comparar.
+            Pocas billeteras dicen en público cuánto pagan. Muchas ponen tu plata en fondos como estos, de los que también podés sacar la
+            plata en el día: sirven para comparar.
           </p>
+          <p className="text-legal text-muted-foreground">En el banco: {EDUCATIVO["fci-mm"].enElBanco}</p>
         </div>
         <Suspense fallback={<CargandoFondos />}>
           <MoneyMarketInmediato fci={fci} {...comun} />
@@ -204,8 +214,9 @@ function MoneyMarketInmediato({ fci, ...comun }: Comun & { fci: Promise<Fuente> 
         consulta={comun.consulta}
         cotizaciones={cotizaciones}
         conProducto
-        orden="Rendimiento de los últimos 30 días, anualizado. No está garantizado."
-        sinDatos="No hay datos de fondos money market en este momento."
+        conLeyenda={false}
+        orden="Lo que pagó el último mes, llevado a un año. Es lo que pagó, no lo que va a pagar: no está garantizado."
+        sinDatos="No hay datos de estos fondos en este momento."
       />
       <FuenteDato fuente={FUENTES.fci} resultado={resultado} fechaDato={fechaMasNueva(resultado.datos)} />
     </div>
@@ -228,13 +239,13 @@ export function TabFci({ fci, ...comun }: Comun & { fci: Promise<Fuente> }) {
           onValueChange={(v) => v && setTipo(v as TipoFci)}
           variant="outline"
           aria-label="Tipo de fondo"
+          className="w-full sm:w-auto"
         >
-          <ToggleGroupItem value="fci-mm" className="px-3">
-            Money market
-          </ToggleGroupItem>
-          <ToggleGroupItem value="fci-rf" className="px-3">
-            Renta fija
-          </ToggleGroupItem>
+          {(["fci-mm", "fci-rf"] as const).map((t) => (
+            <ToggleGroupItem key={t} value={t} className="h-auto min-h-11 whitespace-normal px-3 py-2 text-center leading-snug">
+              {EDUCATIVO[t].titulo}
+            </ToggleGroupItem>
+          ))}
         </ToggleGroup>
         <div className="space-y-1.5">
           <Label htmlFor="orden-fci" className="text-xs text-muted-foreground">
@@ -242,10 +253,10 @@ export function TabFci({ fci, ...comun }: Comun & { fci: Promise<Fuente> }) {
           </Label>
           <Select value={orden} onValueChange={(v) => setOrden(v as Orden)}>
             <SelectTrigger id="orden-fci" className="w-full sm:w-56">
-              <SelectValue>{orden === "patrimonio" ? "Fondo más grande" : "Mayor rendimiento"}</SelectValue>
+              <SelectValue>{orden === "patrimonio" ? "Fondo más grande" : "Lo que más pagó"}</SelectValue>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ganancia">Mayor rendimiento</SelectItem>
+              <SelectItem value="ganancia">Lo que más pagó</SelectItem>
               <SelectItem value="patrimonio">Fondo más grande</SelectItem>
             </SelectContent>
           </Select>
@@ -266,8 +277,8 @@ function ListaFci({ fci, tipo, orden, ...comun }: Comun & { fci: Promise<Fuente>
   const cotizaciones = useCotizaciones(delTipo, comun, orden);
   const textoOrden =
     orden === "patrimonio"
-      ? "Ordenado por tamaño del fondo (patrimonio). Un fondo grande no rinde más, pero suele ser más estable para entrar y salir."
-      : "Ordenado por rendimiento de los últimos 30 días, anualizado. Es lo que rindió, no lo que va a rendir.";
+      ? "Ordenado por tamaño del fondo (cuánta plata tiene invertida). Un fondo grande no paga más, pero suele ser más estable para poner y sacar la plata."
+      : "Ordenado por lo que pagó el último mes, llevado a un año. Es lo que pagó, no lo que va a pagar.";
   return (
     <div className="space-y-3">
       <PanelRanking
@@ -278,7 +289,8 @@ function ListaFci({ fci, tipo, orden, ...comun }: Comun & { fci: Promise<Fuente>
         sinDatos="No hay datos de estos fondos en este momento."
       />
       <p className="text-legal leading-snug text-muted-foreground/80">
-        Mostramos fondos en pesos con al menos $1.000 millones de patrimonio y rescate en hasta 48 h.
+        Mostramos solo fondos en pesos, fondos grandes (con más de $1.000 millones invertidos), de los que podés sacar la plata en hasta 2
+        días.
       </p>
       <FuenteDato fuente={FUENTES.fci} resultado={resultado} fechaDato={fechaMasNueva(resultado.datos)} />
     </div>

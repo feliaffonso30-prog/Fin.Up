@@ -7,19 +7,22 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ars } from "@/lib/plataforma/formato";
 import type { Cotizacion } from "@/lib/plataforma/comparador/tipos";
 import { cn } from "@/lib/utils";
-import { BadgeLiquidez, BadgeRiesgo, BadgeTasaReal, BotonEntidad, tasa } from "./insignias";
+import { plazoEnPalabras } from "@/lib/plataforma/comparador/textos";
+import { BadgeLiquidez, BadgeRiesgo, BadgeTasaReal, BotonEntidad, LeyendaTasas, tasa } from "./insignias";
 
 interface Props {
   cotizaciones: Cotizacion[]; // ya ordenadas
   dias: number;
   /** Cuántas mostrar antes de "Ver todas". */
   inicial?: number;
-  /** Mostrar el nombre del producto (FCI) además de la entidad. */
+  /** Mostrar el nombre del fondo además de quién lo administra. */
   conProducto?: boolean;
   sinDatos?: string;
+  /** Mostrar "¿Qué significan estas tasas?" arriba. Una sola vez por vista: apagalo en la segunda tabla. */
+  conLeyenda?: boolean;
 }
 
-export function TablaAlternativas({ cotizaciones, dias, inicial = 10, conProducto = false, sinDatos }: Props) {
+export function TablaAlternativas({ cotizaciones, dias, inicial = 10, conProducto = false, sinDatos, conLeyenda = true }: Props) {
   const [verTodas, setVerTodas] = useState(false);
   const [verNoDisponibles, setVerNoDisponibles] = useState(false);
 
@@ -43,6 +46,7 @@ export function TablaAlternativas({ cotizaciones, dias, inicial = 10, conProduct
         </p>
       ) : (
         <>
+          {conLeyenda && <LeyendaTasas conUva={disponibles.some((c) => c.alternativa.capitalizacion === "uva")} />}
           <Escritorio cotizaciones={visibles} dias={dias} conProducto={conProducto} />
           <Celular cotizaciones={visibles} dias={dias} conProducto={conProducto} />
         </>
@@ -105,9 +109,9 @@ function Escritorio({ cotizaciones, dias, conProducto }: { cotizaciones: Cotizac
         <TableHeader>
           <TableRow className="hover:bg-transparent">
             <TableHead className="w-8 text-center">#</TableHead>
-            <TableHead>{conProducto ? "Fondo" : "Entidad"}</TableHead>
+            <TableHead>{conProducto ? "Fondo" : "Banco o billetera"}</TableHead>
             <TableHead className="text-right">Tasa anual (TNA)</TableHead>
-            <TableHead className="text-right">{conProducto ? `Si rinde igual, en ${dias} días` : `Ganancia en ${dias} días`}</TableHead>
+            <TableHead className="text-right">{conProducto ? `Si paga lo mismo, en ${plazoEnPalabras(dias)}` : `Ganancia en ${plazoEnPalabras(dias)}`}</TableHead>
             <TableHead className="text-center">¿Le gana a la inflación?</TableHead>
             <TableHead className="w-32">
               <span className="sr-only">Link</span>
@@ -163,7 +167,7 @@ function Celular({ cotizaciones, dias, conProducto }: { cotizaciones: Cotizacion
               </dd>
             </div>
             <div>
-              <dt className="text-legal text-muted-foreground">{conProducto ? `Si rinde igual, en ${dias} días` : `Ganancia en ${dias} días`}</dt>
+              <dt className="text-legal text-muted-foreground">{conProducto ? `Si paga lo mismo, en ${plazoEnPalabras(dias)}` : `Ganancia en ${plazoEnPalabras(dias)}`}</dt>
               <dd className="text-base font-semibold text-cifra">{ars(c.ganancia)}</dd>
             </div>
           </dl>
@@ -179,7 +183,7 @@ function Celular({ cotizaciones, dias, conProducto }: { cotizaciones: Cotizacion
   );
 }
 
-/** En un plazo fijo UVA la tasa se suma al ajuste por inflación: "UVA + 1,00%". */
+/** En un plazo fijo UVA la tasa se suma a la inflación: "Inflación + 1,00%" (la sigla UVA queda en la leyenda). */
 function tasaTexto(c: Cotizacion, valor: number) {
-  return c.alternativa.capitalizacion === "uva" ? `UVA + ${tasa(valor)}` : tasa(valor);
+  return c.alternativa.capitalizacion === "uva" ? `Inflación + ${tasa(valor)}` : tasa(valor);
 }

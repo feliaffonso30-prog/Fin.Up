@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, ListFilter } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronDown, ListFilter } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -98,12 +98,50 @@ export function Comparador({ datos, fci, montoUrl, usdUrl, tabUrl, diasUrl, vist
   const enDetalle = vista === "detalle";
   // El monto y el plazo viajan en el link, para que el resumen y el detalle muestren lo mismo.
   const parametros = new URLSearchParams({ ...(monto !== null ? { monto: String(monto) } : {}), dias: String(dias) }).toString();
-  const notaInflacion = (
+  const fraseDelPerfil = plan && ` Tu perfil es ${plan.perfil.perfil.toLowerCase()}: compará el riesgo de cada opción con el que elegiste en tu cuestionario.`;
+  // En el detalle, el dato con su número y su fuente: es la capa de los números.
+  const notaInflacionDetalle = (
     <div className="space-y-2">
       <p className="text-sm leading-snug text-muted-foreground">
         {inflacion ? `Comparamos contra la última inflación mensual: ${pct(inflacion.mensual * 100)} (${mesAnio(inflacion.fecha)}, INDEC).` : "Sin dato de inflación por ahora: no podemos decir si le gana."}
-        {plan && ` Tu perfil es ${plan.perfil.perfil.toLowerCase()}: compará el riesgo de cada opción con lo que estás dispuesto a tolerar.`}
+        {fraseDelPerfil}
       </p>
+      <Disclaimer />
+    </div>
+  );
+  // En el resumen, la idea en palabras; los números, a un toque en "Cómo calculamos esto".
+  const vieneDelPlan = (origen === "plan" || (origen === "cartera" && usdDeCartera.ok)) && mep;
+  const usdDelPlan = origen === "plan" ? liquidezUsd : usdDeCartera.ok ? usdDeCartera.monto : 0;
+  const notaInflacionResumen = (
+    <div className="space-y-3">
+      <p className="text-sm leading-snug text-muted-foreground">
+        {inflacion
+          ? "«Le gana a la inflación» quiere decir que, al terminar, tu plata alcanza para comprar más cosas que hoy."
+          : "Sin dato de inflación por ahora: no podemos decir si le gana."}
+        {fraseDelPerfil}
+      </p>
+      <details className="group">
+        <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-2 text-sm font-semibold [&::-webkit-details-marker]:hidden">
+          Cómo calculamos esto
+          <ChevronDown className="h-4 w-4 shrink-0 transition-transform group-open:rotate-180 motion-reduce:transition-none" aria-hidden />
+        </summary>
+        <ul className="list-disc space-y-2 pb-1 pl-5 text-sm leading-relaxed text-muted-foreground">
+          {inflacion && (
+            <li>
+              Inflación: usamos la última que midió el INDEC (el organismo oficial que mide los precios): {pct(inflacion.mensual * 100)} en {mesAnio(inflacion.fecha)}.
+            </li>
+          )}
+          <li>En el plazo fijo, la cifra sale de lo que paga hoy el banco. Lo pactás al empezar y no cambia.</li>
+          <li>En el plazo fijo que sigue a la inflación, suponemos que la inflación de los próximos meses es igual a la última.</li>
+          <li>En billeteras y fondos, suponemos que siguen pagando lo mismo durante todo el plazo. Puede cambiar cualquier día.</li>
+          {vieneDelPlan && mep && (
+            <li>
+              El monto es {usd(usdDelPlan)} de tu plan, pasados a pesos con el dólar MEP (el que se compra legalmente con pesos desde un banco o una app de inversión) a {ars(mep.compra)}.
+            </li>
+          )}
+          <li>Las tasas de cada banco, billetera y fondo están en «Ver todos los bancos, billeteras y fondos».</li>
+        </ul>
+      </details>
       <Disclaimer />
     </div>
   );
@@ -116,7 +154,7 @@ export function Comparador({ datos, fci, montoUrl, usdUrl, tabUrl, diasUrl, vist
             <ArrowLeft className="h-4 w-4" aria-hidden />
             Volver a Tus pesos
           </Link>
-          <EncabezadoPagina titulo="Tasas y todas las entidades">El detalle completo, banco por banco, para el monto y el plazo que elijas.</EncabezadoPagina>
+          <EncabezadoPagina titulo="Todos los bancos, billeteras y fondos">Cada opción con sus tasas y sus números, para el monto y el plazo que elijas.</EncabezadoPagina>
         </>
       ) : (
         <EncabezadoPagina titulo="¿Dónde dejar tus pesos?">Elegí cuánta plata y para cuándo. Te mostramos cuánto rendiría y si le gana a la inflación.</EncabezadoPagina>
@@ -172,15 +210,11 @@ export function Comparador({ datos, fci, montoUrl, usdUrl, tabUrl, diasUrl, vist
               {validado.error}
             </p>
           ) : enDetalle ? null : origen === "plan" && mep ? (
-            <p className="text-muted-foreground">
-              Es la parte de tu plan para tener disponible ({usd(liquidezUsd)}), pasada a pesos al dólar MEP ({ars(mep.compra)}). Podés cambiarlo.
-            </p>
+            <p className="text-muted-foreground">Es la parte de tu plan para tener a mano, pasada a pesos. Podés cambiarlo.</p>
           ) : origen === "cartera" && mep && usdDeCartera.ok ? (
-            <p className="text-muted-foreground">
-              Es esa parte de tu plan ({usd(usdDeCartera.monto)}), pasada a pesos al dólar MEP ({ars(mep.compra)}). Podés cambiarlo.
-            </p>
+            <p className="text-muted-foreground">Es esa parte de tu plan, pasada a pesos. Podés cambiarlo.</p>
           ) : origen === "sin-mep" ? (
-            <p className="text-atencion-texto">No pudimos obtener el valor del dólar para pasar a pesos esa parte de tu plan. Escribí el monto en pesos.</p>
+            <p className="text-atencion-texto">No pudimos saber el precio del dólar para pasar a pesos esa parte de tu plan. Escribí el monto en pesos.</p>
           ) : origen === "url" ? (
             <p className="text-muted-foreground">Es el monto que venía en el link. Podés cambiarlo.</p>
           ) : origen === "ejemplo" ? (
@@ -225,13 +259,13 @@ export function Comparador({ datos, fci, montoUrl, usdUrl, tabUrl, diasUrl, vist
             </TabsContent>
           </Tabs>
 
-          {notaInflacion}
+          {notaInflacionDetalle}
         </>
       ) : (
         <>
           <RespuestaPorTipo plazoFijo={datos.plazoFijo} uva={datos.uva} billeteras={datos.billeteras} fci={fci} consulta={consulta} inflacion={inflacion} />
 
-          {notaInflacion}
+          {notaInflacionResumen}
 
           {/* El detalle vive en su propia pantalla: acá solo se ofrece la entrada. */}
           <Link
@@ -240,8 +274,8 @@ export function Comparador({ datos, fci, montoUrl, usdUrl, tabUrl, diasUrl, vist
           >
             <ListFilter className="h-5 w-5 shrink-0 text-accent" aria-hidden />
             <span className="min-w-0 flex-1">
-              <span className="block font-display text-base font-bold leading-snug">Tasas y todas las entidades</span>
-              <span className="mt-0.5 block text-sm leading-relaxed text-muted-foreground">El detalle completo, banco por banco.</span>
+              <span className="block font-display text-base font-bold leading-snug">Ver todos los bancos, billeteras y fondos</span>
+              <span className="mt-0.5 block text-sm leading-relaxed text-muted-foreground">Con las tasas y los números de cada uno.</span>
             </span>
             <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" aria-hidden />
           </Link>

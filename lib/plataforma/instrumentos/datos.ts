@@ -29,7 +29,7 @@ export const INSTRUMENTOS: Instrumento[] = [
     categoria: "cedear-etf",
     sector: "Índice amplio de EE.UU.",
     monedas: ["ARS", "USD"],
-    ratio: 20, // TODO-VERIFICAR ratio
+    ratio: 60, // BYMA 19/11/2026 (antes figuraba 20)
     riesgo: "medio",
     horizonte: "largo",
     descripcion:
@@ -52,7 +52,7 @@ export const INSTRUMENTOS: Instrumento[] = [
     categoria: "cedear-etf",
     sector: "Índice de grandes empresas de EE.UU.",
     monedas: ["ARS", "USD"],
-    ratio: 20, // TODO-VERIFICAR ratio
+    ratio: 20, // BYMA 19/11/2026
     riesgo: "medio",
     horizonte: "largo",
     descripcion:
@@ -74,7 +74,7 @@ export const INSTRUMENTOS: Instrumento[] = [
     categoria: "cedear-etf",
     sector: "Tecnología",
     monedas: ["ARS", "USD"],
-    ratio: 20, // TODO-VERIFICAR ratio
+    ratio: 20, // BYMA 19/11/2026
     riesgo: "alto",
     horizonte: "largo",
     descripcion:
@@ -96,7 +96,7 @@ export const INSTRUMENTOS: Instrumento[] = [
     categoria: "cedear-etf",
     sector: "Empresas chicas de EE.UU.",
     monedas: ["ARS", "USD"],
-    ratio: 10, // TODO-VERIFICAR ratio
+    ratio: 10, // BYMA 19/11/2026
     riesgo: "alto",
     horizonte: "largo",
     descripcion: "Reúne unas 2.000 empresas chicas y medianas de EE.UU.",
@@ -117,7 +117,7 @@ export const INSTRUMENTOS: Instrumento[] = [
     categoria: "cedear-etf",
     sector: "Mercados emergentes",
     monedas: ["ARS", "USD"],
-    ratio: 5, // TODO-VERIFICAR ratio
+    ratio: 5, // BYMA 19/11/2026
     riesgo: "alto",
     horizonte: "largo",
     descripcion: "Empresas grandes de países emergentes como China, India, Taiwán, Corea o Brasil.",
@@ -138,7 +138,7 @@ export const INSTRUMENTOS: Instrumento[] = [
     categoria: "cedear-etf",
     sector: "Brasil",
     monedas: ["ARS", "USD"],
-    ratio: 2, // TODO-VERIFICAR ratio
+    ratio: 2, // BYMA 19/11/2026
     riesgo: "alto",
     horizonte: "largo",
     descripcion: "Las empresas más grandes de Brasil (bancos, petróleo, minería) en un solo fondo.",
@@ -161,7 +161,7 @@ export const INSTRUMENTOS: Instrumento[] = [
     categoria: "cedear-empresa",
     sector: "Tecnología",
     monedas: ["ARS", "USD"],
-    ratio: 20, // TODO-VERIFICAR ratio
+    ratio: 20, // BYMA 19/11/2026
     riesgo: "alto",
     horizonte: "largo",
     descripcion: "Fabricante del iPhone, las Mac y servicios como la App Store. Una de las empresas más grandes del mundo.",
@@ -182,7 +182,7 @@ export const INSTRUMENTOS: Instrumento[] = [
     categoria: "cedear-empresa",
     sector: "Tecnología",
     monedas: ["ARS", "USD"],
-    ratio: 30, // TODO-VERIFICAR ratio
+    ratio: 30, // BYMA 19/11/2026
     riesgo: "alto",
     horizonte: "largo",
     descripcion: "Creadora de Windows y Office, y uno de los mayores proveedores de servicios en la nube (Azure).",
@@ -203,7 +203,7 @@ export const INSTRUMENTOS: Instrumento[] = [
     categoria: "cedear-empresa",
     sector: "Tecnología y publicidad",
     monedas: ["ARS", "USD"],
-    ratio: 58, // TODO-VERIFICAR ratio (cambió con el split de 2022)
+    ratio: 58, // BYMA 19/11/2026
     riesgo: "alto",
     horizonte: "largo",
     descripcion: "Dueña de Google, YouTube y Android. La mayor parte de sus ingresos viene de la publicidad online.",
@@ -224,7 +224,7 @@ export const INSTRUMENTOS: Instrumento[] = [
     categoria: "cedear-empresa",
     sector: "Comercio electrónico y nube",
     monedas: ["ARS", "USD"],
-    ratio: 144, // TODO-VERIFICAR ratio (cambió con el split de 2022)
+    ratio: 144, // BYMA 19/11/2026
     riesgo: "alto",
     horizonte: "largo",
     descripcion: "El mayor comercio online de EE.UU. y, con AWS, líder en servicios en la nube.",
@@ -245,7 +245,7 @@ export const INSTRUMENTOS: Instrumento[] = [
     categoria: "cedear-empresa",
     sector: "Semiconductores",
     monedas: ["ARS", "USD"],
-    ratio: 24, // TODO-VERIFICAR ratio (cambió con el split de 2024)
+    ratio: 24, // BYMA 19/11/2026
     riesgo: "alto",
     horizonte: "largo",
     descripcion: "Diseña los chips que usan los videojuegos y, sobre todo, los centros de datos de inteligencia artificial.",
@@ -266,7 +266,7 @@ export const INSTRUMENTOS: Instrumento[] = [
     categoria: "cedear-empresa",
     sector: "Comercio electrónico y fintech",
     monedas: ["ARS", "USD"],
-    ratio: 120, // TODO-VERIFICAR ratio
+    ratio: 120, // BYMA 19/11/2026
     riesgo: "alto",
     horizonte: "largo",
     descripcion: "Plataforma de comercio electrónico y pagos (Mercado Pago) líder en América Latina.",
@@ -287,7 +287,7 @@ export const INSTRUMENTOS: Instrumento[] = [
     categoria: "cedear-empresa",
     sector: "Consumo masivo",
     monedas: ["ARS", "USD"],
-    ratio: 5, // TODO-VERIFICAR ratio
+    ratio: 5, // BYMA 19/11/2026
     riesgo: "medio",
     horizonte: "largo",
     descripcion: "Fabricante de bebidas presente en casi todo el mundo. Reparte dividendos hace décadas.",
@@ -309,7 +309,7 @@ export const INSTRUMENTOS: Instrumento[] = [
     categoria: "cedear-empresa",
     sector: "Consumo masivo",
     monedas: ["ARS", "USD"],
-    ratio: 15, // TODO-VERIFICAR ratio
+    ratio: 15, // BYMA 19/11/2026
     riesgo: "medio",
     horizonte: "largo",
     descripcion: "Dueña de marcas de uso diario (Gillette, Pantene, Ariel, Pampers). Paga dividendos hace más de un siglo.",
@@ -330,7 +330,7 @@ export const INSTRUMENTOS: Instrumento[] = [
     categoria: "cedear-empresa",
     sector: "Salud",
     monedas: ["ARS", "USD"],
-    ratio: 15, // TODO-VERIFICAR ratio
+    ratio: 15, // BYMA 19/11/2026
     riesgo: "medio",
     horizonte: "largo",
     descripcion: "Empresa de salud: medicamentos y dispositivos médicos. Paga dividendos crecientes hace décadas.",

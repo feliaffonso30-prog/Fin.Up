@@ -5,6 +5,8 @@ import type { PrecioMercado, Precios } from "@/lib/plataforma/cartera-real/tipos
 
 /** Cada cuánto se pregunta de nuevo con la pestaña a la vista. El servidor cachea lo mismo. */
 export const INTERVALO_MS = 60_000;
+/** Símbolos por pedido (el máximo que acepta /api/precios). */
+const TANDA = 20;
 
 export interface EstadoPrecios {
   precios: Precios;
@@ -37,14 +39,23 @@ export function usePrecios(simbolos: string[]): EstadoPrecios {
     const ctrl = new AbortController();
     enCurso.current = ctrl;
     try {
-      const res = await fetch(`/api/precios?simbolos=${encodeURIComponent(clave)}`, { signal: ctrl.signal });
-      if (!res.ok) throw new Error(String(res.status));
-      const d = (await res.json()) as { precios: PrecioMercado[]; mep: { venta: number } | null; consultado: string };
+      // La ruta acepta hasta 20 símbolos por pedido: si hay más, se piden en tandas.
+      const todos = clave ? clave.split(",") : [];
+      const tandas = todos.length === 0 ? [""] : Array.from({ length: Math.ceil(todos.length / TANDA) }, (_, i) => todos.slice(i * TANDA, (i + 1) * TANDA).join(","));
+      const respuestas = await Promise.all(
+        tandas.map(async (t) => {
+          const res = await fetch(`/api/precios?simbolos=${encodeURIComponent(t)}`, { signal: ctrl.signal });
+          if (!res.ok) throw new Error(String(res.status));
+          return (await res.json()) as { precios: PrecioMercado[]; mep: { venta: number } | null; consultado: string };
+        }),
+      );
+      const nuevos = respuestas.flatMap((d) => d.precios);
+      const ultima = respuestas[respuestas.length - 1];
       setEstado((prev) => ({
         // Lo que no llegó esta vez conserva el precio anterior.
-        precios: { ...prev.precios, ...Object.fromEntries(d.precios.map((p) => [p.simbolo, p])) },
-        mep: d.mep?.venta ?? prev.mep,
-        consultado: d.consultado,
+        precios: { ...prev.precios, ...Object.fromEntries(nuevos.map((p) => [p.simbolo, p])) },
+        mep: respuestas.find((d) => d.mep)?.mep?.venta ?? prev.mep,
+        consultado: ultima.consultado,
         error: false,
         cargando: false,
       }));
@@ -67,7 +78,10 @@ export function usePrecios(simbolos: string[]): EstadoPrecios {
     };
     const alCambiarVisibilidad = () => (document.visibilityState === "visible" ? arrancar() : parar());
 
+    // La primera consulta va siempre (aunque la pestaña esté de fondo, para no quedar
+    // "cargando"); lo que espera a que esté visible es la actualización de cada minuto.
     if (document.visibilityState === "visible") arrancar();
+    else void consultar();
     document.addEventListener("visibilitychange", alCambiarVisibilidad);
     return () => {
       parar();

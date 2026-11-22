@@ -4,8 +4,8 @@
 
 import { DIAS_ANIO, interesSimple, tnaATea } from "@/lib/plataforma/finanzas";
 import type { Categoria, PerfilRiesgo } from "@/lib/plataforma/tipos";
-import { NOMBRE_CORTO_CATEGORIA, ratioDe, simboloMercado } from "./activos";
-import type { DiferenciaPlan, MonedaTenencia, Precios, Tenencia, TenenciaValuada, Valuacion } from "./tipos";
+import { divisorPrecio, NOMBRE_CORTO_CATEGORIA, ratioDe, simboloByma, simboloMercado } from "./activos";
+import type { DiferenciaPlan, MonedaTenencia, PrecioMercado, Precios, Tenencia, TenenciaValuada, Valuacion } from "./tipos";
 
 const CATEGORIAS: Categoria[] = ["fija", "variable", "dividendos", "liquidez", "alternativo"];
 
@@ -30,16 +30,58 @@ export function costoDe(t: Tenencia): { usd: number; ars: number } {
   return { usd: aUsd(monto, moneda, t.mepAlAnotar), ars: aArs(monto, moneda, t.mepAlAnotar) };
 }
 
-/** Precio de UNA unidad en USD: un CEDEAR es el activo original ÷ ratio. null si no hay precio. */
-export function precioUnitarioUsd(t: Pick<Tenencia, "tipo" | "simbolo">, precios: Precios): number | null {
+export interface PrecioUnitario {
+  /** Precio de UNA unidad (un CEDEAR, una acción, un nominal, un BTC) en USD. */
+  usd: number;
+  /** El dato de donde sale (para la variación del día y la hora). */
+  dato: PrecioMercado;
+  /** true si es el precio de BYMA; false si es de EE.UU. o cripto. */
+  deByma: boolean;
+}
+
+const enUsd = (p: PrecioMercado, mep: number) => (p.moneda === "USD" ? p.precio : p.precio / mep);
+
+/**
+ * Precio de UNA unidad en USD. Primero el de BYMA (en pesos, pasado con el MEP de hoy;
+ * los bonos ÷ 100 porque cotizan cada 100 nominales). Si no está, un CEDEAR se estima con
+ * el activo original ÷ ratio. null si no hay precio.
+ */
+export function precioUnitario(t: Pick<Tenencia, "tipo" | "simbolo">, precios: Precios, mepHoy: number): PrecioUnitario | null {
+  const byma = simboloByma(t);
+  const pb = byma ? precios[byma] : undefined;
+  if (pb && pb.precio > 0 && (pb.moneda === "USD" || mepHoy > 0)) {
+    return { usd: enUsd(pb, mepHoy) / divisorPrecio(t.simbolo), dato: pb, deByma: true };
+  }
   const sym = simboloMercado(t);
   const p = sym ? precios[sym] : undefined;
-  if (!p || !(p.precioUsd > 0)) return null;
+  if (!p || !(p.precio > 0) || p.moneda !== "USD") return null;
   if (t.tipo === "cedear") {
     const ratio = ratioDe(t.simbolo);
-    return ratio ? p.precioUsd / ratio : null;
+    return ratio ? { usd: p.precio / ratio, dato: p, deByma: false } : null;
   }
-  return p.precioUsd;
+  return { usd: p.precio, dato: p, deByma: false };
+}
+
+/** Atajo: solo el precio de una unidad en USD. */
+export function precioUnitarioUsd(t: Pick<Tenencia, "tipo" | "simbolo">, precios: Precios, mepHoy: number): number | null {
+  return precioUnitario(t, precios, mepHoy)?.usd ?? null;
+}
+
+type MontoMoneda = { monto: number; moneda: MonedaTenencia };
+
+/**
+ * Anotado por cantidad: lo que puso es cantidad × precio de compra. Si no sabe a qué
+ * precio compró, tomamos el precio de hoy como punto de partida (y lo marcamos estimado).
+ */
+export function costoDesdeCantidad(
+  cantidad: number,
+  precioCompra: MontoMoneda | null,
+  precioHoy: MontoMoneda | null,
+): { invertido: MontoMoneda; estimado: boolean } | null {
+  if (!(cantidad > 0)) return null;
+  if (precioCompra && precioCompra.monto > 0) return { invertido: { monto: cantidad * precioCompra.monto, moneda: precioCompra.moneda }, estimado: false };
+  if (precioHoy && precioHoy.monto > 0) return { invertido: { monto: cantidad * precioHoy.monto, moneda: precioHoy.moneda }, estimado: true };
+  return null;
 }
 
 /** Si no sabe cuántas unidades tiene: lo que puso ÷ el precio del día en que lo anota. */
@@ -58,16 +100,22 @@ export function valuarTenencia(t: Tenencia, precios: Precios, mepHoy: number, ho
 
   switch (t.tipo) {
     case "cedear":
+    case "byma":
     case "cripto": {
-      const sym = simboloMercado(t);
-      const p = sym ? precios[sym] : undefined;
-      const unitario = precioUnitarioUsd(t, precios);
-      const esCedear = t.tipo === "cedear";
-      const fuente = esCedear ? `Estimado desde ${t.simbolo} en Nueva York` : `Precio de ${t.simbolo} en dólares`;
-      if (unitario === null || t.cantidad === null || !p) {
-        return { ...base, valorUsd: null, valorArs: null, variacionDiaUsd: null, metodo: esCedear ? "estimado-subyacente" : "mercado", fuente, actualizado: null };
+      const u = precioUnitario(t, precios, mepHoy);
+      const estimado = t.tipo === "cedear" && !u?.deByma;
+      const metodo = estimado ? "estimado-subyacente" : "mercado";
+      const fuente =
+        t.tipo === "cripto"
+          ? `Precio de ${t.simbolo} en dólares`
+          : u?.deByma || t.tipo === "byma"
+            ? `Precio de ${t.simbolo} en BYMA`
+            : `Estimado desde ${simboloMercado(t) ?? t.simbolo} en Nueva York`;
+      if (!u || t.cantidad === null) {
+        return { ...base, valorUsd: null, valorArs: null, variacionDiaUsd: null, metodo, fuente, actualizado: null };
       }
-      const valorUsd = unitario * t.cantidad;
+      const p = u.dato;
+      const valorUsd = u.usd * t.cantidad;
       const v = p.variacionDiaPct;
       return {
         ...base,
@@ -75,7 +123,7 @@ export function valuarTenencia(t: Tenencia, precios: Precios, mepHoy: number, ho
         // Si hoy vale V y subió v%, ayer valía V / (1 + v): la diferencia es lo que se movió hoy.
         // Lo invertido hoy no tiene "ayer": no se movió para esta persona.
         variacionDiaUsd: v === null ? null : t.fecha >= hoy ? 0 : valorUsd - valorUsd / (1 + v / 100),
-        metodo: esCedear ? "estimado-subyacente" : "mercado",
+        metodo,
         fuente,
         actualizado: p.actualizado,
       };
@@ -170,7 +218,7 @@ const SI_TENES_MAS: Record<Categoria, string> = {
 const SI_TENES_MENOS: Record<Categoria, string> = {
   fija: "Tenés menos amortiguador para cuando las acciones caen.",
   variable: "Tu plata se mueve menos, y también puede crecer menos.",
-  dividendos: "Recibís menos ingresos que no dependan de que suba el precio.",
+  dividendos: "Te entra menos plata que no depende de que suba el precio.",
   liquidez: "Tenés menos colchón para una urgencia sin vender nada.",
   alternativo: "Tu plata depende menos de lo más riesgoso.",
 };
