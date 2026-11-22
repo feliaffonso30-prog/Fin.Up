@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FinUp: Noche liviana</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800;900&display=swap">
+<style>
+[data-activa="cielo"]{--fondo:linear-gradient(172deg,#303b9e 0%,#1c2270 42%,#0e1238 100%);--tarjeta:#232a7a;--primario:#4a5cff;--sobre:#ffffff;--marca:#b6bdff;--tinta:#f6f7ff;--gris:#ccd0ee;--cifra-fondo:#333a96;--cifra-texto:#f6f7ff;--rojo:#d9371d;--rojo-sobre:#ffffff;--rojo-suave:#47202e;--rojo-cifra:#ffaa98;--t-texto:#f6f7ff;--t-gris:#ccd0ee;--menu-activo:#b6bdff;--borde:transparent;--activa:#4a5cff}
+[data-activa="resplandor"]{--fondo:radial-gradient(120% 70% at 88% -6%,#3f4cc4 0%,#222a80 38%,#0e1238 78%);--tarjeta:#1d2368;--primario:#4a5cff;--sobre:#ffffff;--marca:#d3d7ff;--tinta:#f6f7ff;--gris:#ccd0ee;--cifra-fondo:#2d3488;--cifra-texto:#f6f7ff;--rojo:#d9371d;--rojo-sobre:#ffffff;--rojo-suave:#47202e;--rojo-cifra:#ffaa98;--t-texto:#f6f7ff;--t-gris:#ccd0ee;--menu-activo:#b6bdff;--borde:transparent;--activa:#4a5cff}
+[data-activa="vidrio"]{--fondo:linear-gradient(165deg,#333eaa 0%,#232a80 55%,#171c5c 100%);--tarjeta:rgba(255,255,255,.1);--primario:#4a5cff;--sobre:#ffffff;--marca:#d3d7ff;--tinta:#f6f7ff;--gris:#d9dcf4;--cifra-fondo:rgba(255,255,255,.12);--cifra-texto:#f6f7ff;--rojo:#d9371d;--rojo-sobre:#ffffff;--rojo-suave:rgba(255,120,100,.2);--rojo-cifra:#ffc4b6;--t-texto:#f6f7ff;--t-gris:#d9dcf4;--menu-activo:#d3d7ff;--borde:rgba(255,255,255,.14);--activa:#4a5cff}
+[data-activa="clara"]{--fondo:linear-gradient(172deg,#303b9e 0%,#1c2270 42%,#0e1238 100%);--tarjeta:#ffffff;--primario:#4a5cff;--sobre:#ffffff;--marca:#b6bdff;--tinta:#f6f7ff;--gris:#ccd0ee;--cifra-fondo:#e8ebff;--cifra-texto:#0e1238;--rojo:#d9371d;--rojo-sobre:#ffffff;--rojo-suave:#ffeee9;--rojo-cifra:#c42a12;--t-texto:#0e1238;--t-gris:#555a7c;--menu-activo:#3344e6;--borde:transparent;--activa:#3344e6}
+*{box-sizing:border-box;margin:0}
+body{background:#e4e5ea;color:#15172b;font-family:"Schibsted Grotesk","Segoe UI",system-ui,Arial,sans-serif;font-size:16px;line-height:1.4;padding:0 0 56px}
+.selector{position:sticky;top:0;z-index:5;background:#e4e5ea;padding:18px 16px 12px;box-shadow:0 10px 16px -14px rgba(21,23,43,.6)}
+.selector h1{font-size:24px;font-weight:800;letter-spacing:-.02em;max-width:1500px;margin:0 auto}
+.gamas{display:flex;gap:10px;overflow-x:auto;margin:12px auto 0;max-width:1500px;padding:3px}
+.gama{flex:1 0 190px;text-align:left;border:0;background:#fff;color:#15172b;border-radius:16px;padding:10px;font:inherit;cursor:pointer;outline:2px solid transparent;transition:outline-color .12s ease-out}
+.gama[aria-pressed=true]{outline:3px solid #15172b}
+.gama:focus-visible{outline:3px solid #0052e0;outline-offset:2px}
+.gama b{display:block;font-size:15px;font-weight:800;margin-top:8px}
+.gama small{display:block;font-size:13px;line-height:1.3;color:#4f5268;margin-top:2px}
+.mini{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:7px;border-radius:10px;height:66px;box-shadow:inset 0 0 0 1px rgba(21,23,43,.1)}
+.mini i{border-radius:6px}
+.mini em{grid-column:1/-1;border-radius:6px;display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:3px}
+.mini u{border-radius:4px}
+.pantallas{display:flex;flex-wrap:wrap;justify-content:center;gap:28px;padding:26px 16px 0}
+figure{width:360px;max-width:100%}
+figcaption{margin-top:12px;font-weight:700;font-size:15px}
+figcaption span{display:block;font-weight:400;color:#4f5268;margin-top:2px}
+.tel{width:100%;height:760px;border-radius:32px;overflow:hidden;background:var(--fondo);color:var(--tinta);display:flex;flex-direction:column;box-shadow:0 18px 40px -22px rgba(12,16,51,.55);position:relative;transition:background-color .18s ease-out,color .18s ease-out}
+.barra{display:flex;justify-content:space-between;align-items:center;padding:20px 22px 0}
+.marca{font-weight:900;font-size:24px;letter-spacing:-.04em;color:var(--marca)}
+.boton{display:block;width:100%;border:0;border-radius:18px;padding:18px;font:inherit;font-weight:800;font-size:18px;text-align:center;cursor:pointer}
+.boton.azul{background:var(--primario);color:var(--sobre)}
+.boton.blanco{background:var(--sobre);color:var(--primario)}
+.nota{font-size:13px;text-align:center;margin-top:10px;color:var(--gris)}
+.panel{margin:14px 16px 0;background:var(--primario);color:var(--sobre);border-radius:22px;padding:22px 20px 24px}
+.gran{font-size:44px;line-height:.98;font-weight:900;letter-spacing:-.035em}
+.sub{margin-top:14px;font-size:17px}
+.vista{margin:12px 16px 0;background:var(--tarjeta);border-radius:22px;padding:16px}
+.vista h2{font-size:15px;font-weight:700}
+.vista .fila{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.cifra{border-radius:16px;padding:12px;background:var(--cifra-fondo);color:var(--cifra-texto)}
+.cifra small{display:block;font-size:13px;font-weight:600}
+.cifra b{display:block;font-size:25px;font-weight:900;letter-spacing:-.03em;margin-top:2px;font-variant-numeric:tabular-nums}
+.cifra.mal{color:var(--rojo-cifra);background:var(--rojo-suave)}
+.ejemplo{font-size:13px;color:var(--gris);margin-top:10px}
+.pie{padding:14px 16px 20px;margin-top:auto}
+.avance{display:flex;gap:5px;padding:16px 22px 0}
+.avance i{flex:1;height:6px;border-radius:6px;background:color-mix(in oklab,var(--tinta) 16%,var(--fondo))}
+.avance i.ya{background:var(--primario)}
+.pregunta{padding:22px 22px 0;font-size:33px;line-height:1.04;font-weight:900;letter-spacing:-.03em}
+.ayuda{padding:10px 22px 0;color:var(--gris);font-size:16px}
+.opciones{list-style:none;padding:20px 22px 0;display:grid;gap:10px;flex:1;align-content:start}
+.opciones button{width:100%;text-align:left;border:0;border-radius:18px;padding:16px 18px;background:var(--tarjeta);font:inherit;color:inherit;cursor:pointer}
+.opciones b{display:block;font-size:18px;font-weight:700}
+.opciones span{display:block;font-size:14px;color:var(--gris);margin-top:1px}
+.opciones .activa{background:var(--primario);color:var(--sobre)}
+.opciones .activa span{color:var(--sobre)}
+.tu{padding:22px 22px 0;font-size:17px;font-weight:600}
+.perfil{padding:2px 22px 0;font-size:52px;line-height:1;font-weight:900;letter-spacing:-.04em}
+.porque{padding:12px 22px 0;font-size:16px;color:var(--gris)}
+.pantalla-riesgo{margin:18px 16px 0;display:grid;gap:10px}
+.bloque{border-radius:22px;padding:16px 18px}
+.bloque small{display:block;font-size:14px;font-weight:600}
+.bloque b{display:block;font-size:38px;line-height:1.02;font-weight:900;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.bloque.bien{background:var(--primario);color:var(--sobre)}
+.bloque.mal{background:var(--rojo);color:var(--rojo-sobre)}
+.bloque p{font-size:14px;margin-top:2px}
+.cuerpo{flex:1;min-height:0;overflow:hidden;padding:14px 16px 0;display:grid;gap:12px;align-content:start}
+.tarjeta{background:var(--tarjeta);border-radius:22px;padding:16px}
+.paso{background:var(--primario);color:var(--sobre)}
+.paso small{font-size:14px;font-weight:600;display:block}
+.paso h2{font-size:25px;line-height:1.05;font-weight:900;letter-spacing:-.025em;margin-top:2px}
+.paso p{font-size:15px;margin-top:6px}
+.paso .boton{margin-top:12px;padding:13px;font-size:16px;border-radius:14px}
+.tarjeta h3{font-size:17px;font-weight:800;letter-spacing:-.01em}
+.dos{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.reparto{display:flex;height:18px;gap:3px;margin-top:12px}
+.reparto i{border-radius:5px}
+.leyenda{list-style:none;padding:0;margin-top:10px;display:grid;gap:7px;font-size:15px}
+.leyenda li{display:flex;align-items:center;gap:8px}
+.leyenda u{width:12px;height:12px;border-radius:4px;flex:none}
+.leyenda b{margin-left:auto;font-weight:800;font-variant-numeric:tabular-nums}
+.menu{display:grid;grid-template-columns:repeat(4,1fr);background:var(--tarjeta);padding:10px 6px 14px;text-align:center;font-size:13px;font-weight:600;color:var(--gris)}
+.menu .ya{color:var(--marca);font-weight:800}
+.finbot{position:absolute;right:16px;bottom:72px;background:var(--primario);color:var(--sobre);border-radius:999px;padding:12px 16px;font-weight:700;font-size:15px;box-shadow:0 8px 18px -8px rgba(12,16,51,.7)}
+.reparto .r1,.leyenda .r1{background:var(--primario)}
+.reparto .r2,.leyenda .r2{background:color-mix(in oklab,var(--primario) 55%,var(--tarjeta))}
+.reparto .r3{background:var(--tinta)}
+.reparto .r4{background:color-mix(in oklab,var(--primario) 25%,var(--tarjeta))}
+@media (prefers-reduced-motion:reduce){.tel,.gama{transition:none}}
+
+/* Texto propio de las tarjetas, separado del texto sobre el fondo */
+.vista,.tarjeta:not(.paso),.opciones button:not(.activa),.menu{color:var(--t-texto);box-shadow:inset 0 0 0 1px var(--borde)}
+.ejemplo,.opciones button:not(.activa) span,.menu{color:var(--t-gris)}
+.menu .ya{color:var(--menu-activo)}
+.cifra{box-shadow:none}
+.reparto .r3{background:var(--t-texto)}
+.panel,.bloque.bien,.paso{background:linear-gradient(150deg,#4d5eff,#3f4fe8)}
+.boton.azul,.opciones .activa,.finbot{background:var(--primario)}
+.vista,.tarjeta:not(.paso),.opciones button:not(.activa),.menu{backdrop-filter:blur(14px)}
+.tel{transition:color .18s ease-out}
+</style></head>
+<body data-activa="cielo">
+<div class="selector">
+  <h1>Noche, más liviana: elegí una variante</h1>
+  <div class="gamas">
+<button class="gama" type="button" data-gama="cielo" aria-pressed="true">
+  <span class="mini" style="background:linear-gradient(172deg,#303b9e 0%,#1c2270 42%,#0e1238 100%)">
+    <i style="background:#4a5cff"></i><i style="background:#d9371d"></i>
+    <em style="background:#232a7a"><u style="background:#333a96"></u><u style="background:#47202e"></u></em>
+  </span>
+  <b>1. Cielo alto</b><small>Azul medio arriba que baja a noche. Mi recomendación.</small>
+</button>
+<button class="gama" type="button" data-gama="resplandor" aria-pressed="false">
+  <span class="mini" style="background:radial-gradient(120% 70% at 88% -6%,#3f4cc4 0%,#222a80 38%,#0e1238 78%)">
+    <i style="background:#4a5cff"></i><i style="background:#d9371d"></i>
+    <em style="background:#1d2368"><u style="background:#2d3488"></u><u style="background:#47202e"></u></em>
+  </span>
+  <b>2. Resplandor</b><small>Noche profunda con una luz suave desde una esquina.</small>
+</button>
+<button class="gama" type="button" data-gama="vidrio" aria-pressed="false">
+  <span class="mini" style="background:linear-gradient(165deg,#333eaa 0%,#232a80 55%,#171c5c 100%)">
+    <i style="background:#4a5cff"></i><i style="background:#d9371d"></i>
+    <em style="background:rgba(255,255,255,.1)"><u style="background:rgba(255,255,255,.12)"></u><u style="background:rgba(255,120,100,.2)"></u></em>
+  </span>
+  <b>3. Noche de vidrio</b><small>Fondo más claro y tarjetas translúcidas. La más etérea.</small>
+</button>
+<button class="gama" type="button" data-gama="clara" aria-pressed="false">
+  <span class="mini" style="background:linear-gradient(172deg,#303b9e 0%,#1c2270 42%,#0e1238 100%)">
+    <i style="background:#4a5cff"></i><i style="background:#d9371d"></i>
+    <em style="background:#ffffff"><u style="background:#e8ebff"></u><u style="background:#ffeee9"></u></em>
+  </span>
+  <b>4. Tarjetas claras</b><small>Degradado de noche con tarjetas blancas. La más liviana.</small>
+</button>
+  </div>
+</div>
+<div class="pantallas">
+
+<figure>
+  <section class="tel">
+    <div class="barra"><span class="marca">finup</span><span>Ingresar</span></div>
+    <div class="panel"><h2 class="gran">Antes de poner un peso, mirá qué puede pasar.</h2>
+    <p class="sub">Tu plan en 3 minutos, con lo bueno y lo malo a la vista.</p></div>
+    <div class="vista">
+      <h2>Si arrancás con USD 1.000, en dólares</h2>
+      <div class="fila">
+        <div class="cifra"><small>Año normal</small><b>+29 a 69</b></div>
+        <div class="cifra mal"><small>Mal año</small><b>−121</b></div>
+      </div>
+      <p class="ejemplo">Es un ejemplo, no una promesa.</p>
+    </div>
+    <div class="pie"><button class="boton azul">Armar mi plan</button><p class="nota">Sin cuenta. No movemos tu plata.</p></div>
+  </section>
+  <figcaption>1. Entrada<span>Da valor antes de pedir nada: el riesgo está en la portada.</span></figcaption>
+</figure>
+
+<figure>
+  <section class="tel">
+    <div class="barra"><span class="marca">finup</span><span>Pregunta 3 de 7</span></div>
+    <div class="avance"><i class="ya"></i><i class="ya"></i><i class="ya"></i><i></i><i></i><i></i><i></i></div>
+    <h2 class="pregunta">¿Cuándo vas a necesitar esta plata?</h2>
+    <p class="ayuda">Cuanto más tiempo tengas, más caídas podés esperar a que se recuperen.</p>
+    <ul class="opciones">
+      <li><button><b>En menos de 2 años</b><span>Un viaje, una mudanza, un estudio</span></button></li>
+      <li><button class="activa"><b>Entre 2 y 5 años</b></button></li>
+      <li><button><b>Entre 5 y 10 años</b></button></li>
+      <li><button><b>En más de 10 años</b><span>Largo plazo, retiro</span></button></li>
+    </ul>
+    <div class="pie"><button class="boton azul">Seguir</button></div>
+  </section>
+  <figcaption>2. Cuestionario<span>Una pregunta por vez, en letra grande y con opciones fáciles de tocar.</span></figcaption>
+</figure>
+
+<figure>
+  <section class="tel">
+    <div class="barra"><span class="marca">finup</span><span>Tu resultado</span></div>
+    <p class="tu">Te salió un perfil</p>
+    <h2 class="perfil">Conservador</h2>
+    <p class="porque">Porque preferís cuidar tu plata antes que hacerla crecer rápido. Con USD 1.000, en un año podría pasar esto:</p>
+    <div class="pantalla-riesgo">
+      <div class="bloque bien"><small>En un año normal</small><b>+USD 29 a 69</b><p>Estimado, según cómo venga el año</p></div>
+      <div class="bloque mal"><small>En un mal año</small><b>−USD 121</b><p>Te quedarían unos USD 879</p></div>
+    </div>
+    <div class="pie"><button class="boton azul">Ver mi plan</button><p class="nota">Estimaciones, no promesas.</p></div>
+  </section>
+  <figcaption>3. Resultado<span>El momento para recordar: lo bueno y lo malo con el mismo tamaño.</span></figcaption>
+</figure>
+
+<figure>
+  <section class="tel">
+    <div class="barra"><span class="marca">finup</span><span>Conservador</span></div>
+    <div class="cuerpo">
+      <div class="tarjeta paso">
+        <small>Tu próximo paso</small>
+        <h2>Primero, tus deudas caras</h2>
+        <p>Pagarlas te ahorra más de lo que te daría casi cualquier inversión.</p>
+        <button class="boton blanco">Ver cómo empezar</button>
+      </div>
+      <div class="tarjeta">
+        <h3>En un año, con USD 1.000, en dólares</h3>
+        <div class="dos">
+          <div class="cifra"><small>Año normal</small><b>+29 a 69</b></div>
+          <div class="cifra mal"><small>Mal año</small><b>−121</b></div>
+        </div>
+      </div>
+      <div class="tarjeta">
+        <h3>Cómo se reparte tu plata</h3>
+        <div class="reparto"><i class="r1" style="width:55%"></i><i class="r2" style="width:20%"></i><i class="r3" style="width:15%"></i><i class="r4" style="width:10%"></i></div>
+        <ul class="leyenda">
+          <li><u class="r1"></u>Préstamos a gobiernos y empresas<b>55%</b></li>
+          <li><u class="r2"></u>Plata disponible al instante<b>20%</b></li>
+        </ul>
+      </div>
+    </div>
+    <span class="finbot">Preguntale a FinBot</span>
+    <nav class="menu"><span class="ya">Mi plan</span><span>Tus pesos</span><span>Ejemplos</span><span>Aprender</span></nav>
+  </section>
+  <figcaption>4. Mi plan<span>Un solo paso arriba y, enseguida, cuánto podés ganar o perder.</span></figcaption>
+</figure>
+
+</div>
+
+<script>
+const botones=[...document.querySelectorAll('.gama')];
+botones.forEach(b=>b.addEventListener('click',()=>{document.body.dataset.activa=b.dataset.gama;botones.forEach(x=>x.setAttribute('aria-pressed',String(x===b)));}));
+</script>
+</body></html>

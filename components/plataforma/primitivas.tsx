@@ -1,47 +1,33 @@
 import { AlertTriangle, CircleAlert, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Brujula } from "@/components/plataforma/brujula";
 import type { Categoria } from "@/lib/plataforma/tipos";
 import { cn } from "@/lib/utils";
 
 // Piezas visuales que se repiten en toda la plataforma. Usan solo tokens de app/globals.css,
 // así el tema se cambia en un lugar.
 
-/** Etiqueta chica en mayúsculas arriba de un título, con el rombo de la marca. */
-export function Sobretitulo({ children, className }: { children: React.ReactNode; className?: string }) {
+/** Marcador chico para listas, leyendas y muestras de color. */
+export function Punto({ className }: { className?: string }) {
+  return <span aria-hidden className={cn("inline-block h-2.5 w-2.5 shrink-0 rounded-[3px]", className)} />;
+}
+
+/** El logo: la brújula y el nombre. El símbolo acompaña el tamaño del texto. */
+export function Marca({ className }: { className?: string }) {
   return (
-    <p className={cn("flex items-center gap-2 font-mono text-xs font-medium uppercase tracking-[0.14em] text-enlace", className)}>
-      <Rombo className="bg-enlace" />
-      {children}
-    </p>
+    <span className={cn("inline-flex items-center gap-[0.22em] font-display text-2xl font-black leading-none tracking-[-0.04em] text-foreground", className)}>
+      <Brujula size="1.12em" grueso />
+      finup
+    </span>
   );
 }
 
-/** El rombo: marcador de la marca para leyendas, muestras de color y sobretítulos. */
-export function Rombo({ className }: { className?: string }) {
-  return <span aria-hidden className={cn("inline-block h-2 w-2 shrink-0 rotate-45 rounded-[1px]", className)} />;
-}
-
-/** El filo: la línea degradada de 1px que firma FinUp. Solo en encabezados, FinBot y el menú. */
-export function Filo({ className }: { className?: string }) {
-  return <div aria-hidden className={cn("filo h-px w-full", className)} />;
-}
-
-/** Encabezado de cada pantalla: sobretítulo, título, bajada y el filo debajo. */
-export function EncabezadoPagina({
-  sobretitulo,
-  titulo,
-  children,
-}: {
-  sobretitulo: string;
-  titulo: React.ReactNode;
-  children?: React.ReactNode;
-}) {
+/** Encabezado de cada pantalla: título y bajada. */
+export function EncabezadoPagina({ titulo, children }: { titulo: React.ReactNode; children?: React.ReactNode }) {
   return (
     <header className="space-y-3">
-      <Sobretitulo>{sobretitulo}</Sobretitulo>
-      <h1 className="text-3xl font-extrabold text-foreground md:text-4xl">{titulo}</h1>
-      {children && <div className="max-w-2xl text-sm leading-relaxed text-muted-foreground">{children}</div>}
-      <Filo className="mt-5 max-w-xl" />
+      <h1 className="text-4xl font-black leading-none text-foreground md:text-5xl">{titulo}</h1>
+      {children && <div className="max-w-2xl text-base leading-relaxed text-muted-foreground">{children}</div>}
     </header>
   );
 }
@@ -51,9 +37,9 @@ export function EncabezadoPagina({
 type NivelAviso = "info" | "atencion" | "error";
 
 const ESTILO_AVISO: Record<NivelAviso, { caja: string; icono: string; titulo: string }> = {
-  info: { caja: "border-info/20 bg-info/10", icono: "text-info", titulo: "text-info" },
-  atencion: { caja: "border-atencion/25 bg-atencion/10", icono: "text-atencion", titulo: "text-atencion" },
-  error: { caja: "border-error/40 bg-error/10", icono: "text-error", titulo: "text-error" },
+  info: { caja: "vidrio", icono: "text-info", titulo: "text-foreground" },
+  atencion: { caja: "vidrio-mal", icono: "text-atencion", titulo: "text-foreground" },
+  error: { caja: "border border-error/40 bg-error/10", icono: "text-error", titulo: "text-error" },
 };
 
 const ICONO_AVISO = { info: Info, atencion: AlertTriangle, error: CircleAlert } satisfies Record<NivelAviso, unknown>;
@@ -72,17 +58,17 @@ export function Aviso({ nivel, titulo, children, role, compacto, className }: Pr
   const estilo = ESTILO_AVISO[nivel];
   const Icono = ICONO_AVISO[nivel];
   return (
-    <div role={role} className={cn("flex gap-3 rounded-xl border", compacto ? "p-3" : "p-4", estilo.caja, className)}>
+    <div role={role} className={cn("flex gap-3 rounded-xl", compacto ? "p-3" : "p-4", estilo.caja, className)}>
       <Icono className={cn("mt-0.5 h-4 w-4 shrink-0", estilo.icono)} aria-hidden />
       <div className="min-w-0 space-y-0.5">
         {titulo && <p className={cn("text-sm font-semibold", estilo.titulo)}>{titulo}</p>}
-        <div className={cn("text-xs leading-relaxed", nivel === "error" ? "text-error" : "text-foreground/85")}>{children}</div>
+        <div className={cn("text-sm leading-relaxed", nivel === "error" ? "text-error" : "text-foreground/90")}>{children}</div>
       </div>
     </div>
   );
 }
 
-/** El bloque de "qué puede salir mal": el corazón del anti-humo, siempre con el mismo aspecto. */
+/** El bloque de "qué puede salir mal": el corazón del producto, siempre con el mismo aspecto. */
 export function QuePuedeSalirMal({
   titulo = "Qué puede salir mal",
   children,
@@ -95,10 +81,10 @@ export function QuePuedeSalirMal({
   className?: string;
 }) {
   return (
-    <div className={cn("trama-atencion rounded-lg border border-atencion/25 bg-atencion/5 p-3", className)}>
-      <p className="mb-1 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-atencion">{titulo}</p>
+    <div className={cn("vidrio-mal rounded-lg p-4", className)}>
+      <p className="mb-1 flex items-center gap-2 text-sm font-bold text-atencion">{titulo}</p>
       <div className="text-sm leading-relaxed text-atencion-texto/90">{children}</div>
-      {pie && <p className="mt-2 text-xs text-atencion-texto/75">{pie}</p>}
+      {pie && <p className="mt-2 text-sm text-atencion-texto/80">{pie}</p>}
     </div>
   );
 }
@@ -146,12 +132,12 @@ export function Dato({
   valor: string;
   nota: string;
   valorClase?: string;
-  /** Marca la cifra del escenario malo con la trama de atención. */
+  /** Marca la cifra del escenario malo con el vidrio lavanda. */
   malEscenario?: boolean;
 }) {
   return (
-    <div className={cn("rounded-lg border p-4", malEscenario ? "trama-atencion border-atencion/25 bg-atencion/5" : "border-border bg-card")}>
-      <p className="font-mono text-xs uppercase tracking-[0.08em] text-muted-foreground">{titulo}</p>
+    <div className={cn("rounded-lg p-4", malEscenario ? "vidrio-mal" : "vidrio")}>
+      <p className="text-sm font-semibold text-muted-foreground">{titulo}</p>
       <p className={cn("mt-1.5 font-display text-2xl font-extrabold tabular-nums tracking-tight", valorClase)}>{valor}</p>
       <p className="mt-1 text-legal text-muted-foreground">{nota}</p>
     </div>

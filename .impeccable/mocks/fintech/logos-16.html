@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FinUp: la brújula cargando</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800;900&display=swap">
+<style>
+:root{--noche:radial-gradient(135% 88% at 94% -10%,#5361e0 0%,#3740ac 30%,#171c5e 62%,#0b0e30 100%);--gris:#d3d7f2;--tinta:#15172b;--tinta2:#3f4259;--papel:#e4e5ea;
+  --ease-out:cubic-bezier(0.23,1,0.32,1);--vaiven:cubic-bezier(0.45,0,0.55,1);--lento:1}
+*{box-sizing:border-box;margin:0}
+::selection{background:#5361e0;color:#fff}
+body{background:var(--papel);color:var(--tinta);font-family:"Schibsted Grotesk","Segoe UI",system-ui,Arial,sans-serif;font-size:16px;line-height:1.4;padding:0 16px 64px}
+.ancho{max-width:1320px;margin:0 auto}
+.cabeza{position:sticky;top:0;z-index:5;background:var(--papel);padding:20px 0 12px;box-shadow:0 10px 14px -14px rgba(21,23,43,.6)}
+h1{font-size:30px;line-height:1.08;font-weight:900;letter-spacing:-.03em;text-wrap:balance}
+.bajada{margin-top:6px;color:var(--tinta2);max-width:78ch}
+.controles{display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:12px}
+.modo{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.modo>span{font-size:14px;font-weight:700;color:var(--tinta2)}
+.chip{border:0;background:#fff;color:var(--tinta);font:inherit;font-weight:700;min-height:44px;padding:8px 16px;border-radius:12px;cursor:pointer;transition:transform .12s var(--ease-out)}
+.chip:active{transform:scale(.97)}
+.chip[aria-pressed=true]{background:var(--tinta);color:#fff}
+.chip:focus-visible{outline:3px solid #5361e0;outline-offset:2px}
+
+.columnas{display:grid;grid-template-columns:1fr 1fr;gap:0 28px;align-items:start}
+.opcion{margin-top:30px}
+.opcion h2{font-size:22px;font-weight:900;letter-spacing:-.02em}
+.opcion>p{margin-top:3px;color:var(--tinta2);max-width:62ch}
+.lamina{margin-top:12px;border-radius:24px;overflow:hidden;background:#0b0e30;background-image:var(--noche);color:#fff}
+.hero{padding:34px 28px 28px;display:flex;flex-direction:column;align-items:center;gap:16px;min-height:250px;justify-content:center;text-align:center}
+.estado{font-size:17px;font-weight:600}
+.lado{padding:20px 24px 22px;display:flex;flex-wrap:wrap;gap:18px 28px;align-items:center;background:rgba(11,14,48,.55)}
+.tamanos{display:flex;align-items:flex-end;gap:18px}
+.tamanos figure{margin:0;text-align:center}
+.tamanos figcaption{font-size:12px;color:var(--gris);margin-top:5px}
+.boton{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:10px 20px;border-radius:14px;background:#fff;color:#171c5e;font-weight:800;font-size:15px}
+.linea{display:inline-flex;align-items:center;gap:10px;font-size:15px;color:var(--gris)}
+.lectura{display:grid;gap:5px;margin-top:10px;font-size:15px;color:var(--tinta2)}
+.lectura b{color:var(--tinta)}
+svg{display:block;flex:none;overflow:visible}
+
+/* ---- Movimiento ----
+   Solo transform y opacity, en CSS (corre fuera del hilo principal).
+   Vaivén = ease-in-out suave, como un péndulo. Giro constante = linear. Nada rebota. */
+.m-aguja,.m-aro{transform-box:view-box;transform-origin:32px 32px}
+/* Los dos vaivenes arrancan desde el reposo (el logo quieto), no desde un extremo: así no hay salto al empezar. */
+.cargando.v-vaiven .m-aguja{animation:vaiven calc(1.7s*var(--lento)) var(--vaiven) calc(-.85s*var(--lento)) infinite alternate}
+.cargando.v-busca .m-aguja,.cargando.v-junto .m-aguja{animation:busca calc(5.4s*var(--lento)) var(--vaiven) infinite}
+.cargando.v-aro .m-aro{animation:giro calc(7s*var(--lento)) linear infinite}
+.cargando.v-junto .m-aro{animation:giro calc(12s*var(--lento)) linear infinite}
+@keyframes vaiven{from{transform:rotate(-24deg)}to{transform:rotate(24deg)}}
+@keyframes busca{0%,100%{transform:rotate(0deg)}11%{transform:rotate(-27deg)}33%{transform:rotate(21deg)}52%{transform:rotate(-11deg)}71%{transform:rotate(25deg)}90%{transform:rotate(-17deg)}}
+@keyframes giro{to{transform:rotate(360deg)}}
+@keyframes pulso{from{opacity:.45}to{opacity:1}}
+/* Con movimiento reducido no gira nada: el aro late con suavidad. */
+@media (prefers-reduced-motion:reduce){
+  .cargando .m-aguja{animation:none!important}
+  .cargando .m-aro{animation:pulso 1.4s ease-in-out infinite alternate!important}
+  .chip{transition:none}
+}
+@media (max-width:980px){.columnas{grid-template-columns:1fr}.cabeza{position:static;box-shadow:none}}
+</style>
+</head>
+<body>
+<div class="ancho">
+  <div class="cabeza">
+    <h1>La brújula cargando: cuatro movimientos</h1>
+    <p class="bajada">El indicador de carga es el mismo logo (la rosa con eje) en movimiento. Mientras carga se mueve sin parar; cuando el resultado está listo, se acomoda desde donde esté hasta quedar quieto, sin saltos ni rebote. Probá "Listo" en cualquier momento.</p>
+    <div class="controles">
+      <div class="modo" role="group" aria-label="Estado"><span>Estado</span>
+        <button class="chip" type="button" data-modo="cargando" aria-pressed="true">Cargando</button>
+        <button class="chip" type="button" data-modo="listo" aria-pressed="false">Listo</button>
+      </div>
+      <div class="modo" role="group" aria-label="Velocidad"><span>Velocidad</span>
+        <button class="chip" type="button" data-vel="1" aria-pressed="true">Normal</button>
+        <button class="chip" type="button" data-vel="3" aria-pressed="false">Cámara lenta</button>
+      </div>
+    </div>
+  </div>
+  <div class="columnas" id="opciones"></div>
+</div>
+<script>
+const B = "#fff", L = "#8d99ff", F = "#171c5e";
+const cara = (pts, f) => `<polygon points="${pts}" fill="${f}"/>`;
+const estrella = (r, w, f) => { const p = 32 - w, q = 32 + w; return cara(`32,${32 - r} ${q},${p} ${32 + r},32 ${q},${q} 32,${32 + r} ${p},${q} ${32 - r},32 ${p},${p}`, f); };
+const diagonales = (d, b, f) => { const A = 32 - d, Z = 32 + d; return cara(`${Z},${A} ${32 + b},32 ${Z},${Z} 32,${32 + b} ${A},${Z} ${32 - b},32 ${A},${A} 32,${32 - b}`, f); };
+const arcos = (r, sw, a1, f) => {
+  const pt = (a) => `${(32 + r * Math.sin(a * Math.PI / 180)).toFixed(2)} ${(32 - r * Math.cos(a * Math.PI / 180)).toFixed(2)}`;
+  return [0, 90, 180, 270].map((g) => `<path transform="rotate(${g} 32 32)" d="M${pt(a1)}A${r} ${r} 0 0 1 ${pt(90 - a1)}" fill="none" stroke="${f}" stroke-width="${sw}" stroke-linecap="round"/>`).join("");
+};
+
+// El logo (rosa con eje) separado en capas. "aguja" = la estrella blanca; "aro" = los cuatro arcos.
+// rosaConAguja: las puntas cortas giran con la estrella (true) o quedan fijas con el aro (false).
+const logo = (chico, rosaConAguja) => {
+  const m = chico
+    ? { aro: arcos(22, 5, 24, L), diag: diagonales(11, 8.5, L), est: estrella(31, 6, B), eje: `<circle cx="32" cy="32" r="8" fill="${B}"/><circle cx="32" cy="32" r="3.4" fill="${F}"/>` }
+    : { aro: arcos(22.5, 2.4, 13, L), diag: diagonales(10, 5.8, L), est: estrella(31, 3.6, B), eje: `<circle cx="32" cy="32" r="5.2" fill="${B}"/><circle cx="32" cy="32" r="2.1" fill="${F}"/>` };
+  return rosaConAguja
+    ? `<g class="m-aro" data-paso="90">${m.aro}</g><g class="m-aguja">${m.diag}${m.est}</g>${m.eje}`
+    : `<g class="m-aro" data-paso="90">${m.aro}</g>${m.diag}<g class="m-aguja">${m.est}</g>${m.eje}`;
+};
+
+const OPCIONES = [
+  { id: "vaiven", nombre: "Vaivén", rosa: false,
+    idea: "La estrella se mece de un lado al otro como un péndulo, parejo. El aro y las puntas cortas quedan quietos.",
+    dice: "El más calmo y el más fácil de leer: una aguja que oscila. Ritmo constante, firme.",
+    riesgo: "Es tan regular que puede sentirse mecánico, como un metrónomo, en esperas largas." },
+  { id: "busca", nombre: "Busca el norte", rosa: false,
+    idea: "La estrella se mueve como una aguja de verdad: va, vuelve, se pasa un poco, corrige. Nunca repite el mismo gesto dos veces seguidas.",
+    dice: "El más fluido y el más \"brújula\": parece que está buscando. Al terminar, encuentra el norte y se queda.",
+    riesgo: "Es más inquieto: en un botón chico puede distraer. El ciclo dura unos 5 segundos y recién ahí se repite." },
+  { id: "aro", nombre: "Aro que gira", rosa: true,
+    idea: "La estrella queda quieta y el aro cortado gira despacio alrededor, sin detenerse.",
+    dice: "El más parecido a un indicador de carga clásico y a los Anillos abiertos que ya tenías. La rosa queda siempre legible.",
+    riesgo: "Es el que menos dice \"brújula\": lo que se mueve es el borde, no la aguja." },
+  { id: "junto", nombre: "Aguja y aro", rosa: false,
+    idea: "Las dos cosas a la vez: la estrella busca el norte mientras el aro gira muy despacio.",
+    dice: "El más rico para una pantalla de espera grande, como \"Armando tu plan\".",
+    riesgo: "Dos movimientos juntos es mucho para tamaños chicos. Es el menos minimalista." },
+];
+
+const svg = (o, t) => `<svg class="js-vivo cargando v-${o.id}" width="${t}" height="${t}" viewBox="0 0 64 64" aria-hidden="true">${logo(t < 32, o.rosa)}</svg>`;
+
+document.getElementById("opciones").innerHTML = OPCIONES.map((o, i) => `
+  <section class="opcion">
+    <h2>${i + 1}. ${o.nombre}</h2>
+    <p>${o.idea}</p>
+    <div class="lamina">
+      <div class="hero">${svg(o, 128)}<p class="estado js-estado" role="status">Armando tu plan…</p></div>
+      <div class="lado">
+        <div class="tamanos">
+          <figure>${svg(o, 64)}<figcaption>64</figcaption></figure>
+          <figure>${svg(o, 40)}<figcaption>40</figcaption></figure>
+          <figure>${svg(o, 24)}<figcaption>24</figcaption></figure>
+        </div>
+        <span class="linea">${svg(o, 20)}<span class="js-linea">Actualizando tasas…</span></span>
+      </div>
+    </div>
+    <div class="lectura"><p><b>Qué dice:</b> ${o.dice}</p><p><b>Riesgo:</b> ${o.riesgo}</p></div>
+  </section>`).join("");
+
+// "Listo": cada pieza congela el ángulo en el que está y llega al reposo con ease-out fuerte (WAAPI).
+// Sirve aunque el resultado llegue a mitad de un ciclo: no hay salto. El aro se acomoda al cuarto de vuelta más cercano.
+const EASE_OUT = "cubic-bezier(0.23, 1, 0.32, 1)";
+const reducir = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function asentar(nodo) {
+  const piezas = [...nodo.querySelectorAll(".m-aguja,.m-aro")];
+  const angulos = piezas.map((el) => { const m = new DOMMatrixReadOnly(getComputedStyle(el).transform); return Math.atan2(m.b, m.a) * 180 / Math.PI; });
+  nodo.classList.remove("cargando");
+  if (reducir()) return;
+  piezas.forEach((el, i) => {
+    const paso = Number(el.dataset.paso || 0), destino = paso ? Math.round(angulos[i] / paso) * paso : 0;
+    if (Math.abs(angulos[i] - destino) < 0.5) return;
+    el.animate([{ transform: `rotate(${angulos[i]}deg)` }, { transform: `rotate(${destino}deg)` }], { duration: 620, easing: EASE_OUT });
+  });
+}
+const grupo = (sel, alElegir) => {
+  const bs = [...document.querySelectorAll(sel)];
+  bs.forEach((b) => b.addEventListener("click", () => { bs.forEach((x) => x.setAttribute("aria-pressed", String(x === b))); alElegir(b); }));
+};
+grupo("[data-modo]", (b) => {
+  const cargando = b.dataset.modo === "cargando";
+  document.querySelectorAll(".js-vivo").forEach((n) => {
+    // Si ya está cargando no se toca nada: cancelar una animación de CSS en curso la dejaría detenida.
+    if (cargando) { if (!n.classList.contains("cargando")) { n.getAnimations({ subtree: true }).forEach((a) => a.cancel()); n.classList.add("cargando"); } }
+    else if (n.classList.contains("cargando")) asentar(n);
+  });
+  document.querySelectorAll(".js-estado").forEach((p) => (p.textContent = cargando ? "Armando tu plan…" : "Tu plan está listo."));
+  document.querySelectorAll(".js-linea").forEach((p) => (p.textContent = cargando ? "Actualizando tasas…" : "Tasas actualizadas."));
+});
+grupo("[data-vel]", (b) => document.documentElement.style.setProperty("--lento", b.dataset.vel));
+</script>
+</body>
+</html>

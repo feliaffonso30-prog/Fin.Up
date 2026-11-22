@@ -68,6 +68,14 @@ export const NOMBRE_CATEGORIA: Record<CategoriaInstrumento, string> = {
   "renta-fija": "Bonos y ONs",
 };
 
+/** Título de cada grupo en la lista de ejemplos: en simple, con el término técnico entre paréntesis. */
+export const TITULO_CATEGORIA: Record<CategoriaInstrumento, string> = {
+  "cedear-etf": "Canastas de muchas empresas (CEDEARs de ETFs)",
+  "cedear-empresa": "Empresas del exterior (CEDEARs)",
+  "accion-ar": "Empresas argentinas (acciones)",
+  "renta-fija": "Préstamos a gobiernos y empresas (bonos y ONs)",
+};
+
 export const NOMBRE_RIESGO: Record<NivelRiesgo, string> = { bajo: "Riesgo bajo", medio: "Riesgo medio", alto: "Riesgo alto" };
 
 export const NOMBRE_HORIZONTE: Record<HorizonteInstrumento, string> = {

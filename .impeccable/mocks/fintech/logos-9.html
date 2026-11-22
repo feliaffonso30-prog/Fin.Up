@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FinUp: logos, novena ronda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800;900&display=swap">
+<style>
+:root{--noche:radial-gradient(135% 88% at 94% -10%,#5361e0 0%,#3740ac 30%,#171c5e 62%,#0b0e30 100%);--gris:#d3d7f2;--tinta:#15172b;--tinta2:#3f4259;--papel:#e4e5ea;--curva:cubic-bezier(0.23,1,0.32,1)}
+*{box-sizing:border-box;margin:0}
+::selection{background:#5361e0;color:#fff}
+body{background:var(--papel);color:var(--tinta);font-family:"Schibsted Grotesk","Segoe UI",system-ui,Arial,sans-serif;font-size:16px;line-height:1.4;padding:0 16px 64px}
+.ancho{max-width:1320px;margin:0 auto}
+.cabeza{position:sticky;top:0;z-index:5;background:var(--papel);padding:20px 0 12px;box-shadow:0 10px 14px -14px rgba(21,23,43,.6)}
+h1{font-size:30px;line-height:1.08;font-weight:900;letter-spacing:-.03em;text-wrap:balance}
+.bajada{margin-top:6px;color:var(--tinta2);max-width:74ch}
+.controles{display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:12px}
+.modo{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.modo>span{font-size:14px;font-weight:700;color:var(--tinta2)}
+.chip{border:0;background:#fff;color:var(--tinta);font:inherit;font-weight:700;min-height:44px;padding:8px 16px;border-radius:12px;cursor:pointer;transition:transform .12s var(--curva)}
+.chip:active{transform:scale(.97)}
+.chip[aria-pressed=true]{background:var(--tinta);color:#fff}
+.chip:focus-visible{outline:3px solid #5361e0;outline-offset:2px}
+
+/* Resumen: los ocho en chico, lado a lado */
+.resumen{margin-top:24px;border-radius:24px;background:#0b0e30;background-image:var(--noche);color:#fff;padding:22px 24px;display:grid;grid-template-columns:1fr 1fr;gap:20px 36px}
+.resumen h2{font-size:15px;font-weight:800;color:var(--gris);margin-bottom:12px}
+.fila{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.mini{display:flex;flex-direction:column;align-items:flex-start;gap:9px;min-width:0}
+.mini b{font-size:13px;font-weight:700}
+.pestana{display:inline-flex;align-items:center;gap:7px;max-width:100%;padding:7px 10px;border-radius:9px 9px 0 0;background:#23284f;font-size:12px;color:#e8eaff;white-space:nowrap}
+.pestana .icono{border-radius:3px}
+
+/* Dos columnas: faro y brújula */
+.columnas{display:grid;grid-template-columns:1fr 1fr;gap:0 28px;align-items:start}
+.familia{margin-top:36px;font-size:26px;font-weight:900;letter-spacing:-.025em}
+.nota-familia{margin-top:3px;color:var(--tinta2);max-width:60ch}
+.opcion{margin-top:26px}
+.opcion h3{font-size:21px;font-weight:900;letter-spacing:-.02em}
+.opcion>p{margin-top:3px;color:var(--tinta2);max-width:62ch}
+.lamina{margin-top:12px;border-radius:24px;overflow:hidden;background:#0b0e30;background-image:var(--noche);color:#fff}
+.hero{padding:30px 28px 26px;display:flex;flex-direction:column;justify-content:center;gap:14px;min-height:200px}
+.estado{font-size:15px;color:var(--gris)}
+.lado{padding:20px 24px 22px;display:grid;grid-template-columns:auto 1fr;gap:18px 26px;align-items:end;background:rgba(11,14,48,.55)}
+.sello{display:flex;align-items:center;gap:.22em;font-weight:900;letter-spacing:-.04em;line-height:1}
+.atras .sello{flex-direction:row-reverse}
+.hero .sello{align-self:flex-start}
+.sello svg{display:block;flex:none;overflow:visible}
+.tamanos{display:flex;align-items:flex-end;gap:16px}
+.tamanos figure{margin:0;text-align:center}
+.tamanos figcaption{font-size:12px;color:var(--gris);margin-top:5px}
+.icono{display:block;border-radius:22%}
+.barra-app{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.09);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);font-size:14px}
+.apps{display:flex;gap:12px;align-items:flex-end;justify-content:flex-end}
+.apps i{display:block;width:44px;height:44px;border-radius:22%}
+.apps span{display:block;text-align:center;font-size:11px;color:#fff;margin-top:3px}
+.apps div{width:48px}
+.lectura{display:grid;gap:5px;margin-top:10px;font-size:15px;color:var(--tinta2)}
+.lectura b{color:var(--tinta)}
+
+@media (prefers-reduced-motion:reduce){.chip{transition:none}}
+@media (max-width:980px){.columnas,.resumen{grid-template-columns:1fr}.cabeza{position:static;box-shadow:none}}
+@media (max-width:520px){.hero{min-height:160px;padding:24px 20px}.hero .sello{font-size:50px!important}.lado{grid-template-columns:1fr}.apps{justify-content:flex-start}.fila{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="ancho">
+  <div class="cabeza">
+    <h1>Logos, novena ronda: faro o brújula</h1>
+    <p class="bajada">Cuatro variantes de cada finalista, lado a lado. El logo queda quieto: los Anillos abiertos siguen siendo el indicador de carga. Cada variante trae un dibujo simplificado para 16 px.</p>
+    <div class="controles">
+      <div class="modo" role="group" aria-label="Posición del símbolo"><span>Símbolo</span>
+        <button class="chip" type="button" data-pos="adelante" aria-pressed="true">Adelante del nombre</button>
+        <button class="chip" type="button" data-pos="atras" aria-pressed="false">Atrás del nombre</button>
+      </div>
+    </div>
+  </div>
+  <div class="resumen" id="resumen"></div>
+  <div class="columnas">
+    <div id="col-faro"></div>
+    <div id="col-brujula"></div>
+  </div>
+</div>
+<script>
+const LAV = "#8d99ff", LAV2 = "#d3d7ff", B = "#fff";
+const pol = (pts, f) => `<polygon points="${pts}" fill="${f}"/>`;
+
+/* ---------- FARO ---------- */
+
+// En chico las piezas van pegadas (los huecos de menos de medio píxel solo agrisan) y la linterna va en lavanda.
+const cima = (cx, chico) => chico
+  ? `<path d="M${cx} 2L${cx + 12} 12H${cx - 12}Z" fill="${B}"/><rect x="${cx - 8}" y="12" width="16" height="13" fill="${LAV}"/><rect x="${cx - 14}" y="25" width="28" height="7" rx="3" fill="${B}"/>`
+  : `<path d="M${cx} 4L${cx + 9.5} 13H${cx - 9.5}Z" fill="${B}"/><rect x="${cx - 6.5}" y="15" width="13" height="10" fill="${LAV}"/><rect x="${cx - 12.5}" y="26.5" width="25" height="5.5" rx="2.75" fill="${B}"/>`;
+// Torre: trapecio de y0 a y1; con franjas, la del medio va en lavanda.
+const torre = (cx, chico, franjas) => {
+  const [y0, y1, a0, a1] = chico ? [32, 62, 9, 14] : [33.5, 60, 7.5, 11.5];
+  const x = (y, lado) => +(cx + lado * (a0 + (a1 - a0) * (y - y0) / (y1 - y0))).toFixed(2);
+  const tramo = (ya, yb, f) => pol(`${x(ya, -1)},${ya} ${x(ya, 1)},${ya} ${x(yb, 1)},${yb} ${x(yb, -1)},${yb}`, f);
+  if (!franjas) return tramo(y0, y1, B);
+  const [c1, c2] = chico ? [41.1, 50.3] : [42.3, 51.2];
+  return tramo(y0, c1, B) + tramo(c1, c2, LAV) + tramo(c2, y1, B);
+};
+const haz = (chico) => chico ? pol("26,14 64,3 64,36 26,24", LAV) : pol("25.5,16.5 63,6 63,34 25.5,24", LAV);
+
+// 1. Franjas: sin haces. La torre rayada es lo que la separa de una pieza de ajedrez.
+const faroFranjas = (chico) => cima(32, chico) + torre(32, chico, true);
+
+// 2. Dos haces macizos: los haces son formas llenas y se conservan en chico.
+const faroDosHaces = (chico) => (chico
+  ? pol("24,14 24,23 0,31 0,6", LAV) + pol("40,14 40,23 64,31 64,6", LAV)
+  : pol("25.5,16.5 25.5,23.5 1,30 1,10", LAV) + pol("38.5,16.5 38.5,23.5 63,30 63,10", LAV)) + cima(32, chico) + torre(32, chico, false);
+
+// 3. Un haz: torre a la izquierda y un solo haz horizontal. Linterna y haz son una sola forma lavanda.
+const faroUnHaz = (chico) => haz(chico) + cima(chico ? 18 : 19, chico) + torre(chico ? 18 : 19, chico, false);
+
+// 4. Franjas y haz: suma las dos señas del faro (torre rayada y luz).
+const faroFranjasHaz = (chico) => haz(chico) + cima(chico ? 18 : 19, chico) + torre(chico ? 18 : 19, chico, true);
+
+/* ---------- BRÚJULA ---------- */
+
+// 1. Rosa de los vientos: sin aro. Cuatro puntas con facetas y cuatro puntas cortas detrás.
+const rosa = (chico) => {
+  const r2 = chico ? 17.7 : 15.5, w = chico ? 10 : 9, t = chico ? 2 : 3, c = chico ? 12 : 10;
+  const a = 32 - r2, b = 32 + r2, p = 32 - w, q = 32 + w, u = 64 - t;
+  return pol(`${b},${a} ${32 + c},32 ${b},${b} 32,${32 + c} ${a},${b} ${32 - c},32 ${a},${a} 32,${32 - c}`, LAV2) +
+    pol(`32,${t} ${p},${p} 32,32`, B) + pol(`32,${t} ${q},${p} 32,32`, LAV) +
+    pol(`${u},32 ${q},${p} 32,32`, B) + pol(`${u},32 ${q},${q} 32,32`, LAV) +
+    pol(`32,${u} ${q},${q} 32,32`, B) + pol(`32,${u} ${p},${q} 32,32`, LAV) +
+    pol(`${t},32 ${p},${q} 32,32`, B) + pol(`${t},32 ${p},${p} 32,32`, LAV);
+};
+
+// 2. Norte fijo: aro grueso y aguja en rombo, derecha y partida a lo largo. No apunta en diagonal ni hacia arriba.
+const norteFijo = (chico) => chico
+  ? `<circle cx="32" cy="32" r="25.5" fill="none" stroke="${B}" stroke-width="10"/>` + pol("32,15 23.5,32 32,49", B) + pol("32,15 40.5,32 32,49", LAV)
+  : `<circle cx="32" cy="32" r="24.5" fill="none" stroke="${B}" stroke-width="9"/>` + pol("32,15 24.5,32 32,49", B) + pol("32,15 39.5,32 32,49", LAV);
+
+// 3. De bolsillo: la brújula como objeto, con su argolla. La aguja mira al noroeste.
+const bolsillo = (chico) => chico
+  ? `<rect x="24" y="1" width="16" height="12" rx="5" fill="${LAV}"/><circle cx="32" cy="37" r="20.5" fill="none" stroke="${B}" stroke-width="9"/>` +
+    `<g transform="rotate(-35 32 37)">${pol("32,24 39,37 25,37", LAV)}${pol("25,37 39,37 32,50", B)}</g>`
+  : `<circle cx="32" cy="7.5" r="4.5" fill="none" stroke="${LAV}" stroke-width="4.5"/><rect x="28" y="11" width="8" height="5" fill="${B}"/><circle cx="32" cy="37" r="21" fill="none" stroke="${B}" stroke-width="7"/>` +
+    `<g transform="rotate(-35 32 37)">${pol("32,22 38.5,37 25.5,37", LAV)}${pol("25.5,37 38.5,37 32,52", B)}</g>`;
+
+// 4. Disco calado: un disco macizo con la rosa recortada. Solo el norte va en lavanda.
+const discoCalado = (chico) => chico
+  ? `<path fill-rule="evenodd" fill="${B}" d="M32 1A31 31 0 1 0 32 63A31 31 0 1 0 32 1ZM32 8L39 25L56 32L39 39L32 56L25 39L8 32L25 25Z"/>` + pol("32,8 39,25 32,32 25,25", LAV)
+  : `<path fill-rule="evenodd" fill="${B}" d="M32 3A29 29 0 1 0 32 61A29 29 0 1 0 32 3ZM32 9L37.5 26.5L55 32L37.5 37.5L32 55L26.5 37.5L9 32L26.5 26.5Z"/>` + pol("32,9 37.5,26.5 32,32 26.5,26.5", LAV);
+
+const FARO = [
+  { nombre: "Franjas", dibujo: faroFranjas,
+    idea: "Torre rayada, linterna en lavanda y techo en punta. Sin haces.",
+    resuelve: "La franja es la seña más propia de un faro: ninguna torre de ajedrez la tiene. No depende de haces que se pierden en chico.",
+    riesgo: "Sin luz, es un faro apagado: dice menos \"orienta\". La franja en 16 px ocupa menos de 2 px." },
+  { nombre: "Dos haces macizos", dibujo: faroDosHaces,
+    idea: "El faro de frente, con dos haces llenos que se abren hacia los costados.",
+    resuelve: "Los haces dejan de ser un detalle transparente: son parte de la silueta y se mantienen en la pestaña.",
+    riesgo: "La silueta en T puede leerse como cartel, cruz o moño. Es la más simétrica y la más vista en seguros y consultoras." },
+  { nombre: "Un haz", dibujo: faroUnHaz,
+    idea: "La torre a la izquierda y un solo haz horizontal, grande, que apunta al nombre.",
+    resuelve: "El haz ocupa media silueta: en chico se ve una torre con luz, no una torre sola. Es horizontal, no sube.",
+    riesgo: "El haz solo puede recordar a un megáfono o una linterna de mano. Con el símbolo atrás del nombre, el haz apunta hacia afuera." },
+  { nombre: "Franjas y haz", dibujo: faroFranjasHaz,
+    idea: "La torre rayada con un haz horizontal: las dos señas juntas.",
+    resuelve: "Si una seña falla en chico, queda la otra. Es la más inequívoca como faro.",
+    riesgo: "Es la que más piezas tiene: en 16 px puede empastarse. Mismo riesgo de megáfono que \"Un haz\"." },
+];
+const BRUJULA = [
+  { nombre: "Rosa de los vientos", dibujo: rosa,
+    idea: "Sin aro: cuatro puntas con facetas blancas y lavanda, y cuatro puntas cortas detrás.",
+    resuelve: "No hay círculo ni aguja en diagonal: nada que ver con Safari. Es simétrica, no señala hacia arriba.",
+    riesgo: "La estrella de cuatro puntas hoy se usa como ícono de inteligencia artificial. Las puntas cortas ayudan, pero en 16 px casi no se ven." },
+  { nombre: "Norte fijo", dibujo: norteFijo,
+    idea: "Aro grueso y una aguja en rombo, derecha, partida a lo largo: mitad blanca, mitad lavanda.",
+    resuelve: "La aguja no va en diagonal como la de Safari. Partida a lo largo, no tiene una mitad que señale hacia arriba.",
+    riesgo: "Sigue siendo la brújula más genérica: aro más aguja. El rombo puede recordar a una gema, y el aro, a los anillos de carga detenidos." },
+  { nombre: "De bolsillo", dibujo: bolsillo,
+    idea: "La brújula como objeto: caja redonda con su argolla. La aguja mira al noroeste.",
+    resuelve: "La argolla la vuelve un objeto concreto, no un ícono de navegador ni de mapas. La aguja hacia la izquierda no se lee como gráfico que sube.",
+    riesgo: "En chico se parece a un cronómetro o un reloj de bolsillo. Puede sentirse antigua." },
+  { nombre: "Disco calado", dibujo: discoCalado,
+    idea: "Un disco blanco macizo con la rosa de los vientos recortada. Solo el norte va en lavanda.",
+    resuelve: "Es la forma más pesada de las ocho: acompaña al nombre en negrita. No es un aro con aguja, así que se aleja de Safari.",
+    riesgo: "El norte en lavanda es una punta hacia arriba. La estrella recortada también roza el ícono de inteligencia artificial." },
+];
+
+// Por debajo de 32 px (la barra de la app) también se usa el dibujo simplificado.
+const svg = (o, t) => `<svg width="${t}" height="${t}" viewBox="0 0 64 64" aria-hidden="true">${o.dibujo(t < 32)}</svg>`;
+// En 16-20 px se usa el dibujo simplificado y con menos margen, como en un favicon real.
+const icono = (o, t) => {
+  const chico = t <= 20;
+  return `<svg class="icono" width="${t}" height="${t}" viewBox="0 0 64 64" role="img" aria-label="Ícono de ${o.nombre}"><rect width="64" height="64" fill="#171c5e"/><g transform="${chico ? "translate(4 4) scale(.875)" : "translate(8 8) scale(.75)"}">${o.dibujo(chico)}</g></svg>`;
+};
+const sello = (o, fs) => `<span class="sello" style="font-size:${fs}px" role="img" aria-label="finup">${svg(o, Math.round(fs * 1.12))}<span>finup</span></span>`;
+
+const mini = (o) => `<div class="mini">${icono(o, 44)}<span class="pestana">${icono(o, 16)}FinUp</span><b>${o.nombre}</b></div>`;
+document.getElementById("resumen").innerHTML =
+  `<div><h2>Faro: ícono de 44 px y pestaña de 16 px</h2><div class="fila">${FARO.map(mini).join("")}</div></div>` +
+  `<div><h2>Brújula: ícono de 44 px y pestaña de 16 px</h2><div class="fila">${BRUJULA.map(mini).join("")}</div></div>`;
+
+const lamina = (o, i, letra) => `
+  <section class="opcion">
+    <h3>${letra}${i + 1}. ${o.nombre}</h3>
+    <p>${o.idea}</p>
+    <div class="lamina">
+      <div class="hero">${sello(o, 64)}<p class="estado">Tu progreso financiero, paso a paso</p></div>
+      <div class="lado">
+        <div class="tamanos">
+          <figure>${icono(o, 64)}<figcaption>Ícono</figcaption></figure>
+          <figure>${icono(o, 32)}<figcaption>32 px</figcaption></figure>
+          <figure>${icono(o, 16)}<figcaption>Pestaña</figcaption></figure>
+        </div>
+        <div class="apps">
+          <div><i style="background:#e9e4d8"></i><span>Notas</span></div>
+          <div>${icono(o, 44)}<span>FinUp</span></div>
+          <div><i style="background:#2f6d4f"></i><span>Mapas</span></div>
+          <div><i style="background:#b8452f"></i><span>Música</span></div>
+        </div>
+        <div class="barra-app">${sello(o, 22)}<span>Ingresar</span></div>
+      </div>
+    </div>
+    <div class="lectura"><p><b>Qué resuelve:</b> ${o.resuelve}</p><p><b>Riesgo:</b> ${o.riesgo}</p></div>
+  </section>`;
+
+document.getElementById("col-faro").innerHTML =
+  `<h2 class="familia">Faro</h2><p class="nota-familia">Problema a resolver: en 16 px perdía los haces y parecía una torre o una pieza de ajedrez.</p>` + FARO.map((o, i) => lamina(o, i, "F")).join("");
+document.getElementById("col-brujula").innerHTML =
+  `<h2 class="familia">Brújula</h2><p class="nota-familia">Problema a resolver: se parecía a Safari y a las apps de mapas, y la aguja en diagonal se leía como flecha que sube.</p>` + BRUJULA.map((o, i) => lamina(o, i, "B")).join("");
+
+const pos = [...document.querySelectorAll("[data-pos]")];
+pos.forEach((b) => b.addEventListener("click", () => {
+  pos.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  document.body.classList.toggle("atras", b.dataset.pos === "atras");
+}));
+</script>
+</body>
+</html>

@@ -13,21 +13,15 @@ describe("destinoSeguro (anti open-redirect)", () => {
 });
 
 describe("rutas", () => {
-  it("protege panel y onboarding, no el login", () => {
-    expect(esRutaProtegida("/dashboard")).toBe(true);
-    expect(esRutaProtegida("/onboarding")).toBe(true);
-    expect(esRutaProtegida("/aprender/x")).toBe(true);
-    expect(esRutaProtegida("/comparador")).toBe(true);
-    expect(esRutaProtegida("/api/comparador")).toBe(false);
-    expect(esRutaProtegida("/instrumentos")).toBe(true);
-    expect(esRutaProtegida("/instrumentos/SPY")).toBe(true);
-    expect(esRutaProtegida("/login")).toBe(false);
-    expect(esRutaProtegida("/dashboardfalso")).toBe(false);
-    expect(esRutaProtegida("/api/chat")).toBe(false);
+  it("toda la plataforma se puede usar sin cuenta", () => {
+    for (const ruta of ["/", "/onboarding", "/dashboard", "/comparador", "/instrumentos", "/instrumentos/SPY", "/aprender", "/nueva-contrasena", "/login", "/api/chat"]) {
+      expect(esRutaProtegida(ruta)).toBe(false);
+    }
   });
   it("detecta rutas de acceso", () => {
     expect(esRutaDeAcceso("/login")).toBe(true);
     expect(esRutaDeAcceso("/registro")).toBe(true);
+    expect(esRutaDeAcceso("/recuperar")).toBe(true);
     expect(esRutaDeAcceso("/dashboard")).toBe(false);
   });
 });

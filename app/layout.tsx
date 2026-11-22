@@ -1,31 +1,20 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter, JetBrains_Mono, Plus_Jakarta_Sans } from 'next/font/google'
+import { Schibsted_Grotesk } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const inter = Inter({ 
+const schibsted = Schibsted_Grotesk({
   subsets: ["latin"],
-  variable: '--font-inter',
-});
-
-const plusJakarta = Plus_Jakarta_Sans({ 
-  subsets: ["latin"],
-  variable: '--font-jakarta',
-});
-
-// Tickers, porcentajes y tasas
-const jetbrains = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains",
+  variable: '--font-schibsted',
 });
 
 export const metadata: Metadata = {
-  title: 'FinUp - Inteligencia Financiera Personalizada',
-  description: 'Aprendé a invertir de forma simple, transparente y sin humo. Portafolios personalizados y educación financiera para jóvenes inversores.',
+  title: 'FinUp: antes de invertir, mirá qué puede pasar',
+  description: 'Tu plan en 3 minutos, con lo bueno y lo malo a la vista. FinUp te ayuda a decidir antes de invertir, con claridad y sin mover tu plata.',
 }
 
 export const viewport: Viewport = {
-  themeColor: '#0a1752',
+  themeColor: '#0b0e30',
 }
 
 export default function RootLayout({
@@ -34,8 +23,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="es" className="bg-background">
-      <body className={`${inter.variable} ${plusJakarta.variable} ${jetbrains.variable} font-sans antialiased`}>
+    <html lang="es">
+      <body className={`${schibsted.variable} font-sans antialiased`}>
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

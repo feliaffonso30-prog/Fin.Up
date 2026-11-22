@@ -25,22 +25,16 @@ export function Opcion({
       aria-checked={seleccionada}
       onClick={onClick}
       className={cn(
-        "flex w-full cursor-pointer items-start justify-between gap-3 rounded-xl border px-4 py-3 text-left transition-all",
-        seleccionada
-          ? "border-ring bg-primary text-primary-foreground shadow-lg shadow-primary/10"
-          : "border-input bg-transparent text-foreground/90 hover:border-ring",
+        "flex min-h-14 w-full cursor-pointer items-start justify-between gap-3 rounded-lg px-4 py-3.5 text-left transition-[transform,background-color] duration-150 active:scale-[0.98] motion-reduce:active:scale-100",
+        seleccionada ? "bloque-azul" : "vidrio text-foreground hover:bg-white/15",
       )}
     >
       <span className="min-w-0">
-        <span className="block text-sm font-semibold">{titulo}</span>
-        {detalle && (
-          <span className={cn("mt-0.5 block text-xs leading-snug", seleccionada ? "text-primary-foreground" : "text-muted-foreground")}>
-            {detalle}
-          </span>
-        )}
+        <span className="block text-lg font-bold leading-snug">{titulo}</span>
+        {detalle && <span className={cn("mt-0.5 block text-sm leading-snug", seleccionada ? "text-white" : "text-muted-foreground")}>{detalle}</span>}
         {children}
       </span>
-      {seleccionada && <Check className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />}
+      {seleccionada && <Check className="mt-1 h-5 w-5 shrink-0" aria-hidden />}
     </button>
   );
 }
@@ -63,7 +57,7 @@ export function GrupoOpciones({
       aria-label={labelledBy ? undefined : etiqueta}
       aria-labelledby={labelledBy}
       aria-describedby={describedBy}
-      className="space-y-2"
+      className="space-y-2.5"
     >
       {children}
     </div>

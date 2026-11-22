@@ -50,8 +50,8 @@ export const LECCIONES: Leccion[] = [
     ],
   },
   {
-    id: "anti-humo",
-    titulo: "Cómo detectar el humo",
+    id: "senales-de-estafa",
+    titulo: "Cómo reconocer una estafa",
     resumen: "Las estafas y los falsos gurús comparten señales. Si ves varias juntas, desconfiá.",
     puntos: [
       "Prometen ganancias garantizadas o rendimientos muy por encima del mercado. Nadie puede garantizarlo.",

@@ -30,6 +30,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
       montoUrl={primero(params.monto)}
       usdUrl={primero(params.usd)}
       tabUrl={primero(params.tab)}
+      diasUrl={primero(params.dias)}
     />
   );
 }

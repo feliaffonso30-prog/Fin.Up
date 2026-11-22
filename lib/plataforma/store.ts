@@ -3,15 +3,15 @@
 import { useCallback, useEffect, useMemo, useSyncExternalStore } from "react";
 import { AUTH_CONFIGURADA } from "@/lib/supabase/config";
 import { actualizarPlan } from "./plan";
-import { archivarPlanRemoto, guardarPlanRemoto, leerPlanVigente } from "./remoto";
+import { archivarPlanRemoto, guardarPlanRemoto, haySesion, leerPlanVigente } from "./remoto";
 import type { Plan } from "./tipos";
 import { esPlan } from "./validar-plan";
 
 // Dónde vive el plan del usuario:
-// - Con Supabase configurado (hay login): en la tabla `planes_inversion`, atado a su cuenta.
-//   En el navegador no se deja copia, para que en una compu compartida no se vea el plan de otro.
-// - Sin Supabase (modo sin cuenta): en localStorage, solo en este navegador.
-// En los dos casos los componentes usan el mismo hook: `usePlan()`.
+// - Con sesión iniciada: en la tabla `planes_inversion`, atado a su cuenta, sin copia en el navegador.
+// - Sin sesión (primero el plan, después la cuenta) o sin Supabase configurado: en localStorage,
+//   solo en este navegador. Al crear la cuenta, ese plan se pasa a la tabla y se borra de acá.
+// En todos los casos los componentes usan el mismo hook: `usePlan()`.
 
 const CLAVE = "finup:plan:v1";
 const EVENTO = "finup:plan-cambio";
@@ -77,13 +77,14 @@ function usePlanLocal() {
     return true;
   }, []);
   const recargar = useCallback(() => {}, []);
-  return { plan, cargando: crudo === undefined, error: null as string | null, guardar, borrar, recargar };
+  return { plan, cargando: crudo === undefined, error: null as string | null, sinCuenta: false, guardar, borrar, recargar };
 }
 
 // ---- Modo con cuenta (Supabase) -------------------------------------------
 
-type EstadoRemoto = { plan: Plan | null | undefined; error: string | null };
-let remoto: EstadoRemoto = { plan: undefined, error: null }; // undefined = cargando
+// sinCuenta: hay login disponible pero nadie inició sesión, así que el plan vive en este navegador.
+type EstadoRemoto = { plan: Plan | null | undefined; error: string | null; sinCuenta: boolean };
+let remoto: EstadoRemoto = { plan: undefined, error: null, sinCuenta: false }; // undefined = cargando
 let cargaEnCurso = false;
 const oyentes = new Set<() => void>();
 
@@ -95,13 +96,17 @@ function emitir(nuevo: EstadoRemoto) {
 /** Olvida lo cargado (al ingresar con otra cuenta). */
 export function reiniciarPlanRemoto() {
   cargaEnCurso = false;
-  emitir({ plan: undefined, error: null });
+  emitir({ plan: undefined, error: null, sinCuenta: false });
 }
 
 async function cargarRemoto() {
   if (cargaEnCurso) return;
   cargaEnCurso = true;
   try {
+    if (!(await haySesion())) {
+      emitir({ plan: parsear(leerCrudo()), error: null, sinCuenta: true });
+      return;
+    }
     const guardado = await leerPlanVigente();
     let plan = guardado ? actualizarPlan(guardado) : null;
     if (!plan) {
@@ -112,9 +117,9 @@ async function cargarRemoto() {
         plan = local;
       }
     }
-    emitir({ plan, error: null });
+    emitir({ plan, error: null, sinCuenta: false });
   } catch {
-    emitir({ plan: null, error: "No pudimos cargar tu cartera. Revisá tu conexión y probá de nuevo." });
+    emitir({ plan: null, error: "No pudimos cargar tu plan. Revisá tu conexión y probá de nuevo.", sinCuenta: false });
   } finally {
     cargaEnCurso = false;
   }
@@ -134,21 +139,31 @@ function usePlanRemoto() {
   }, []);
 
   const guardar = useCallback(async (p: Plan) => {
+    if (!(await haySesion())) {
+      guardarPlan(p);
+      emitir({ plan: p, error: null, sinCuenta: true });
+      return true;
+    }
     const ok = await guardarPlanRemoto(p);
-    if (ok) emitir({ plan: p, error: null });
+    if (ok) emitir({ plan: p, error: null, sinCuenta: false });
     return ok;
   }, []);
   const borrar = useCallback(async () => {
+    if (!(await haySesion())) {
+      borrarPlan();
+      emitir({ plan: null, error: null, sinCuenta: true });
+      return true;
+    }
     const ok = await archivarPlanRemoto();
-    if (ok) emitir({ plan: null, error: null });
+    if (ok) emitir({ plan: null, error: null, sinCuenta: false });
     return ok;
   }, []);
   const recargar = useCallback(() => {
-    emitir({ plan: undefined, error: null });
+    emitir({ plan: undefined, error: null, sinCuenta: false });
     void cargarRemoto();
   }, []);
 
-  return { plan: estado.plan ?? null, cargando: estado.plan === undefined, error: estado.error, guardar, borrar, recargar };
+  return { plan: estado.plan ?? null, cargando: estado.plan === undefined, error: estado.error, sinCuenta: estado.sinCuenta, guardar, borrar, recargar };
 }
 
 // AUTH_CONFIGURADA es una constante de compilación: siempre se usa el mismo hook.

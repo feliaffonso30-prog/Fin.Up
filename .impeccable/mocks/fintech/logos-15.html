@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FinUp: logos, ronda quince</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800;900&display=swap">
+<style>
+:root{--noche:radial-gradient(135% 88% at 94% -10%,#5361e0 0%,#3740ac 30%,#171c5e 62%,#0b0e30 100%);--gris:#d3d7f2;--tinta:#15172b;--tinta2:#3f4259;--papel:#e4e5ea;--curva:cubic-bezier(0.23,1,0.32,1)}
+*{box-sizing:border-box;margin:0}
+::selection{background:#5361e0;color:#fff}
+body{background:var(--papel);color:var(--tinta);font-family:"Schibsted Grotesk","Segoe UI",system-ui,Arial,sans-serif;font-size:16px;line-height:1.4;padding:0 16px 64px}
+.ancho{max-width:1320px;margin:0 auto}
+.cabeza{position:sticky;top:0;z-index:5;background:var(--papel);padding:20px 0 12px;box-shadow:0 10px 14px -14px rgba(21,23,43,.6)}
+h1{font-size:30px;line-height:1.08;font-weight:900;letter-spacing:-.03em;text-wrap:balance}
+.bajada{margin-top:6px;color:var(--tinta2);max-width:78ch}
+.controles{display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:12px}
+.modo{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.modo>span{font-size:14px;font-weight:700;color:var(--tinta2)}
+.chip{border:0;background:#fff;color:var(--tinta);font:inherit;font-weight:700;min-height:44px;padding:8px 16px;border-radius:12px;cursor:pointer;transition:transform .12s var(--curva)}
+.chip:active{transform:scale(.97)}
+.chip[aria-pressed=true]{background:var(--tinta);color:#fff}
+.chip:focus-visible{outline:3px solid #5361e0;outline-offset:2px}
+
+.resumen{margin-top:24px;border-radius:24px;background:#0b0e30;background-image:var(--noche);color:#fff;padding:22px 24px}
+.resumen h2{font-size:15px;font-weight:800;color:var(--gris);margin-bottom:12px}
+.fila{display:grid;grid-template-columns:repeat(4,minmax(0,220px));gap:14px 40px}
+.mini{display:flex;flex-direction:column;align-items:flex-start;gap:9px;min-width:0}
+.mini b{font-size:13px;font-weight:700}
+.pestana{display:inline-flex;align-items:center;gap:7px;max-width:100%;padding:7px 10px;border-radius:9px 9px 0 0;background:#23284f;font-size:12px;color:#e8eaff;white-space:nowrap}
+.pestana .icono{border-radius:3px}
+
+.columnas{display:grid;grid-template-columns:1fr 1fr;gap:0 28px;align-items:start}
+.opcion{margin-top:30px}
+.opcion h2{font-size:22px;font-weight:900;letter-spacing:-.02em}
+.opcion>p{margin-top:3px;color:var(--tinta2);max-width:62ch}
+.lamina{margin-top:12px;border-radius:24px;overflow:hidden;background:#0b0e30;background-image:var(--noche);color:#fff}
+.hero{padding:30px 28px 26px;display:flex;flex-direction:column;justify-content:center;gap:14px;min-height:200px}
+.estado{font-size:15px;color:var(--gris)}
+.lado{padding:20px 24px 22px;display:grid;grid-template-columns:auto 1fr;gap:18px 26px;align-items:end;background:rgba(11,14,48,.55)}
+.sello{display:flex;align-items:center;gap:.22em;font-weight:900;letter-spacing:-.04em;line-height:1}
+.atras .sello{flex-direction:row-reverse}
+.hero .sello{align-self:flex-start}
+.sello svg{display:block;flex:none;overflow:visible}
+.tamanos{display:flex;align-items:flex-end;gap:12px}
+.tamanos figure{margin:0;text-align:center}
+.tamanos figcaption{font-size:12px;color:var(--gris);margin-top:5px}
+.icono{display:block;border-radius:22%}
+.barra-app{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.09);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);font-size:14px}
+.apps{display:flex;gap:12px;align-items:flex-end;justify-content:flex-end}
+.apps i{display:block;width:44px;height:44px;border-radius:22%}
+.apps span{display:block;text-align:center;font-size:11px;color:#fff;margin-top:3px}
+.apps div{width:48px}
+/* Otras aplicaciones: sobre claro y a un solo color */
+.usos{display:grid;grid-template-columns:1fr 1fr}
+.uso{padding:18px 24px 16px;display:flex;flex-direction:column;gap:8px}
+.uso small{font-size:12px}
+.uso.claro{background:#f4f5fa;color:#171c5e}
+.uso.claro small{color:#3f4259}
+.uso.mono{background:#3740ac;color:#fff}
+.uso.mono small{color:#e8eaff}
+.lectura{display:grid;gap:5px;margin-top:10px;font-size:15px;color:var(--tinta2)}
+.lectura b{color:var(--tinta)}
+
+@media (prefers-reduced-motion:reduce){.chip{transition:none}}
+@media (max-width:980px){.columnas{grid-template-columns:1fr}.cabeza{position:static;box-shadow:none}}
+@media (max-width:520px){.hero{min-height:160px;padding:24px 20px}.hero .sello{font-size:50px!important}.lado{grid-template-columns:1fr}.apps{justify-content:flex-start}.fila{grid-template-columns:repeat(2,1fr)}.usos{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="ancho">
+  <div class="cabeza">
+    <h1>Logos, ronda quince: la rosa fina plana, con eje, con marcas y al mínimo</h1>
+    <p class="bajada">Cuatro bocetos sobre la rosa fina plana: con un punto en el centro (el eje de la aguja), con marcas alrededor del aro (los grados de la brújula), con las dos cosas, y una versión aparte todavía más minimalista.</p>
+    <div class="controles">
+      <div class="modo" role="group" aria-label="Posición del símbolo"><span>Símbolo</span>
+        <button class="chip" type="button" data-pos="adelante" aria-pressed="true">Adelante del nombre</button>
+        <button class="chip" type="button" data-pos="atras" aria-pressed="false">Atrás del nombre</button>
+      </div>
+    </div>
+  </div>
+  <div class="resumen"><h2>Las cuatro en ícono de 44 px y en pestaña de 16 px</h2><div class="fila" id="resumen"></div></div>
+  <div class="columnas" id="opciones"></div>
+</div>
+<script>
+// Paletas: sobre Noche, sobre fondo claro y a un solo color. s = sombra de las puntas cortas.
+const NOCHE = { b: "#fff", l: "#8d99ff", l2: "#d3d7ff", s: "#5361e0", f: "#171c5e" };
+const CLARO = { b: "#171c5e", l: "#5361e0", l2: "#3740ac", s: "#8d99ff", f: "#f4f5fa" };
+const MONO = { b: "#fff", l: "#fff", l2: "#fff", s: "#fff", f: "#3740ac" };
+
+const cara = (pts, f) => `<polygon points="${pts}" fill="${f}"/>`;
+// Puntas largas. r = largo; w = cintura. luz / sombra: la cara que mira arriba a la izquierda y la otra.
+const largas = (r, w, luz, sombra) => {
+  const p = 32 - w, q = 32 + w, a = 32 - r, z = 32 + r;
+  return cara(`32,${a} ${p},${p} 32,32`, luz) + cara(`32,${a} ${q},${p} 32,32`, sombra) +
+    cara(`${z},32 ${q},${p} 32,32`, luz) + cara(`${z},32 ${q},${q} 32,32`, sombra) +
+    cara(`32,${z} ${p},${q} 32,32`, luz) + cara(`32,${z} ${q},${q} 32,32`, sombra) +
+    cara(`${a},32 ${p},${p} 32,32`, luz) + cara(`${a},32 ${p},${q} 32,32`, sombra);
+};
+// Puntas cortas en diagonal. d = alcance; c = base sobre los ejes.
+const cortas = (d, c, luz, sombra) => {
+  const A = 32 - d, Z = 32 + d, n = `32,${32 - c}`, e = `${32 + c},32`, su = `32,${32 + c}`, o = `${32 - c},32`;
+  return cara(`${Z},${A} ${n} 32,32`, luz) + cara(`${Z},${A} ${e} 32,32`, sombra) +   // noreste
+    cara(`${Z},${Z} ${e} 32,32`, luz) + cara(`${Z},${Z} ${su} 32,32`, sombra) +       // sudeste
+    cara(`${A},${Z} ${o} 32,32`, luz) + cara(`${A},${Z} ${su} 32,32`, sombra) +       // sudoeste
+    cara(`${A},${A} ${n} 32,32`, luz) + cara(`${A},${A} ${o} 32,32`, sombra);         // noroeste
+};
+// Aro en cuatro arcos: se corta donde pasan las puntas largas.
+const arcos = (r, sw, a1, f) => {
+  const pt = (a) => `${(32 + r * Math.sin(a * Math.PI / 180)).toFixed(2)} ${(32 - r * Math.cos(a * Math.PI / 180)).toFixed(2)}`;
+  return [0, 90, 180, 270].map((g) => `<path transform="rotate(${g} 32 32)" d="M${pt(a1)}A${r} ${r} 0 0 1 ${pt(90 - a1)}" fill="none" stroke="${f}" stroke-width="${sw}" stroke-linecap="round"/>`).join("");
+};
+// Formas planas (enteras, sin facetas).
+const estrella = (rv, rh, w, f) => {
+  const p = 32 - w, q = 32 + w;
+  return cara(`32,${32 - rv} ${q},${p} ${32 + rh},32 ${q},${q} 32,${32 + rv} ${p},${q} ${32 - rh},32 ${p},${p}`, f);
+};
+const diagonales = (d, b, f) => {
+  const A = 32 - d, Z = 32 + d;
+  return cara(`${Z},${A} ${32 + b},32 ${Z},${Z} 32,${32 + b} ${A},${Z} ${32 - b},32 ${A},${A} 32,${32 - b}`, f);
+};
+// Rombo: aguja de alto 2L y ancho 2W. r = agujero del eje.
+const rombo = (L, W, f, r = 0, horizontal = false) => {
+  const d = `M32 ${32 - L}L${32 + W} 32L32 ${32 + L}L${32 - W} 32Z` + (r ? `M32 ${32 - r}A${r} ${r} 0 1 0 32 ${32 + r}A${r} ${r} 0 1 0 32 ${32 - r}Z` : "");
+  return `<path fill-rule="evenodd" fill="${f}" d="${d}"${horizontal ? ' transform="rotate(90 32 32)"' : ""}/>`;
+};
+
+// Base: la rosa fina plana.
+const base = (c, k) => c
+  ? arcos(22, 5, 24, k.l) + diagonales(11, 8.5, k.l) + estrella(31, 31, 6, k.b)
+  : arcos(22.5, 2.4, 13, k.l) + diagonales(10, 5.8, k.l) + estrella(31, 31, 3.6, k.b);
+// Eje: un botón en el centro con un punto del color del fondo, como el eje donde gira la aguja.
+const eje = (c, k) => c
+  ? `<circle cx="32" cy="32" r="8" fill="${k.b}"/><circle cx="32" cy="32" r="3.4" fill="${k.f}"/>`
+  : `<circle cx="32" cy="32" r="5.2" fill="${k.b}"/><circle cx="32" cy="32" r="2.1" fill="${k.f}"/>`;
+// Marcas: puntos por fuera del aro. Uno grande en cada diagonal y dos chicos a cada lado; en chico, solo los grandes.
+const marcas = (c, k) => {
+  const pt = (a, r, t) => `<circle cx="${(32 + r * Math.sin(a * Math.PI / 180)).toFixed(2)}" cy="${(32 - r * Math.cos(a * Math.PI / 180)).toFixed(2)}" r="${t}" fill="${k.l}"/>`;
+  return [45, 135, 225, 315].map((a) => c ? pt(a, 30.5, 3.4) : pt(a, 28.6, 1.7) + pt(a - 22.5, 28.6, 1.05) + pt(a + 22.5, 28.6, 1.05)).join("");
+};
+
+const conEje = (c, k) => base(c, k) + eje(c, k);
+const conMarcas = (c, k) => marcas(c, k) + base(c, k);
+const conTodo = (c, k) => marcas(c, k) + base(c, k) + eje(c, k);
+// Mínima: sin puntas cortas, estrella más delgada y el aro reducido a cuatro arcos cortos.
+const minima = (c, k) => c
+  ? arcos(21, 5, 30, k.l) + estrella(31, 31, 5.5, k.b)
+  : arcos(21.5, 2.2, 24, k.l) + estrella(31, 31, 3, k.b);
+
+const OPCIONES = [
+  { nombre: "Con eje", dibujo: conEje,
+    idea: "La rosa fina plana con un botón en el centro y un punto adentro: el eje donde gira la aguja.",
+    dice: "Con muy poco, la estrella pasa a ser un instrumento: algo gira ahí. Es el cambio más chico y el que más rinde.",
+    riesgo: "El centro pesa un poco más y la estrella pierde algo de filo. En 16 px el punto mide menos de un píxel: se ve el botón, no el agujero." },
+  { nombre: "Con marcas", dibujo: conMarcas,
+    idea: "Puntos por fuera del aro, como los grados del borde de una brújula: uno grande en cada diagonal y dos chicos a cada lado.",
+    dice: "El borde con marcas es propio de un instrumento de medir, y aleja al símbolo del emblema de la OTAN y del destello de inteligencia artificial.",
+    riesgo: "Son doce puntos muy chicos: es la parte más delicada del dibujo. En la barra de la app casi no se ven y en 16 px quedan solo cuatro. Puede recordar a un reloj." },
+  { nombre: "Con eje y marcas", dibujo: conTodo,
+    idea: "Las dos cosas juntas: el eje en el centro y los puntos alrededor.",
+    dice: "Es la que más se lee como brújula de las cuatro. Centro, aguja y borde: las tres partes del instrumento.",
+    riesgo: "Es la menos minimalista: suma piezas justo cuando venías pidiendo sacar. En chico hay que simplificarla." },
+  { nombre: "Mínima", dibujo: minima,
+    idea: "Aparte: sin puntas cortas, con la estrella más delgada y el aro reducido a cuatro arcos cortos.",
+    dice: "La más limpia y la más fácil de recordar y de dibujar. Los cuatro arcos funcionan como paréntesis alrededor de la estrella.",
+    riesgo: "Es la que menos brújula es. Una estrella de cuatro puntas con un aro alrededor es el dibujo del emblema de la OTAN y, sin el aro, el destello de inteligencia artificial." },
+];
+
+const svg = (o, t, k = NOCHE) => `<svg width="${t}" height="${t}" viewBox="0 0 64 64" aria-hidden="true">${o.dibujo(t < 32, k)}</svg>`;
+const icono = (o, t) => {
+  const chico = t <= 24;
+  return `<svg class="icono" width="${t}" height="${t}" viewBox="0 0 64 64" role="img" aria-label="Ícono de ${o.nombre}"><rect width="64" height="64" fill="#171c5e"/><g transform="${chico ? "translate(4 4) scale(.875)" : "translate(8 8) scale(.75)"}">${o.dibujo(chico, NOCHE)}</g></svg>`;
+};
+const sello = (o, fs, k) => `<span class="sello" style="font-size:${fs}px" role="img" aria-label="finup">${svg(o, Math.round(fs * 1.12), k)}<span>finup</span></span>`;
+
+document.getElementById("resumen").innerHTML = OPCIONES.map((o, i) =>
+  `<div class="mini">${icono(o, 44)}<span class="pestana">${icono(o, 16)}FinUp</span><b>${i + 1}. ${o.nombre}</b></div>`).join("");
+
+document.getElementById("opciones").innerHTML = OPCIONES.map((o, i) => `
+  <section class="opcion">
+    <h2>${i + 1}. ${o.nombre}</h2>
+    <p>${o.idea}</p>
+    <div class="lamina">
+      <div class="hero">${sello(o, 64)}<p class="estado">Tu progreso financiero, paso a paso</p></div>
+      <div class="lado">
+        <div class="tamanos">
+          <figure>${icono(o, 64)}<figcaption>64</figcaption></figure>
+          <figure>${icono(o, 48)}<figcaption>48</figcaption></figure>
+          <figure>${icono(o, 32)}<figcaption>32</figcaption></figure>
+          <figure>${icono(o, 24)}<figcaption>24</figcaption></figure>
+          <figure>${icono(o, 16)}<figcaption>16</figcaption></figure>
+        </div>
+        <div class="apps">
+          <div><i style="background:#e9e4d8"></i><span>Notas</span></div>
+          <div>${icono(o, 44)}<span>FinUp</span></div>
+          <div><i style="background:#2f6d4f"></i><span>Mapas</span></div>
+        </div>
+        <div class="barra-app">${sello(o, 22)}<span>Ingresar</span></div>
+      </div>
+      <div class="usos">
+        <div class="uso claro">${sello(o, 34, CLARO)}<small>Sobre fondo claro</small></div>
+        <div class="uso mono">${sello(o, 34, MONO)}<small>A un solo color</small></div>
+      </div>
+    </div>
+    <div class="lectura"><p><b>Qué dice:</b> ${o.dice}</p><p><b>Riesgo:</b> ${o.riesgo}</p></div>
+  </section>`).join("");
+
+const pos = [...document.querySelectorAll("[data-pos]")];
+pos.forEach((b) => b.addEventListener("click", () => {
+  pos.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  document.body.classList.toggle("atras", b.dataset.pos === "atras");
+}));
+</script>
+</body>
+</html>

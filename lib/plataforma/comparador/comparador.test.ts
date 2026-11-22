@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { interesSimple } from "../finanzas";
-import { compararTodo, cotizar, cotizarTodas, mejorPorTipo, ORDEN_TIPOS, ranking, tnaPlazoFijo } from "./cotizar";
+import { compararTodo, cotizar, cotizarTodas, mejorPorTipo, motivoEnPalabras, ORDEN_TIPOS, ranking, tnaPlazoFijo } from "./cotizar";
+import { plazoEnPalabras } from "./textos";
 import { hrefComparador, PESTANA_POR_CATEGORIA } from "./desde-cartera";
 import { buscarEnlace, claveEntidad } from "./enlaces";
 import {
@@ -247,6 +248,17 @@ describe("ranking", () => {
     const filaUva = filas.find((f) => f.tipo === "uva");
     expect(filaUva?.mejor).toBeUndefined();
     expect(filaUva?.motivo).toBeTruthy();
+    // En la primera vista, el motivo va en palabras: meses, no "Plazo mínimo: 90 días."
+    expect(filaUva?.motivoSimple).toMatch(/^Para 1 mes no hay: pide dejar la plata al menos \d+ meses\.$/);
+  });
+
+  it("motivo en palabras: plazo en meses, sin siglas ni dos puntos dobles", () => {
+    const bna = uva[0];
+    expect(motivoEnPalabras(cotizar(bna, consulta({ dias: 30 }), inflacion), consulta({ dias: 30 }), inflacion)).not.toMatch(/días|UVA|:.*:/);
+    expect(motivoEnPalabras(undefined, consulta(), inflacion)).toBe("Hoy no tenemos datos de este tipo.");
+    expect(plazoEnPalabras(90)).toBe("3 meses");
+    expect(plazoEnPalabras(30)).toBe("1 mes");
+    expect(plazoEnPalabras(45)).toBe("45 días");
   });
 
   it("comparar todo: mientras cargan los fondos, los FCI quedan como cargando", () => {

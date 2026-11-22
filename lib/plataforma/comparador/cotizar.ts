@@ -4,6 +4,7 @@
 
 import { interesCompuesto, interesSimple, rendimientoUva, tasaReal, tnaATea, tnaATem, teaATem } from "../finanzas";
 import { ars } from "../formato";
+import { plazoEnPalabras } from "./textos";
 import type { Alternativa, Consulta, Cotizacion, Inflacion, TipoAlternativa, Tramo } from "./tipos";
 
 const DIAS_REFERENCIA = 30; // la TNA "de cartel" de un plazo fijo es a 30 días
@@ -165,7 +166,23 @@ export interface FilaComparacion {
   tipo: TipoAlternativa;
   mejor?: Cotizacion;
   motivo?: string; // por qué no hay opción para este tipo
+  /** El mismo motivo en palabras cotidianas, para la primera vista (sin "Plazo mínimo: 90 días."). */
+  motivoSimple?: string;
   cargando?: boolean; // los fondos todavía no llegaron
+}
+
+/** Por qué no hay opción, dicho como lo entiende alguien que nunca invirtió. Sigue el orden de `cotizar`. */
+export function motivoEnPalabras(cot: Cotizacion | undefined, c: Consulta, inflacion: Inflacion | null): string {
+  if (!cot) return "Hoy no tenemos datos de este tipo.";
+  const a = cot.alternativa;
+  if (a.montoMinimo !== null && c.monto < a.montoMinimo) return `Pide poner al menos ${ars(a.montoMinimo)}.`;
+  if (a.montoMaximo !== null && c.monto > a.montoMaximo) return `Acepta hasta ${ars(a.montoMaximo)}.`;
+  if (a.plazoMinDias !== null && c.dias < a.plazoMinDias) {
+    return `Para ${plazoEnPalabras(c.dias)} no hay: pide dejar la plata al menos ${plazoEnPalabras(a.plazoMinDias)}.`;
+  }
+  if (a.capitalizacion === "uva" && !inflacion) return "Hoy no tenemos el dato de inflación para calcularlo.";
+  if (a.tipo === "plazo-fijo" && !c.esCliente) return "Solo lo ofrecen a quienes ya son clientes del banco.";
+  return "Hoy no está disponible.";
 }
 
 /** Una fila por tipo, en orden fijo. Con `fondosCargando`, los FCI quedan como "cargando". */
@@ -185,6 +202,10 @@ export function compararTodo(
     const delTipo = cotizaciones
       .filter((x) => x.alternativa.tipo === tipo)
       .sort((a, b) => (a.alternativa.plazoMinDias ?? 0) - (b.alternativa.plazoMinDias ?? 0));
-    return { tipo, motivo: delTipo[0]?.motivoNoDisponible ?? "Sin datos en este momento." };
+    return {
+      tipo,
+      motivo: delTipo[0]?.motivoNoDisponible ?? "Sin datos en este momento.",
+      motivoSimple: motivoEnPalabras(delTipo[0], c, inflacion),
+    };
   });
 }

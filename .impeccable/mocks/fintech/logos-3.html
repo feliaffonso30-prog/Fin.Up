@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FinUp: logos con movimiento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800;900&display=swap">
+<style>
+:root{--noche:radial-gradient(135% 88% at 94% -10%,#5361e0 0%,#3740ac 30%,#171c5e 62%,#0b0e30 100%);--gris:#d3d7f2;--curva:cubic-bezier(0.23,1,0.32,1)}
+*{box-sizing:border-box;margin:0}
+body{background:#e4e5ea;color:#15172b;font-family:"Schibsted Grotesk","Segoe UI",system-ui,Arial,sans-serif;font-size:16px;line-height:1.4;padding:0 16px 64px}
+.ancho{max-width:1120px;margin:0 auto}
+.cabeza{position:sticky;top:0;z-index:5;background:#e4e5ea;padding:20px 0 12px;box-shadow:0 10px 14px -14px rgba(21,23,43,.6)}
+h1{font-size:30px;line-height:1.08;font-weight:900;letter-spacing:-.03em}
+.bajada{margin-top:6px;font-size:16px;color:#3f4259;max-width:70ch}
+.modo{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{border:0;background:#fff;color:#15172b;font:inherit;font-weight:700;min-height:44px;padding:8px 16px;border-radius:12px;cursor:pointer;transition:transform .12s var(--curva)}
+.chip:active{transform:scale(.97)}
+.chip[aria-pressed=true]{background:#15172b;color:#fff}
+.chip:focus-visible{outline:3px solid #5361e0;outline-offset:2px}
+.familia{margin-top:34px;font-size:15px;font-weight:800;color:#3f4259}
+.opcion{margin-top:14px}
+.opcion h2{font-size:26px;font-weight:900;letter-spacing:-.025em}
+.opcion>p{margin-top:3px;color:#3f4259;max-width:72ch}
+.lamina{margin-top:12px;border-radius:24px;overflow:hidden;background:#0b0e30;background-image:var(--noche);color:#fff;display:grid;grid-template-columns:1.25fr 1fr}
+.hero{padding:30px 28px;display:flex;flex-direction:column;justify-content:center;gap:14px;min-height:220px}
+.estado{font-size:15px;color:var(--gris)}
+.lado{padding:22px 24px;display:flex;flex-direction:column;gap:18px;justify-content:center;background:rgba(11,14,48,.55)}
+.sello{display:flex;align-items:center;gap:.22em;font-weight:900;letter-spacing:-.04em;line-height:1}
+.sello svg{display:block;flex:none}
+.tamanos{display:flex;align-items:flex-end;gap:16px}
+.tamanos figure{margin:0;text-align:center}
+.tamanos figcaption{font-size:12px;color:var(--gris);margin-top:5px}
+.icono{display:block;border-radius:22%}
+.barra-app{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.09);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);font-size:14px}
+.apps{display:flex;gap:12px;align-items:flex-end}
+.apps i{display:block;width:44px;height:44px;border-radius:22%}
+.apps span{display:block;text-align:center;font-size:11px;color:#fff;margin-top:3px}
+.apps div{width:48px}
+.lectura{display:grid;grid-template-columns:1fr 1fr;gap:6px 22px;margin-top:10px;font-size:15px;color:#3f4259}
+.lectura b{color:#15172b}
+
+/* ---- Movimiento: solo transform y opacity ---- */
+.vivo *{transform-box:view-box}
+/* Nivel */
+.cargando .m-burbuja{animation:burbuja 2.6s ease-in-out infinite alternate}
+.revelar .m-burbuja{animation:burbuja-fin .6s var(--curva) both}
+@keyframes burbuja{from{transform:translateX(-13px)}to{transform:translateX(13px)}}
+@keyframes burbuja-fin{0%{transform:translateX(13px)}50%{transform:translateX(-3px)}78%{transform:translateX(1px)}100%{transform:none}}
+/* Balancín */
+.m-tabla{transform-origin:32px 40px}
+.cargando .m-tabla{animation:tabla 3s ease-in-out infinite alternate}
+.revelar .m-tabla{animation:tabla-fin .55s var(--curva) both}
+@keyframes tabla{from{transform:rotate(-7deg)}to{transform:rotate(7deg)}}
+@keyframes tabla-fin{0%{transform:rotate(7deg)}45%{transform:rotate(-3deg)}75%{transform:rotate(1deg)}100%{transform:none}}
+/* Faro */
+.m-haz,.m-luz{transform-origin:32px 18px}
+.cargando .m-haz{animation:haz 3.2s ease-in-out infinite alternate}
+.revelar .m-haz{animation:haz-fin .5s var(--curva) both}
+.revelar .m-luz{animation:luz-fin .5s var(--curva) both}
+@keyframes haz{0%{transform:scaleX(1);opacity:1}50%{transform:scaleX(0);opacity:.6}100%{transform:scaleX(-1);opacity:1}}
+@keyframes haz-fin{from{transform:scaleX(0);opacity:.6}to{transform:none;opacity:1}}
+@keyframes luz-fin{0%{transform:none}50%{transform:scale(1.25)}100%{transform:none}}
+/* Onda */
+.m-onda{transform:translateX(-16px)}
+.m-resto{opacity:0}
+.cargando .m-onda{animation:onda 2.8s linear infinite}
+.cargando .m-resto{opacity:1}
+.revelar .m-onda{animation:onda-fin .52s var(--curva) both}
+.revelar .m-resto{animation:apagar .52s ease-out both}
+@keyframes onda{from{transform:none}to{transform:translateX(-32px)}}
+@keyframes onda-fin{from{transform:none}to{transform:translateX(-16px)}}
+@keyframes apagar{from{opacity:1}to{opacity:0}}
+/* Encastre */
+.m-encastre{transform-origin:32px 32px}
+.cargando .m-pa{animation:pa 1.8s ease-in-out infinite alternate}
+.cargando .m-pb{animation:pb 1.8s ease-in-out infinite alternate}
+.revelar .m-pa{animation:pa-fin .42s var(--curva) both}
+.revelar .m-pb{animation:pb-fin .42s var(--curva) both}
+.revelar .m-encastre{animation:clic .42s var(--curva) both}
+@keyframes pa{from{transform:none}to{transform:translateY(-5px)}}
+@keyframes pb{from{transform:none}to{transform:translateY(5px)}}
+@keyframes pa-fin{from{transform:translateY(-5px)}to{transform:none}}
+@keyframes pb-fin{from{transform:translateY(5px)}to{transform:none}}
+@keyframes clic{0%{transform:none}60%{transform:scale(1.04)}100%{transform:none}}
+/* Péndulo de la i (en la palabra) */
+.i-viva{position:relative;display:inline-block}
+.i-punto{position:absolute;left:50%;top:.115em;width:.2em;height:.2em;margin-left:-.08em;border-radius:50%;background:#8d99ff;transform-origin:50% .66em}
+.cargando .i-punto{animation:pendulo 1.6s ease-in-out infinite alternate}
+.revelar .i-punto{animation:latido .45s var(--curva) both}
+@keyframes pendulo{from{transform:rotate(-16deg)}to{transform:rotate(16deg)}}
+@keyframes latido{0%{transform:rotate(16deg)}40%{transform:rotate(0) scale(1.3)}100%{transform:none}}
+@media (prefers-reduced-motion:reduce){.vivo *,.i-punto{animation:none!important}.chip{transition:none}}
+@media (max-width:760px){.lamina{grid-template-columns:1fr}.hero{min-height:170px;padding:24px 20px}.lectura{grid-template-columns:1fr}.hero .sello{font-size:54px!important}}
+</style>
+</head>
+<body>
+<div class="ancho">
+  <div class="cabeza">
+    <h1>Logos con movimiento</h1>
+    <p class="bajada">Todos se mueven sin parar mientras la app carga y hacen un gesto corto al mostrar tu resultado. Cambiá de estado con estos botones.</p>
+    <div class="modo" role="group" aria-label="Estado">
+      <button class="chip" type="button" data-modo="cargando" aria-pressed="true">Cargando</button>
+      <button class="chip" type="button" data-modo="revelar" aria-pressed="false">Mostrar el resultado</button>
+    </div>
+  </div>
+  <div id="opciones"></div>
+</div>
+<script>
+const LAV = "#8d99ff", LAV2 = "#d3d7ff";
+const nivel = (chico) => `<rect x="${chico ? 7 : 6}" y="${chico ? 20 : 22}" width="${chico ? 50 : 52}" height="${chico ? 24 : 20}" rx="${chico ? 12 : 10}" fill="none" stroke="#fff" stroke-width="${chico ? 7 : 4}"/>` +
+  (chico ? "" : `<line x1="25" y1="26" x2="25" y2="38" stroke="${LAV}" stroke-width="2.5"/><line x1="39" y1="26" x2="39" y2="38" stroke="${LAV}" stroke-width="2.5"/>`) +
+  `<circle class="m-burbuja" cx="32" cy="32" r="${chico ? 7 : 5.5}" fill="${LAV2}"/>`;
+const balancin = (chico) => `<path d="M32 40L${chico ? 21 : 24} 55L${chico ? 43 : 40} 55Z" fill="${LAV}"/>` +
+  `<g class="m-tabla"><rect x="6" y="${chico ? 33 : 35}" width="52" height="${chico ? 8 : 5}" rx="2.5" fill="#fff"/><circle cx="${chico ? 16 : 14}" cy="${chico ? 22 : 27}" r="${chico ? 10 : 8}" fill="#fff"/><circle cx="${chico ? 48 : 50}" cy="${chico ? 22 : 27}" r="${chico ? 10 : 8}" fill="${LAV2}"/></g>`;
+const faro = (chico) => `<path d="M${chico ? 24 : 27} 58L${chico ? 27 : 29} 26L${chico ? 37 : 35} 26L${chico ? 40 : 37} 58Z" fill="#fff"/>` +
+  (chico ? "" : `<rect class="m-haz" x="38" y="15.5" width="22" height="5" rx="2.5" fill="${LAV}"/>`) +
+  `<circle class="m-luz" cx="32" cy="${chico ? 16 : 18}" r="${chico ? 9 : 6}" fill="${LAV2}"/>`;
+function onda(chico, animada) {
+  const tramo = (x, resto) => `<g ${resto ? 'class="m-resto"' : ""}><path d="M${x} 32Q${x + 8} 2 ${x + 16} 32" stroke="#fff"/><path d="M${x + 16} 32Q${x + 24} 62 ${x + 32} 32" stroke="${LAV2}"/></g>`;
+  const cuerpo = animada ? tramo(-32, 1) + tramo(0, 1) + tramo(32, 0) + tramo(64, 1) : tramo(32, 0);
+  return `<g class="m-onda" fill="none" stroke-width="${chico ? 9 : 7}" stroke-linecap="round" ${animada ? "" : 'transform="translate(-16 0)"'}>${cuerpo}</g>`;
+}
+const encastre = () => `<g class="m-encastre"><path class="m-pa" d="M8 8H39V31H23V56H8Z" fill="#fff"/><path class="m-pb" d="M56 56H25V33H41V8H56Z" fill="${LAV}"/></g>`;
+const letraI = (chico) => `<rect x="${chico ? 25 : 27}" y="28" width="${chico ? 14 : 10}" height="28" rx="5" fill="#fff"/><circle cx="32" cy="14" r="${chico ? 9 : 7}" fill="${LAV}"/>`;
+
+const OPCIONES = [
+  { familia: "Objetos" },
+  { id: "nivel", nombre: "Nivel de burbuja", dibujo: nivel,
+    idea: "El nivel que usa un albañil: la burbuja busca el centro mientras carga y, al llegar tu resultado, queda justo entre las dos marcas.",
+    dice: "A nivel: nada inclinado hacia la ganancia.", riesgo: "Puede parecer un interruptor de la app. No todos conocen el objeto." },
+  { id: "balancin", nombre: "Balancín", dibujo: balancin,
+    idea: "Dos pesos sobre una tabla que se hamaca. Al mostrar tu resultado queda horizontal: lo bueno y lo malo pesan lo mismo.",
+    dice: "Mismo peso, sin explicación.", riesgo: "Recuerda a la balanza de un estudio jurídico o a un subibaja." },
+  { id: "faro", nombre: "Faro", dibujo: faro,
+    idea: "Un faro cuya luz barre de un lado al otro. Es la «noche con la luz prendida» del diseño: alumbra los dos lados antes de que avances.",
+    dice: "Te muestra el camino, con lo bueno y lo malo iluminados.", riesgo: "El faro es una metáfora gastada de «guía» o asesor, y FinUp no asesora. En chico parece un peón." },
+  { familia: "Formas con movimiento propio" },
+  { id: "onda", nombre: "La onda pareja", dibujo: onda,
+    idea: "Una onda que pasa sin fin: sube en blanco y baja en lavanda, lo mismo. Al mostrar tu resultado frena y quedan una subida y una bajada.",
+    dice: "Sube y baja lo mismo.", riesgo: "Puede leerse como audio o como el signo de «aproximadamente»." },
+  { id: "encastre", nombre: "El encastre", dibujo: encastre,
+    idea: "Dos piezas idénticas, una blanca y una lavanda, que se buscan. Al mostrar tu resultado encajan con un clic y forman un cuadrado.",
+    dice: "Lo bueno y lo malo son la misma pieza: una no cierra sin la otra.", riesgo: "Tiene un aire a juego de bloques." },
+  { id: "pendulo", nombre: "El péndulo de la i", dibujo: letraI, palabra: true,
+    idea: "Sin símbolo aparte: el punto de la i de «finup» se hamaca como un metrónomo mientras carga, y al final vuelve al centro y late una vez.",
+    dice: "Tomate tu tiempo: la decisión se asienta.", riesgo: "Como ícono de app queda una i, que es el símbolo genérico de «información»." },
+];
+
+const svg = (o, t, vivo) => `<svg ${vivo ? 'class="vivo js-vivo cargando"' : ""} width="${t}" height="${t}" viewBox="0 0 64 64" aria-hidden="true">${o.dibujo(false, vivo)}</svg>`;
+const icono = (o, t) => `<svg class="icono" width="${t}" height="${t}" viewBox="0 0 64 64" role="img" aria-label="Ícono"><rect width="64" height="64" fill="#171c5e"/><g transform="translate(8 8) scale(.75)">${o.dibujo(t <= 20, false)}</g></svg>`;
+function sello(o, fs, vivo) {
+  if (o.palabra) return `<span class="sello ${vivo ? "js-vivo cargando" : ""}" style="font-size:${fs}px" role="img" aria-label="finup"><span>f<span class="i-viva">ı<span class="i-punto"></span></span>nup</span></span>`;
+  return `<span class="sello" style="font-size:${fs}px" role="img" aria-label="finup">${svg(o, Math.round(fs * 1.12), vivo)}<span>finup</span></span>`;
+}
+document.getElementById("opciones").innerHTML = OPCIONES.map((o) => o.familia ? `<h2 class="familia">${o.familia}</h2>` : `
+  <section class="opcion">
+    <h2>${o.nombre}</h2>
+    <p>${o.idea}</p>
+    <div class="lamina">
+      <div class="hero">${sello(o, 76, true)}<p class="estado js-estado">Armando tu plan…</p></div>
+      <div class="lado">
+        <div class="tamanos">
+          <figure>${icono(o, 64)}<figcaption>Ícono</figcaption></figure>
+          <figure>${icono(o, 32)}<figcaption>32 px</figcaption></figure>
+          <figure>${icono(o, 16)}<figcaption>Pestaña</figcaption></figure>
+        </div>
+        <div class="barra-app">${sello(o, 22, false)}<span>Ingresar</span></div>
+        <div class="apps">
+          <div><i style="background:#e9e4d8"></i><span>Notas</span></div>
+          <div>${icono(o, 44)}<span>FinUp</span></div>
+          <div><i style="background:#2f6d4f"></i><span>Mapas</span></div>
+          <div><i style="background:#b8452f"></i><span>Música</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="lectura"><p><b>Qué dice:</b> ${o.dice}</p><p><b>Riesgo:</b> ${o.riesgo}</p></div>
+  </section>`).join("");
+
+const botones = [...document.querySelectorAll("[data-modo]")];
+botones.forEach((b) => b.addEventListener("click", () => {
+  botones.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  const modo = b.dataset.modo;
+  document.querySelectorAll(".js-vivo").forEach((n) => { n.classList.remove("cargando", "revelar"); void n.getBoundingClientRect(); n.classList.add(modo); });
+  document.querySelectorAll(".js-estado").forEach((p) => (p.textContent = modo === "cargando" ? "Armando tu plan…" : "Tu resultado está listo."));
+}));
+</script>
+</body>
+</html>

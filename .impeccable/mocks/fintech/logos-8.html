@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FinUp: logos, octava ronda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800;900&display=swap">
+<style>
+:root{--noche:radial-gradient(135% 88% at 94% -10%,#5361e0 0%,#3740ac 30%,#171c5e 62%,#0b0e30 100%);--gris:#d3d7f2;--curva:cubic-bezier(0.23,1,0.32,1)}
+*{box-sizing:border-box;margin:0}
+body{background:#e4e5ea;color:#15172b;font-family:"Schibsted Grotesk","Segoe UI",system-ui,Arial,sans-serif;font-size:16px;line-height:1.4;padding:0 16px 64px}
+.ancho{max-width:1120px;margin:0 auto}
+.cabeza{position:sticky;top:0;z-index:5;background:#e4e5ea;padding:20px 0 12px;box-shadow:0 10px 14px -14px rgba(21,23,43,.6)}
+h1{font-size:30px;line-height:1.08;font-weight:900;letter-spacing:-.03em}
+.bajada{margin-top:6px;font-size:16px;color:#3f4259;max-width:74ch}
+.controles{display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:12px}
+.modo{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.modo>span{font-size:14px;font-weight:700;color:#3f4259}
+.chip{border:0;background:#fff;color:#15172b;font:inherit;font-weight:700;min-height:44px;padding:8px 16px;border-radius:12px;cursor:pointer;transition:transform .12s var(--curva)}
+.chip:active{transform:scale(.97)}
+.chip[aria-pressed=true]{background:#15172b;color:#fff}
+.chip:focus-visible{outline:3px solid #5361e0;outline-offset:2px}
+.familia{margin-top:34px;font-size:15px;font-weight:800;color:#3f4259}
+.nota-familia{margin-top:2px;font-size:14px;color:#3f4259;max-width:80ch}
+.opcion{margin-top:14px}
+.opcion h2{font-size:26px;font-weight:900;letter-spacing:-.025em}
+.opcion>p{margin-top:3px;color:#3f4259;max-width:72ch}
+.lamina{margin-top:12px;border-radius:24px;overflow:hidden;background:#0b0e30;background-image:var(--noche);color:#fff;display:grid;grid-template-columns:1.25fr 1fr}
+.hero{padding:30px 28px;display:flex;flex-direction:column;justify-content:center;gap:14px;min-height:220px}
+.estado{font-size:15px;color:var(--gris)}
+.lado{padding:22px 24px;display:flex;flex-direction:column;gap:18px;justify-content:center;background:rgba(11,14,48,.55)}
+.sello{display:flex;align-items:center;gap:.22em;font-weight:900;letter-spacing:-.04em;line-height:1}
+.atras .sello{flex-direction:row-reverse}
+.hero .sello{align-self:flex-start}
+.sello svg{display:block;flex:none;overflow:visible}
+.tamanos{display:flex;align-items:flex-end;gap:16px}
+.tamanos figure{margin:0;text-align:center}
+.tamanos figcaption{font-size:12px;color:var(--gris);margin-top:5px}
+.icono{display:block;border-radius:22%}
+.barra-app{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.09);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);font-size:14px}
+.apps{display:flex;gap:12px;align-items:flex-end}
+.apps i{display:block;width:44px;height:44px;border-radius:22%}
+.apps span{display:block;text-align:center;font-size:11px;color:#fff;margin-top:3px}
+.apps div{width:48px}
+.lectura{display:grid;grid-template-columns:1fr 1fr;gap:6px 22px;margin-top:10px;font-size:15px;color:#3f4259}
+.lectura b{color:#15172b}
+
+/* ---- Movimiento: solo transform y opacity ---- */
+.vivo *{transform-box:view-box}
+.vivo{overflow:visible}
+
+/* Movimiento (criterios de Emil Kowalski):
+   - Bucle de carga: CSS (corre fuera del hilo principal), solo transform y opacity.
+     Giro constante = linear; vaivén en pantalla = ease-in-out fuerte.
+   - Resultado: WAAPI. Arranca desde la posición actual (sin saltos) y llega con ease-out fuerte, sin rebote.
+   - Tono firme: nada de overshoot. Una sola entrada por símbolo. */
+:root{--ease-out:cubic-bezier(0.23,1,0.32,1);--ease-in-out:cubic-bezier(0.77,0,0.175,1)}
+.vivo *{transform-box:view-box}
+
+/* Bucles de carga: solo transform y opacity. Giro constante = linear; vaivén = ease-in-out fuerte. Sin rebote. */
+.m-t1,.m-t2,.m-t3,.m-esp{transform-origin:32px 32px}
+.m-portal{transform-origin:32px 56px}
+.cargando .m-t1{animation:giro 14s linear infinite}
+.cargando .m-t2{animation:giro-inv 10s linear infinite}
+.cargando .m-t3{animation:giro 7s linear infinite}
+.cargando .m-esp{animation:giro 12s linear infinite}
+.cargando .m-c1{animation:ola 2.4s var(--ease-in-out) infinite alternate}
+.cargando .m-c2{animation:ola 2.4s var(--ease-in-out) .35s infinite alternate}
+.cargando .m-c3{animation:ola 2.4s var(--ease-in-out) .7s infinite alternate}
+.cargando .m-clave{animation:clave 2s var(--ease-in-out) infinite alternate}
+.cargando .m-portal{animation:portal 2s var(--ease-in-out) infinite alternate}
+@keyframes giro{to{transform:rotate(360deg)}}
+@keyframes giro-inv{to{transform:rotate(-360deg)}}
+@keyframes ola{from{opacity:.4}to{opacity:1}}
+@keyframes clave{from{transform:translateY(-3.5px)}to{transform:translateY(0)}}
+@keyframes portal{from{transform:scaleY(.82)}to{transform:scaleY(1)}}
+
+@media (prefers-reduced-motion:reduce){.vivo *{animation:none!important}.cargando [class*=m-c]{animation:ola 2.4s ease-in-out infinite alternate!important}.chip{transition:none}}
+@media (max-width:760px){.lamina{grid-template-columns:1fr}.hero{min-height:170px;padding:24px 20px}.lectura{grid-template-columns:1fr}.hero .sello{font-size:54px!important}}
+</style>
+</head>
+<body>
+<div class="ancho">
+  <div class="cabeza">
+    <h1>Logos, octava ronda: objetos concretos</h1>
+    <p class="bajada">Cinco objetos para el logo principal: faro, tronco, bellota, brújula y llave. Son bocetos de prueba para elegir cuál desarrollar.</p>
+    <div class="controles">
+      <div class="modo" role="group" aria-label="Posición del símbolo"><span>Símbolo</span>
+        <button class="chip" type="button" data-pos="adelante" aria-pressed="true">Adelante del nombre</button>
+        <button class="chip" type="button" data-pos="atras" aria-pressed="false">Atrás del nombre</button>
+      </div>
+    </div>
+  </div>
+  <div id="opciones"></div>
+</div>
+<script>
+const LAV = "#8d99ff", LAV2 = "#d3d7ff";
+
+// Faro: torre firme, linterna en lavanda y dos haces de luz
+const faro = (chico) => chico
+  ? `<path d="M32 3L45 13H19Z" fill="#fff"/><rect x="23" y="15" width="18" height="12" fill="${LAV}"/><rect x="18" y="29" width="28" height="5" rx="2" fill="#fff"/><polygon points="23,36 41,36 46,61 18,61" fill="#fff"/>`
+  : `<polygon points="41,20.5 62,13 62,28" fill="${LAV2}" opacity=".5"/><polygon points="23,20.5 2,13 2,28" fill="${LAV2}" opacity=".5"/>` +
+    `<path d="M32 5L42 14H22Z" fill="#fff"/><rect x="25" y="16" width="14" height="9" fill="${LAV}"/><rect x="20" y="27" width="24" height="4" rx="2" fill="#fff"/><polygon points="24.5,33 39.5,33 43.5,60 20.5,60" fill="#fff"/>`;
+
+// Tronco: un tocón visto en perspectiva, con los anillos arriba
+const tronco = (chico) =>
+  `<path d="M9 26V44A23 11 0 0 0 55 44V26Z" fill="${LAV}"/><ellipse cx="32" cy="26" rx="23" ry="11" fill="#fff"/>` +
+  (chico ? `<ellipse cx="32" cy="26" rx="9" ry="4.2" fill="${LAV}"/>`
+         : `<ellipse cx="32" cy="26" rx="14.5" ry="6.6" fill="none" stroke="${LAV}" stroke-width="3"/><ellipse cx="32" cy="26" rx="5" ry="2.3" fill="${LAV}"/>`);
+
+// Bellota: sombrero en lavanda, fruto en blanco
+const bellota = (chico) =>
+  `<path d="M32 11Q32 5 36 3" fill="none" stroke="${LAV}" stroke-width="${chico ? 6 : 4}" stroke-linecap="round"/>` +
+  `<path d="M9 28C9 16 19 10 32 10C45 10 55 16 55 28Q55 31 52 31H12Q9 31 9 28Z" fill="${LAV}"/>` +
+  `<path d="M14 ${chico ? 31 : 34}H50C50 46 41 56 32 61C23 56 14 46 14 ${chico ? 31 : 34}Z" fill="#fff"/>`;
+
+// Brújula: aro blanco y aguja en dos mitades, girada hacia el noreste
+const brujula = (chico) => {
+  const w = chico ? 9 : 6.5;
+  return `<circle cx="32" cy="32" r="${chico ? 24 : 25.5}" fill="none" stroke="#fff" stroke-width="${chico ? 8 : 5}"/>` +
+    `<g transform="rotate(40 32 32)"><polygon points="32,${chico ? 15 : 13} ${32 + w},32 ${32 - w},32" fill="${LAV}"/><polygon points="${32 - w},32 ${32 + w},32 32,${chico ? 49 : 51}" fill="#fff"/></g>`;
+};
+
+// Llave: vertical, con el aro arriba y los dientes en lavanda
+const llave = (chico) => chico
+  ? `<circle cx="30" cy="17" r="10" fill="none" stroke="#fff" stroke-width="9"/><rect x="25.5" y="27" width="9" height="33" fill="#fff"/><rect x="34.5" y="38" width="12" height="8" fill="${LAV}"/><rect x="34.5" y="51" width="9" height="8" fill="${LAV}"/>`
+  : `<circle cx="30" cy="17" r="10.5" fill="none" stroke="#fff" stroke-width="7"/><rect x="26.5" y="27" width="7" height="33" rx="1" fill="#fff"/><rect x="33.5" y="40" width="11" height="6" fill="${LAV}"/><rect x="33.5" y="50" width="8" height="6" fill="${LAV}"/>`;
+
+const OPCIONES = [
+  { familia: "Cinco objetos concretos", nota: "Bocetos de prueba, sin movimiento: el logo principal queda quieto y los Anillos abiertos quedan para la carga. Blanco y lavanda, formas macizas para acompañar el nombre en negrita." },
+  { id: "faro", nombre: "Faro", dibujo: faro,
+    idea: "Una torre firme con la linterna en lavanda y dos haces de luz. En chico quedan solo la torre y la linterna.",
+    dice: "Firme, quieto, y orienta sin decirte adónde ir.",
+    riesgo: "Usado en seguros y consultoras. En pestaña puede leerse como torre o pieza de ajedrez." },
+  { id: "tronco", nombre: "Tronco", dibujo: tronco,
+    idea: "Un tocón en perspectiva, con los anillos a la vista. Es el mismo dibujo de los anillos de carga, vuelto objeto.",
+    dice: "Tiempo y constancia: lo que creció capa por capa.",
+    riesgo: "Puede leerse como base de datos, pila de monedas o rollo. Un árbol cortado también puede sentirse como algo que terminó." },
+  { id: "bellota", nombre: "Bellota", dibujo: bellota,
+    idea: "El sombrero en lavanda y el fruto en blanco, con un tallo corto.",
+    dice: "Algo chico que se guarda y con paciencia se vuelve roble.",
+    riesgo: "Puede resultar tierna para un tono firme. Hay que comprobar que nuestro público la reconozca como bellota." },
+  { id: "brujula", nombre: "Brújula", dibujo: brujula,
+    idea: "Un aro blanco y una aguja en dos mitades, lavanda hacia el norte.",
+    dice: "Orientación: saber hacia dónde vas antes de moverte.",
+    riesgo: "Muy parecida al ícono del navegador Safari y a muchas apps de mapas y viajes. La aguja inclinada hacia arriba roza la flecha ascendente que queríamos evitar." },
+  { id: "llave", nombre: "Llave", dibujo: llave,
+    idea: "Una llave vertical, con el aro arriba y los dientes en lavanda.",
+    dice: "Acceso y seguridad: la llave para entender tus finanzas.",
+    riesgo: "Se asocia a contraseñas, seguridad informática e inmobiliarias. Es fina y alta: al lado del nombre ocupa poco." },
+];
+
+const svg = (o, t, vivo) => `<svg ${vivo ? 'class="vivo"' : ""} width="${t}" height="${t}" viewBox="0 0 64 64" aria-hidden="true">${o.dibujo(false, vivo)}</svg>`;
+const icono = (o, t) => `<svg class="icono" width="${t}" height="${t}" viewBox="0 0 64 64" role="img" aria-label="Ícono"><rect width="64" height="64" fill="#171c5e"/><g transform="translate(8 8) scale(.75)">${o.dibujo(t <= 20, false)}</g></svg>`;
+const sello = (o, fs, vivo) => `<span class="sello" style="font-size:${fs}px" role="img" aria-label="finup">${svg(o, Math.round(fs * 1.12), vivo)}<span>finup</span></span>`;
+
+document.getElementById("opciones").innerHTML = OPCIONES.map((o) => o.familia ? `<h2 class="familia">${o.familia}</h2><p class="nota-familia">${o.nota}</p>` : `
+  <section class="opcion">
+    <h2>${o.nombre}</h2>
+    <p>${o.idea}</p>
+    <div class="lamina">
+      <div class="hero">${sello(o, 76, true)}<p class="estado">Tu progreso financiero, paso a paso</p></div>
+      <div class="lado">
+        <div class="tamanos">
+          <figure>${icono(o, 64)}<figcaption>Ícono</figcaption></figure>
+          <figure>${icono(o, 32)}<figcaption>32 px</figcaption></figure>
+          <figure>${icono(o, 16)}<figcaption>Pestaña</figcaption></figure>
+        </div>
+        <div class="barra-app">${sello(o, 22, false)}<span>Ingresar</span></div>
+        <div class="apps">
+          <div><i style="background:#e9e4d8"></i><span>Notas</span></div>
+          <div>${icono(o, 44)}<span>FinUp</span></div>
+          <div><i style="background:#2f6d4f"></i><span>Mapas</span></div>
+          <div><i style="background:#b8452f"></i><span>Música</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="lectura"><p><b>Qué dice:</b> ${o.dice}</p><p><b>Riesgo:</b> ${o.riesgo}</p></div>
+  </section>`).join("");
+
+// Resultado: cada pieza que se estaba moviendo congela su posición actual y llega al reposo con ease-out fuerte.
+// Así el gesto sirve aunque el resultado llegue a mitad de un ciclo (interrumpible, sin saltos).
+const EASE_OUT = "cubic-bezier(0.23, 1, 0.32, 1)";
+const reducir = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function revelar(svg) {
+  svg.querySelectorAll("*").forEach((el) => {
+    const cs = getComputedStyle(el), actual = cs.transform, op = cs.opacity;
+    el.getAnimations().forEach((a) => a.cancel());
+    if (reducir()) return;
+    if (op !== "1" && el.getAnimations().length === 0 && /m-c/.test(el.getAttribute("class") || "")) {
+      el.animate([{ opacity: op }, { opacity: 1 }], { duration: 480, easing: EASE_OUT, fill: "backwards" });
+      return;
+    }
+    if (!actual || actual === "none") return;
+    // WAAPI: de la posición congelada al reposo. Las piezas de acento llegan un poco después (30-40 ms).
+    const demora = el.dataset.llega ? Number(el.dataset.llega) : 0;
+    el.animate([{ transform: actual }, { transform: "none" }], { duration: 480, delay: demora, easing: EASE_OUT, fill: "backwards" });
+  });
+}
+const botones = [...document.querySelectorAll("[data-modo]")];
+botones.forEach((b) => b.addEventListener("click", () => {
+  botones.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  const modo = b.dataset.modo;
+  document.querySelectorAll(".js-vivo").forEach((n) => {
+    if (modo === "cargando") { n.getAnimations({ subtree: true }).forEach((a) => a.cancel()); n.classList.remove("revelar"); n.classList.add("cargando"); }
+    else if (n.classList.contains("cargando")) { revelar(n); n.classList.remove("cargando"); n.classList.add("revelar"); }
+  });
+  document.querySelectorAll(".js-estado").forEach((p) => (p.textContent = modo === "cargando" ? "Armando tu plan…" : "Tu resultado está listo."));
+}));
+const pos = [...document.querySelectorAll("[data-pos]")];
+pos.forEach((b) => b.addEventListener("click", () => {
+  pos.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  document.body.classList.toggle("atras", b.dataset.pos === "atras");
+}));
+</script>
+</body>
+</html>

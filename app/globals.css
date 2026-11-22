@@ -7,100 +7,91 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Fondo azul profundo de la marca */
-  --background: #0a1752;
-  --foreground: #f9fcfe;
+  /* Noche profunda. La luz de la esquina vive en --noche y se aplica al body. */
+  --background: #0b0e30;
+  --foreground: #ffffff;
+  --noche: radial-gradient(135% 88% at 94% -10%, #5361e0 0%, #3740ac 30%, #171c5e 62%, #0b0e30 100%);
 
-  /* Superficies: cada capa es un poco más clara que la de abajo (fondo → tarjeta → fila) */
-  --card: #0f1f5c;
-  --card-foreground: #f8fafc;
+  /* Tarjetas de vidrio: blanco translúcido sobre la noche */
+  --card: rgba(255, 255, 255, 0.09);
+  --card-foreground: #ffffff;
 
-  --popover: #0f1f5c;
-  --popover-foreground: #f8fafc;
+  /* Lo que flota sobre el contenido (FinBot, menús) necesita fondo opaco para leerse */
+  --popover: #171c5e;
+  --popover-foreground: #ffffff;
 
-  /* Color Principal: relleno de las acciones principales. #2563eb deja el texto blanco en 5,17:1 (AA).
-     El azul de marca #3b82f6 sigue en --chart-1 y en los acentos. */
-  --primary: #2563eb; /* blue-600 */
-  --primary-foreground: #ffffff;
-  --primary-hover: #3069ee; /* un poco más claro: 4,79:1 con texto blanco */
-  --primary-active: #1d4ed8; /* blue-700: 6,7:1 con texto blanco */
+  /* Acción principal: botón blanco, lo que más resalta sobre la noche */
+  --primary: #ffffff;
+  --primary-foreground: #0b0e30;
+  --primary-hover: #eceeff;
+  --primary-active: #d9dcff;
 
-  /* Elementos inactivos, filas dentro de tarjetas y fondos sutiles */
-  --secondary: #142a70;
-  --secondary-foreground: #60a5fa;
+  --secondary: rgba(255, 255, 255, 0.08);
+  --secondary-foreground: #e4e6ff;
 
-  --muted: #142a70;
-  --muted-foreground: #a8bcd9; /* texto secundario: 8,6:1 sobre el fondo, 8:1 sobre tarjetas, 7:1 sobre filas */
+  --muted: rgba(255, 255, 255, 0.08);
+  --muted-foreground: #d3d7f2; /* texto secundario */
 
-  /* Acento cyan: porcentajes y bordes activos */
-  --accent: #06b6d4;
-  --accent-foreground: #0b0f19;
+  --accent: #8d99ff;
+  --accent-foreground: #0b0e30;
 
-  /* Errores: #f87171 se lee a 6:1 sobre el fondo (#ef4444 quedaba en 4,44:1) */
-  --destructive: #f87171;
-  --destructive-foreground: #ffffff;
+  --destructive: #ffb3a6;
+  --destructive-foreground: #0b0e30;
 
-  /* Bordes y líneas divisorias: separan tarjetas y bloques del fondo sin recargar (1,63:1) */
-  --border: #2a3d7a;
-  /* Borde de campos, selects y switch apagado: 3,3:1 sobre las tarjetas (WCAG 1.4.11) */
-  --input: #5f75a5;
-  /* Foco del teclado: sólido, 6,6:1 sobre el fondo */
-  --ring: #60a5fa;
+  --border: rgba(255, 255, 255, 0.14);
+  /* Borde de campos y switch apagado: necesita 3:1 sobre la noche */
+  --input: rgba(255, 255, 255, 0.42);
+  --ring: #c8cdff;
 
-  --radius: 1rem;
+  --radius: 1.125rem;
 
-  /* Escala "gema" de la marca y el "filo": la línea degradada de 1px que firma FinUp.
-     Va solo en el encabezado de cada pantalla, en FinBot y en la sección activa del menú. */
-  --gema-900: #0739a3;
-  --gema-700: #1673e0;
-  --gema-500: #3d9cff;
-  --gema-400: #16b4ff;
-  --gema-200: #74dcff;
-  --filo: linear-gradient(90deg, transparent 0%, var(--gema-500) 22%, var(--gema-200) 50%, var(--gema-500) 78%, transparent 100%);
-  --filo-vertical: linear-gradient(180deg, var(--gema-500), var(--gema-200));
+  /* Azul de los bloques protagonistas (uno por pantalla) */
+  --azul: linear-gradient(150deg, #4d5eff, #3140d6);
+
 
   /* ---------- Tokens semánticos de FinUp ----------
      Se usan con opacidad desde Tailwind: border-atencion/25 bg-atencion/10 text-atencion. */
-  --enlace: #51a2ff; /* sobretítulos, links y sección activa */
-  --info: #8ec5ff;
-  --atencion: #ffd230; /* "qué puede salir mal" y avisos de cuidado */
-  --atencion-texto: #fef3c6; /* texto largo dentro de un aviso de atención */
-  --error: #ffa2a2;
-  --exito: #5ee9b5;
-  --cifra: #a2f4fd; /* cifras destacadas, como la ganancia estimada */
+  --enlace: #c8cdff; /* links y sección activa */
+  --info: #c8cdff;
+  /* Decisión del fundador: lo que puede salir mal va en lavanda, dentro de la gama.
+     El aviso se sostiene con la etiqueta, el signo menos y el tamaño, no con un color de alarma. */
+  --atencion: #d3d7ff;
+  --atencion-texto: #eef0ff;
+  --error: #ffb3a6; /* solo errores de formularios y de conexión */
+  --exito: #c9e4ff;
+  --cifra: #ffffff;
 
-  /* Riesgo: siempre acompañado de barras 1/2/3, nunca solo por color */
-  --riesgo-bajo: #b8e6fe;
-  --riesgo-medio: #fee685;
-  --riesgo-alto: #ff8904;
+  /* Riesgo: dentro de la gama. Lo distinguen las barras 1/2/3 y la etiqueta, no el color */
+  --riesgo-bajo: #c9e4ff;
+  --riesgo-medio: #c8cdff;
+  --riesgo-alto: #efe6ff;
 
-  /* Partes de la cartera: barra de distribución y puntos */
-  --cat-fija: #1673e0;
-  --cat-variable: #06b6d4;
-  --cat-dividendos: #74dcff;
-  --cat-liquidez: #a8bcd9;
-  --cat-alternativo: #8b9cff;
+  /* Partes del plan */
+  --cat-fija: #7c89ff;
+  --cat-variable: #b9c0ff;
+  --cat-dividendos: #ffffff;
+  --cat-liquidez: #5b66c9;
+  --cat-alternativo: #9aa7e8;
 
   /* Gráficos */
-  --chart-1: #3d9cff; /* serie principal; en la proyección, "si va mal" */
-  --chart-2: #74dcff; /* en la proyección, "si va bien" */
-  --chart-3: #60a5fa;
-  --chart-4: #a8bcd9; /* series de referencia: lo aportado, la inflación */
-  --chart-5: #16b4ff;
-  --sidebar: #0f1f5c;
-  --sidebar-foreground: #f8fafc;
-  --sidebar-primary: #3b82f6;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #142a70;
-  --sidebar-accent-foreground: #60a5fa;
-  --sidebar-border: #2a3d7a;
-  --sidebar-ring: rgba(59, 130, 246, 0.4);
+  --chart-1: #8d99ff; /* serie principal; en la proyección, "si va mal" */
+  --chart-2: #ffffff; /* en la proyección, "si va bien" */
+  --chart-3: #c8cdff;
+  --chart-4: #9fa5cf; /* series de referencia: lo aportado, la inflación */
+  --chart-5: #5b66c9;
+  --sidebar: #171c5e;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #ffffff;
+  --sidebar-primary-foreground: #0b0e30;
+  --sidebar-accent: rgba(255, 255, 255, 0.08);
+  --sidebar-accent-foreground: #e4e6ff;
+  --sidebar-border: rgba(255, 255, 255, 0.14);
+  --sidebar-ring: #c8cdff;
 }
 
 @theme inline {
-  --font-sans: var(--font-inter), 'Inter', system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains), 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Menlo, Consolas, monospace;
-  --font-display: var(--font-jakarta), 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-sans: var(--font-schibsted), 'Schibsted Grotesk', system-ui, sans-serif;
+  --font-display: var(--font-schibsted), 'Schibsted Grotesk', system-ui, sans-serif;
   /* Letra de avisos legales y notas al pie: nunca menos de 12px */
   --text-legal: 0.75rem;
   --text-legal--line-height: 1.45;
@@ -145,11 +136,11 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  /* Radios: 8 chips internos · 12 botones y campos · 16 bloques · 20 tarjetas · 24 diálogos */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
+  /* Radios: 10 chips · 14 campos y botones chicos · 18 botones y opciones · 22 tarjetas · 24 bloques azules */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 22px;
   --radius-2xl: 24px;
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
@@ -163,21 +154,52 @@
 
 /* ---------- Rasgos de identidad ---------- */
 
-/* El filo: usar en un div de 1px de alto (h-px) */
-@utility filo {
-  background-image: var(--filo);
-}
-@utility filo-vertical {
-  background-image: var(--filo-vertical);
+/* Bloque azul protagonista: uno por pantalla */
+@utility bloque-azul {
+  background-image: var(--azul);
+  color: #ffffff;
+  box-shadow: 0 14px 30px -18px rgba(6, 10, 50, 0.9);
 }
 
-/* Trama de "lo que puede salir mal": rayado ámbar que marca siempre el escenario malo */
-@utility trama-atencion {
-  background-image: repeating-linear-gradient(
-    135deg,
-    color-mix(in oklab, var(--atencion) 9%, transparent) 0 6px,
-    transparent 6px 12px
-  );
+/* Tarjeta de vidrio: sin desenfoque, para que no pese en celulares baratos */
+@utility vidrio {
+  background-color: var(--card);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+/* El mal año: lavanda sobre vidrio, del mismo tamaño que el año normal */
+@utility vidrio-mal {
+  background-color: rgba(150, 160, 255, 0.22);
+  box-shadow: inset 0 0 0 1px rgba(200, 206, 255, 0.45);
+}
+
+/* Revelado del resultado, al terminar el cuestionario. Solo opacidad y transform. */
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes aparecer-suave {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.revelar {
+  animation: aparecer 0.5s cubic-bezier(0.23, 1, 0.32, 1) both;
+  animation-delay: calc(var(--orden, 0) * 70ms + 120ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .revelar {
+    animation-name: aparecer-suave;
+  }
 }
 
 @layer base {
@@ -190,8 +212,25 @@
     outline: 2px solid var(--ring);
     outline-offset: 2px;
   }
+  html {
+    background-color: var(--background);
+    scrollbar-color: rgba(255, 255, 255, 0.28) transparent;
+  }
+  /* La luz queda arriba de la página: lo que se desplaza siempre cae sobre noche profunda */
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    background-color: var(--background);
+    background-image: var(--noche);
+    background-repeat: no-repeat;
+    background-size: 100% 100vh;
+  }
+  ::selection {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+  }
+  input,
+  textarea {
+    caret-color: var(--ring);
   }
   /* Títulos en la tipografía de marca */
   h1,
@@ -200,6 +239,7 @@
   [data-slot='card-title'] {
     /* @apply y no var(): con @theme inline, --font-display no existe como variable en :root */
     @apply font-display;
-    letter-spacing: -0.015em;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
   }
 }

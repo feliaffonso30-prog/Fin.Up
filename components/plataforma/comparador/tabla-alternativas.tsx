@@ -7,19 +7,22 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ars } from "@/lib/plataforma/formato";
 import type { Cotizacion } from "@/lib/plataforma/comparador/tipos";
 import { cn } from "@/lib/utils";
-import { BadgeLiquidez, BadgeRiesgo, BadgeTasaReal, BotonEntidad, tasa } from "./insignias";
+import { plazoEnPalabras } from "@/lib/plataforma/comparador/textos";
+import { BadgeLiquidez, BadgeRiesgo, BadgeTasaReal, BotonEntidad, LeyendaTasas, tasa } from "./insignias";
 
 interface Props {
   cotizaciones: Cotizacion[]; // ya ordenadas
   dias: number;
   /** Cuántas mostrar antes de "Ver todas". */
   inicial?: number;
-  /** Mostrar el nombre del producto (FCI) además de la entidad. */
+  /** Mostrar el nombre del fondo además de quién lo administra. */
   conProducto?: boolean;
   sinDatos?: string;
+  /** Mostrar "¿Qué significan estas tasas?" arriba. Una sola vez por vista: apagalo en la segunda tabla. */
+  conLeyenda?: boolean;
 }
 
-export function TablaAlternativas({ cotizaciones, dias, inicial = 10, conProducto = false, sinDatos }: Props) {
+export function TablaAlternativas({ cotizaciones, dias, inicial = 10, conProducto = false, sinDatos, conLeyenda = true }: Props) {
   const [verTodas, setVerTodas] = useState(false);
   const [verNoDisponibles, setVerNoDisponibles] = useState(false);
 
@@ -43,6 +46,7 @@ export function TablaAlternativas({ cotizaciones, dias, inicial = 10, conProduct
         </p>
       ) : (
         <>
+          {conLeyenda && <LeyendaTasas conUva={disponibles.some((c) => c.alternativa.capitalizacion === "uva")} />}
           <Escritorio cotizaciones={visibles} dias={dias} conProducto={conProducto} />
           <Celular cotizaciones={visibles} dias={dias} conProducto={conProducto} />
         </>
@@ -105,9 +109,9 @@ function Escritorio({ cotizaciones, dias, conProducto }: { cotizaciones: Cotizac
         <TableHeader>
           <TableRow className="hover:bg-transparent">
             <TableHead className="w-8 text-center">#</TableHead>
-            <TableHead>{conProducto ? "Fondo" : "Entidad"}</TableHead>
+            <TableHead>{conProducto ? "Fondo" : "Banco o billetera"}</TableHead>
             <TableHead className="text-right">Tasa anual (TNA)</TableHead>
-            <TableHead className="text-right">{conProducto ? `Si rinde igual, en ${dias} días` : `Ganancia en ${dias} días`}</TableHead>
+            <TableHead className="text-right">{conProducto ? `Si paga lo mismo, en ${plazoEnPalabras(dias)}` : `Ganancia en ${plazoEnPalabras(dias)}`}</TableHead>
             <TableHead className="text-center">¿Le gana a la inflación?</TableHead>
             <TableHead className="w-32">
               <span className="sr-only">Link</span>
@@ -117,7 +121,7 @@ function Escritorio({ cotizaciones, dias, conProducto }: { cotizaciones: Cotizac
         <TableBody>
           {cotizaciones.map((c, i) => (
             <TableRow key={c.alternativa.id} className="align-top">
-              <TableCell className="text-center font-mono text-muted-foreground">{i + 1}</TableCell>
+              <TableCell className="text-center text-muted-foreground">{i + 1}</TableCell>
               <TableCell className="min-w-[13rem] whitespace-normal">
                 <Nombre c={c} conProducto={conProducto} />
                 <div className="mt-1.5 flex flex-wrap gap-1">
@@ -126,11 +130,11 @@ function Escritorio({ cotizaciones, dias, conProducto }: { cotizaciones: Cotizac
                 </div>
               </TableCell>
               <TableCell className="text-right">
-                <p className="font-mono text-base font-semibold">{tasaTexto(c, c.tna)}</p>
+                <p className="text-base font-semibold">{tasaTexto(c, c.tna)}</p>
                 <p className="text-legal text-muted-foreground">TEA {tasaTexto(c, c.tea)}</p>
                 <p className="text-legal text-muted-foreground">TEM {tasaTexto(c, c.tem)}</p>
               </TableCell>
-              <TableCell className="text-right font-mono font-semibold text-cifra">{ars(c.ganancia)}</TableCell>
+              <TableCell className="text-right font-semibold text-cifra">{ars(c.ganancia)}</TableCell>
               <TableCell className="text-center">
                 <BadgeTasaReal real={c.tasaRealMensual} />
               </TableCell>
@@ -151,20 +155,20 @@ function Celular({ cotizaciones, dias, conProducto }: { cotizaciones: Cotizacion
       {cotizaciones.map((c, i) => (
         <li key={c.alternativa.id} className="space-y-3 rounded-xl border border-border bg-card p-4">
           <div className="flex gap-3">
-            <span className="font-mono text-sm text-muted-foreground">{i + 1}</span>
+            <span className="text-sm text-muted-foreground">{i + 1}</span>
             <Nombre c={c} conProducto={conProducto} />
           </div>
           <dl className="grid grid-cols-2 gap-3 text-sm">
             <div>
               <dt className="text-legal text-muted-foreground">Tasa anual (TNA)</dt>
-              <dd className="font-mono text-base font-semibold">{tasaTexto(c, c.tna)}</dd>
+              <dd className="text-base font-semibold">{tasaTexto(c, c.tna)}</dd>
               <dd className="text-legal text-muted-foreground">
                 TEA {tasaTexto(c, c.tea)} · TEM {tasaTexto(c, c.tem)}
               </dd>
             </div>
             <div>
-              <dt className="text-legal text-muted-foreground">{conProducto ? `Si rinde igual, en ${dias} días` : `Ganancia en ${dias} días`}</dt>
-              <dd className="font-mono text-base font-semibold text-cifra">{ars(c.ganancia)}</dd>
+              <dt className="text-legal text-muted-foreground">{conProducto ? `Si paga lo mismo, en ${plazoEnPalabras(dias)}` : `Ganancia en ${plazoEnPalabras(dias)}`}</dt>
+              <dd className="text-base font-semibold text-cifra">{ars(c.ganancia)}</dd>
             </div>
           </dl>
           <div className="flex flex-wrap items-center gap-1.5">
@@ -179,7 +183,7 @@ function Celular({ cotizaciones, dias, conProducto }: { cotizaciones: Cotizacion
   );
 }
 
-/** En un plazo fijo UVA la tasa se suma al ajuste por inflación: "UVA + 1,00%". */
+/** En un plazo fijo UVA la tasa se suma a la inflación: "Inflación + 1,00%" (la sigla UVA queda en la leyenda). */
 function tasaTexto(c: Cotizacion, valor: number) {
-  return c.alternativa.capitalizacion === "uva" ? `UVA + ${tasa(valor)}` : tasa(valor);
+  return c.alternativa.capitalizacion === "uva" ? `Inflación + ${tasa(valor)}` : tasa(valor);
 }

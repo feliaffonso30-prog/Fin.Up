@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FinUp: firma y Detector</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800;900&display=swap">
+<style>
+:root{
+  --noche:radial-gradient(135% 88% at 94% -10%,#5361e0 0%,#3740ac 30%,#171c5e 62%,#0b0e30 100%);
+  --fondo:#0b0e30;--gris:#d3d7f2;--vidrio:rgba(255,255,255,.09);--filo:rgba(255,255,255,.14);
+  --azul:linear-gradient(150deg,#4d5eff,#3140d6);--lavanda:#d3d7ff;
+  --mal-fondo:rgba(150,160,255,.22);--mal-filo:rgba(200,206,255,.45);
+  --curva:cubic-bezier(0.23,1,0.32,1);
+}
+*{box-sizing:border-box;margin:0}
+body{background:#e4e5ea;color:#15172b;font-family:"Schibsted Grotesk","Segoe UI",system-ui,Arial,sans-serif;font-size:16px;line-height:1.4;padding:28px 16px 64px}
+.ancho{max-width:1180px;margin:0 auto}
+h1{font-size:34px;line-height:1.08;font-weight:900;letter-spacing:-.03em}
+.bajada{margin-top:8px;font-size:17px;color:#3f4259;max-width:68ch}
+.tema{margin-top:44px;font-size:25px;font-weight:900;letter-spacing:-.025em}
+.tema-txt{margin-top:4px;color:#3f4259;max-width:68ch}
+.hoja{margin-top:16px;background:var(--fondo);background-image:var(--noche);background-repeat:no-repeat;color:#fff;border-radius:24px;padding:28px 24px}
+.marcas{display:flex;flex-wrap:wrap;align-items:flex-end;gap:32px 44px}
+.marcas figure{margin:0}.marcas figcaption{margin-top:10px;font-size:13px;color:var(--gris)}
+.logo{display:block;height:auto;overflow:visible}
+.controles{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:16px;align-items:center}
+.grupo{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:14px;font-weight:700}
+.chip{border:0;background:#fff;color:#15172b;font:inherit;font-weight:700;min-height:42px;padding:8px 14px;border-radius:12px;cursor:pointer;transition:transform .12s var(--curva)}
+.chip:active{transform:scale(.97)}
+.chip[aria-pressed=true]{background:#15172b;color:#fff}
+.chip:focus-visible,.boton:focus-visible,.senal:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #8d99ff;outline-offset:2px}
+.pantallas{display:flex;flex-wrap:wrap;gap:24px;margin-top:18px;justify-content:center}
+figure.fig{width:360px;max-width:100%;margin:0}
+figure.fig>figcaption{margin-top:10px;font-weight:700;font-size:15px}
+figure.fig>figcaption span{display:block;font-weight:400;color:#4f5268;margin-top:2px}
+.tel{width:100%;min-height:760px;border-radius:32px;overflow:hidden;background:var(--fondo);background-image:var(--noche);background-repeat:no-repeat;background-size:100% 760px;color:#fff;display:flex;flex-direction:column;box-shadow:0 18px 40px -22px rgba(12,16,51,.6)}
+.barra{display:flex;justify-content:space-between;align-items:center;padding:18px 20px 0;font-size:15px}
+.barra .logo{width:82px}
+.panel{margin:14px 16px 0;border-radius:24px;padding:22px 20px 24px;background:var(--azul);box-shadow:0 14px 30px -18px rgba(6,10,50,.9)}
+.gran{font-size:38px;line-height:1;font-weight:900;letter-spacing:-.035em}
+.sub{margin-top:12px;font-size:16px}
+.cuerpo{padding:20px 18px 0;flex:1}
+.cuerpo h3{font-size:16px;font-weight:700}
+.pie{padding:14px 16px 20px}
+.boton{display:block;width:100%;border:0;border-radius:18px;padding:17px;background:#fff;color:#0b0e30;font:inherit;font-weight:800;font-size:18px;text-align:center;cursor:pointer;transition:transform .12s var(--curva)}
+.boton:active{transform:scale(.97)}
+.nota{font-size:13px;color:var(--gris);text-align:center;margin-top:9px}
+
+/* La línea de hoy */
+.linea{margin-top:12px}
+.cifras{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cifras small{display:block;font-size:13px;font-weight:600}
+.cifras b{display:block;font-size:27px;font-weight:900;letter-spacing:-.03em;line-height:1.1}
+.cifras .m b{color:var(--lavanda)}
+.dibujo{position:relative;margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.arriba,.abajo{display:flex;width:100%}
+.arriba{align-items:flex-end;height:var(--alto-arriba)}
+.abajo{align-items:flex-start;height:var(--alto-abajo)}
+.base{height:3px;background:#fff;border-radius:2px;grid-column:1/-1}
+.barra-b{width:100%;border-radius:8px 8px 0 0;background:rgba(255,255,255,.3);position:relative;height:var(--h);transition:height .5s var(--curva)}
+.barra-b i{position:absolute;left:0;right:0;bottom:0;background:#fff;height:var(--seguro);border-radius:6px 6px 0 0;transition:height .5s var(--curva)}
+.barra-m{width:100%;border-radius:0 0 8px 8px;background:var(--mal-fondo);box-shadow:inset 0 0 0 1.5px var(--mal-filo);height:var(--h);transition:height .5s var(--curva)}
+.leyenda-linea{margin-top:8px;font-size:13px;color:var(--gris)}
+.ejemplo{margin-top:8px;font-size:13px;color:var(--gris)}
+
+/* Mi plan */
+.paso{margin:14px 16px 0;border-radius:24px;padding:17px;background:var(--azul)}
+.paso small{font-size:14px;font-weight:600;display:block}
+.paso h2{font-size:25px;line-height:1.05;font-weight:900;letter-spacing:-.025em;margin-top:8px}
+.paso .boton{margin-top:12px;padding:12px;font-size:16px;border-radius:14px}
+.seg{display:flex;gap:4px;margin-top:6px}.seg i{height:6px;flex:1;border-radius:6px;background:rgba(255,255,255,.25)}.seg i.h{background:#fff}.seg i.a{background:rgba(255,255,255,.6)}
+
+/* Detector */
+.titulo{padding:16px 20px 0;font-size:33px;line-height:1.04;font-weight:900;letter-spacing:-.03em}
+.ayuda{padding:9px 20px 0;color:var(--gris)}
+.form{padding:16px 16px 0}
+.fila{display:grid;grid-template-columns:1fr 1.15fr;gap:8px;margin-top:6px}
+label.et{font-weight:700;font-size:15px;display:block}
+.campo{position:relative}
+.campo span{position:absolute;right:13px;top:50%;transform:translateY(-50%);font-weight:800;font-size:20px;pointer-events:none}
+input,select{width:100%;height:54px;border:0;border-radius:14px;background:var(--vidrio);box-shadow:inset 0 0 0 1px rgba(255,255,255,.42);color:#fff;font:inherit;font-weight:800;font-size:22px;padding:0 13px}
+select{font-size:16px;font-weight:600}select option{color:#0b0e30}
+.lista{margin-top:15px}.lista>p{font-weight:700;font-size:15px}
+.senal{display:flex;gap:11px;align-items:flex-start;width:100%;text-align:left;border:0;margin-top:7px;padding:11px 12px;border-radius:14px;background:var(--vidrio);box-shadow:inset 0 0 0 1px var(--filo);color:#fff;font:inherit;font-size:14.5px;line-height:1.25;cursor:pointer;min-height:44px;transition:transform .12s var(--curva)}
+.senal:active{transform:scale(.985)}
+.senal u{flex:none;width:20px;height:20px;border-radius:6px;margin-top:1px;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:14px;font-weight:900;color:#0b0e30}
+.senal[aria-pressed=true]{background:var(--mal-fondo);box-shadow:inset 0 0 0 1px var(--mal-filo)}
+.senal[aria-pressed=true] u{background:var(--lavanda);box-shadow:none}
+.res-numero{margin:13px 16px 0;border-radius:24px;padding:18px;background:var(--azul)}
+.res-numero small{display:block;font-size:14px;font-weight:600}
+.res-numero b{display:block;font-size:44px;line-height:1.02;font-weight:900;letter-spacing:-.04em;margin-top:2px}
+.res-numero p{font-size:14.5px;margin-top:7px;line-height:1.3}
+.res-bloque{margin:12px 16px 0;padding:15px;border-radius:20px;background:var(--mal-fondo);box-shadow:inset 0 0 0 1px var(--mal-filo)}
+.res-bloque h3{font-size:19px;font-weight:900;letter-spacing:-.02em}
+.res-bloque ul{padding-left:18px;margin-top:6px;font-size:14.5px;line-height:1.3}.res-bloque li{margin-top:4px}
+.res-bloque p{margin-top:7px;font-size:14.5px;line-height:1.3}
+.res-sigue{margin:12px 18px 0;font-size:14.5px;line-height:1.35}
+.res-sigue b{display:block;font-size:15px;margin-bottom:2px}
+.oculto{display:none}
+@media (prefers-reduced-motion:reduce){.barra-b,.barra-b i,.barra-m,.chip,.boton,.senal{transition:none}}
+</style>
+</head>
+<body>
+<div class="ancho">
+  <h1>Firma visual y Detector de promesas</h1>
+  <p class="bajada">Son bocetos: se pueden tocar, pero no cambian nada en la app. Las cifras son el ejemplo con USD 1.000 que sale del motor real.</p>
+
+  <h2 class="tema">1. La p que baja</h2>
+  <p class="tema-txt">Es la única letra que cruza la línea, y baja en lavanda. Hasta en el “up” se ve lo que puede bajar.</p>
+  <div class="hoja">
+    <div class="marcas">
+      <figure><svg class="logo js-logo" style="width:300px" role="img" aria-label="finup"></svg><figcaption>Grande</figcaption></figure>
+      <figure><svg class="logo js-logo" style="width:122px" role="img" aria-label="finup"></svg><figcaption>En la barra</figcaption></figure>
+      <figure><svg class="logo js-logo" style="width:68px" role="img" aria-label="finup"></svg><figcaption>Lo más chico</figcaption></figure>
+      <figure><svg id="icono" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Ícono de la app"></svg><figcaption>Ícono de la app</figcaption></figure>
+      <figure><svg id="icono-chico" viewBox="0 0 64 64" width="24" height="24" role="img" aria-label="Ícono de la pestaña"></svg><figcaption>Pestaña</figcaption></figure>
+    </div>
+  </div>
+
+  <h2 class="tema">2. La línea de hoy</h2>
+  <p class="tema-txt">La línea es lo que ponés. Lo que puede ganar se apoya arriba y lo que puede perder cuelga abajo. Las cifras mantienen el mismo tamaño.</p>
+  <div class="controles">
+    <div class="grupo" role="group" aria-label="Cómo dibujar las barras">Dibujo:
+      <button class="chip" type="button" data-escala="real" aria-pressed="true">A escala real</button>
+      <button class="chip" type="button" data-escala="igual" aria-pressed="false">Mismo alto</button>
+    </div>
+    <div class="grupo" role="group" aria-label="Perfil de ejemplo">Perfil:
+      <button class="chip" type="button" data-perfil="conservador" aria-pressed="true">Conservador</button>
+      <button class="chip" type="button" data-perfil="moderado" aria-pressed="false">Moderado</button>
+    </div>
+  </div>
+  <div class="pantallas">
+    <figure class="fig">
+      <section class="tel">
+        <div class="barra"><svg class="logo js-logo" role="img" aria-label="finup"></svg><span>Ingresar</span></div>
+        <div class="panel"><h3 class="gran">Antes de poner un peso, mirá qué puede pasar.</h3><p class="sub">Tu plan en 3 minutos, con lo bueno y lo malo a la vista.</p></div>
+        <div class="cuerpo"><h3>Si arrancás con USD 1.000, en dólares</h3><div class="linea js-linea"></div><p class="ejemplo">Es un ejemplo, no una promesa.</p></div>
+        <div class="pie"><button class="boton" type="button">Armar mi plan</button><p class="nota">Sin cuenta. No movemos tu plata.</p></div>
+      </section>
+      <figcaption>Portada<span>La línea reemplaza a las dos tarjetas.</span></figcaption>
+    </figure>
+    <figure class="fig">
+      <section class="tel">
+        <div class="barra"><svg class="logo js-logo" role="img" aria-label="finup"></svg><span>Conservador</span></div>
+        <div class="paso"><small>Paso 2 de 6</small><div class="seg"><i class="h"></i><i class="a"></i><i></i><i></i><i></i><i></i></div><h2>Ahora, tus deudas caras</h2><button class="boton" type="button">Ver cómo empezar</button></div>
+        <div class="cuerpo"><h3>En un año, con USD 1.000, en dólares</h3><div class="linea js-linea"></div><p class="ejemplo">Es una estimación, no una promesa.</p></div>
+      </section>
+      <figcaption>Mi plan<span>La misma pieza, siempre en el mismo orden.</span></figcaption>
+    </figure>
+  </div>
+
+  <h2 class="tema">3. Detector de promesas</h2>
+  <p class="tema-txt">Probalo: cambiá el número y tocá señales. El cálculo y las señales salen de reglas, sin IA. Nunca dice “es estafa” ni “es seguro”.</p>
+  <div class="pantallas">
+    <figure class="fig">
+      <section class="tel">
+        <div class="barra"><svg class="logo js-logo" role="img" aria-label="finup"></svg><span>Detector</span></div>
+        <h3 class="titulo">¿Te prometieron algo?</h3>
+        <p class="ayuda">Mirá qué significa antes de poner un peso.</p>
+        <form class="form" onsubmit="return false">
+          <label class="et" for="tasa">¿Cuánto te prometen ganar?</label>
+          <div class="fila">
+            <div class="campo"><input id="tasa" inputmode="decimal" value="10" aria-describedby="error-tasa"><span>%</span></div>
+            <select id="periodo" aria-label="Cada cuánto">
+              <option value="365">por día</option>
+              <option value="52">por semana</option>
+              <option value="12" selected>por mes</option>
+              <option value="1">por año</option>
+            </select>
+          </div>
+          <div class="lista" role="group" aria-labelledby="titulo-senales">
+            <p id="titulo-senales">¿Qué más viste?</p>
+            <div id="senales"></div>
+          </div>
+        </form>
+      </section>
+      <figcaption>Lo que completás<span>Sin pegar textos ni datos personales.</span></figcaption>
+    </figure>
+    <figure class="fig">
+      <section class="tel" aria-live="polite">
+        <div class="barra"><svg class="logo js-logo" role="img" aria-label="finup"></svg><span>Tu resultado</span></div>
+        <div class="res-numero" id="bloque-numero">
+          <small>Eso sería, en un año</small><b id="anual"></b><p id="comparacion"></p>
+        </div>
+        <div class="res-bloque"><h3 id="cuenta-senales"></h3><ul id="marcadas"></ul><p id="lectura"></p></div>
+        <div class="res-sigue"><b>Antes de poner plata</b>Buscá a quien te lo ofrece en los registros de la CNV y pedí que te expliquen qué puede salir mal.</div>
+        <div class="pie" style="margin-top:auto"><button class="boton" type="button">Preguntale a FinBot</button><p class="nota">Es una ayuda para pensar, no un análisis de la oferta.</p></div>
+      </section>
+      <figcaption>La respuesta<span>Se actualiza mientras tocás. Viviría en Aprender y en el menú de FinBot, fuera del recorrido.</span></figcaption>
+    </figure>
+  </div>
+</div>
+
+<script>
+// --- Marca: el texto real, cortado en la línea de base ---
+const SVG = "http://www.w3.org/2000/svg";
+let idUnico = 0;
+function dibujarMarca(svg) {
+  const FS = 100, BASE = 80, id = "m" + idUnico++;
+  svg.innerHTML =
+    `<defs><clipPath id="${id}a"><rect x="-5" y="-30" width="500" height="${BASE + 30}"/></clipPath>` +
+    `<clipPath id="${id}b"><rect x="-5" y="${BASE + 8}" width="500" height="50"/></clipPath></defs>` +
+    `<g font-family="'Schibsted Grotesk',system-ui,sans-serif" font-weight="900" font-size="${FS}" letter-spacing="-4">` +
+    `<text x="0" y="${BASE}" fill="#fff" clip-path="url(#${id}a)">finup</text>` +
+    `<text x="0" y="${BASE}" fill="#d3d7ff" clip-path="url(#${id}b)">finup</text></g>` +
+    `<rect class="linea-base" x="0" y="${BASE + 1.5}" height="4" rx="2" fill="#fff"/>`;
+  const ancho = svg.querySelector("text").getComputedTextLength();
+  svg.querySelector(".linea-base").setAttribute("width", ancho);
+  svg.setAttribute("viewBox", `0 0 ${ancho} 112`);
+}
+function dibujarIcono(svg) {
+  const id = "i" + idUnico++;
+  svg.innerHTML =
+    `<rect width="64" height="64" rx="15" fill="#171c5e"/>` +
+    `<defs><clipPath id="${id}a"><rect width="64" height="39"/></clipPath><clipPath id="${id}b"><rect y="43.5" width="64" height="21"/></clipPath></defs>` +
+    `<g font-family="'Schibsted Grotesk',system-ui,sans-serif" font-weight="900" font-size="50" text-anchor="middle">` +
+    `<text x="32" y="40" fill="#fff" clip-path="url(#${id}a)">p</text><text x="32" y="40" fill="#d3d7ff" clip-path="url(#${id}b)">p</text></g>` +
+    `<rect x="10" y="40" width="44" height="2.5" rx="1.25" fill="#fff"/>`;
+}
+function marcas() {
+  document.querySelectorAll(".js-logo").forEach(dibujarMarca);
+  dibujarIcono(document.getElementById("icono"));
+  dibujarIcono(document.getElementById("icono-chico"));
+}
+(document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(marcas);
+marcas();
+
+// --- La línea de hoy ---
+const PERFILES = { conservador: { min: 29, max: 69, caida: 121 }, moderado: { min: 35, max: 84, caida: 230 } };
+let escala = "real", perfil = "conservador";
+const numero = (n) => n.toLocaleString("es-AR");
+function lineaHTML() {
+  return `<div class="cifras"><div><small>Año normal</small><b class="js-normal"></b></div><div class="m"><small>Mal año</small><b class="js-malo"></b></div></div>` +
+    `<div class="dibujo"><div class="arriba"><div class="barra-b"><i></i></div></div><div class="arriba"></div><div class="base"></div><div class="abajo"></div><div class="abajo"><div class="barra-m"></div></div></div>`;
+}
+document.querySelectorAll(".js-linea").forEach((n) => (n.innerHTML = lineaHTML()));
+function pintarLinea() {
+  const p = PERFILES[perfil];
+  const maxPx = 72;
+  const k = maxPx / PERFILES.moderado.caida;
+  const hMax = escala === "real" ? p.max * k : 44;
+  const hMin = escala === "real" ? p.min * k : 44 * (p.min / p.max);
+  const hCaida = escala === "real" ? p.caida * k : 44;
+  document.querySelectorAll(".js-linea").forEach((n) => {
+    n.querySelector(".js-normal").textContent = `+${p.min} a ${p.max}`;
+    n.querySelector(".js-malo").textContent = `−${p.caida}`;
+    const d = n.querySelector(".dibujo");
+    d.style.setProperty("--alto-arriba", Math.max(hMax, 44) + "px");
+    d.style.setProperty("--alto-abajo", (escala === "real" ? maxPx : 44) + "px");
+    const b = n.querySelector(".barra-b");
+    b.style.setProperty("--h", hMax + "px");
+    b.style.setProperty("--seguro", hMin + "px");
+    n.querySelector(".barra-m").style.setProperty("--h", hCaida + "px");
+  });
+}
+function grupo(attr, alCambiar) {
+  const bs = [...document.querySelectorAll(`[data-${attr}]`)];
+  bs.forEach((b) => b.addEventListener("click", () => {
+    bs.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    alCambiar(b.dataset[attr]);
+    pintarLinea();
+  }));
+}
+grupo("escala", (v) => (escala = v));
+grupo("perfil", (v) => (perfil = v));
+pintarLinea();
+
+// --- Detector: reglas, sin IA ---
+const SENALES = [
+  ["garantia", "Dicen que la ganancia está garantizada"],
+  ["apuro", "Te apuran: “quedan pocos lugares”"],
+  ["cuenta", "Piden transferir a una cuenta personal o manejar tu plata"],
+  ["ganancias", "Solo muestran ganancias, nunca qué puede salir mal"],
+  ["sumar", "Te piden sumar gente para ganar más"],
+];
+const CORTO = { garantia: "Ganancia garantizada", apuro: "Te apuran", cuenta: "Cuenta personal o manejar tu plata", ganancias: "No dicen qué puede salir mal", sumar: "Sumar gente para ganar más" };
+const INFLACION_12M = "33,3%"; // ArgentinaDatos, octubre de 2025 a septiembre de 2026
+const marcadas = new Set(["apuro", "cuenta", "ganancias"]);
+const cajas = document.getElementById("senales");
+SENALES.forEach(([id, texto]) => {
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "senal"; b.dataset.id = id;
+  b.setAttribute("aria-pressed", String(marcadas.has(id)));
+  b.innerHTML = `<u>${marcadas.has(id) ? "✓" : ""}</u><span>${texto}</span>`;
+  b.addEventListener("click", () => {
+    marcadas.has(id) ? marcadas.delete(id) : marcadas.add(id);
+    b.setAttribute("aria-pressed", String(marcadas.has(id)));
+    b.querySelector("u").textContent = marcadas.has(id) ? "✓" : "";
+    calcular();
+  });
+  cajas.append(b);
+});
+function textoAnual(a) {
+  if (!Number.isFinite(a) || a > 1e6) return "Más de 1.000.000%";
+  return a.toLocaleString("es-AR", { maximumFractionDigits: a >= 100 ? 0 : 1 }) + "%";
+}
+function calcular() {
+  const t = parseFloat(String(document.getElementById("tasa").value).replace(",", "."));
+  const veces = Number(document.getElementById("periodo").value);
+  const valido = Number.isFinite(t) && t > 0;
+  const anual = valido ? (Math.pow(1 + t / 100, veces) - 1) * 100 : NaN;
+  document.getElementById("anual").textContent = valido ? textoAnual(anual) : "—";
+  document.getElementById("comparacion").textContent = valido
+    ? `Como referencia, la inflación de los últimos 12 meses fue ${INFLACION_12M} (INDEC, a septiembre de 2026). ${veces > 1 ? "El cálculo supone que se reinvierte todo cada vez." : ""}`
+    : "Escribí un porcentaje mayor a cero.";
+  const n = marcadas.size;
+  document.getElementById("cuenta-senales").textContent = n === 0 ? "No marcaste señales" : `Marcaste ${n} de ${SENALES.length} señales`;
+  document.getElementById("marcadas").innerHTML = SENALES.filter(([id]) => marcadas.has(id)).map(([id]) => `<li>${CORTO[id]}</li>`).join("");
+  document.getElementById("marcadas").classList.toggle("oculto", n === 0);
+  document.getElementById("lectura").textContent = n === 0
+    ? "Eso no significa que sea seguro: nadie puede garantizar un rendimiento."
+    : n === 1 ? "Una señal alcanza para preguntar más. No tener otras no significa que sea seguro."
+    : "Las estafas y los falsos gurús comparten estas señales. Si ves varias juntas, desconfiá.";
+}
+document.getElementById("tasa").addEventListener("input", calcular);
+document.getElementById("periodo").addEventListener("change", calcular);
+calcular();
+</script>
+</body>
+</html>

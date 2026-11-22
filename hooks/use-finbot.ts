@@ -51,7 +51,7 @@ export function useFinBot(contexto: ContextoEstrategia | null) {
       });
       if (res.status === 429) {
         const { error } = await res.json().catch(() => ({ error: null }));
-        agregar(error ?? "Llegaste al máximo de preguntas de la demo por ahora. Probá más tarde.");
+        agregar(error ?? "Llegaste al máximo de preguntas por ahora. Probá más tarde.");
         return;
       }
       if (!res.ok || !res.body) throw new Error();

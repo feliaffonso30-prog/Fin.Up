@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FinUp: logos, décima ronda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800;900&display=swap">
+<style>
+:root{--noche:radial-gradient(135% 88% at 94% -10%,#5361e0 0%,#3740ac 30%,#171c5e 62%,#0b0e30 100%);--gris:#d3d7f2;--tinta:#15172b;--tinta2:#3f4259;--papel:#e4e5ea;--curva:cubic-bezier(0.23,1,0.32,1)}
+*{box-sizing:border-box;margin:0}
+::selection{background:#5361e0;color:#fff}
+body{background:var(--papel);color:var(--tinta);font-family:"Schibsted Grotesk","Segoe UI",system-ui,Arial,sans-serif;font-size:16px;line-height:1.4;padding:0 16px 64px}
+.ancho{max-width:1320px;margin:0 auto}
+.cabeza{position:sticky;top:0;z-index:5;background:var(--papel);padding:20px 0 12px;box-shadow:0 10px 14px -14px rgba(21,23,43,.6)}
+h1{font-size:30px;line-height:1.08;font-weight:900;letter-spacing:-.03em;text-wrap:balance}
+.bajada{margin-top:6px;color:var(--tinta2);max-width:76ch}
+.controles{display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:12px}
+.modo{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.modo>span{font-size:14px;font-weight:700;color:var(--tinta2)}
+.chip{border:0;background:#fff;color:var(--tinta);font:inherit;font-weight:700;min-height:44px;padding:8px 16px;border-radius:12px;cursor:pointer;transition:transform .12s var(--curva)}
+.chip:active{transform:scale(.97)}
+.chip[aria-pressed=true]{background:var(--tinta);color:#fff}
+.chip:focus-visible{outline:3px solid #5361e0;outline-offset:2px}
+
+/* Resumen: las ocho en chico */
+.resumen{margin-top:24px;border-radius:24px;background:#0b0e30;background-image:var(--noche);color:#fff;padding:22px 24px}
+.resumen h2{font-size:15px;font-weight:800;color:var(--gris);margin-bottom:12px}
+.fila{display:grid;grid-template-columns:repeat(8,1fr);gap:14px}
+.mini{display:flex;flex-direction:column;align-items:flex-start;gap:9px;min-width:0}
+.mini b{font-size:13px;font-weight:700}
+.pestana{display:inline-flex;align-items:center;gap:7px;max-width:100%;padding:7px 10px;border-radius:9px 9px 0 0;background:#23284f;font-size:12px;color:#e8eaff;white-space:nowrap}
+.pestana .icono{border-radius:3px}
+
+.columnas{display:grid;grid-template-columns:1fr 1fr;gap:0 28px;align-items:start}
+.opcion{margin-top:30px}
+.opcion h2{font-size:22px;font-weight:900;letter-spacing:-.02em}
+.opcion>p{margin-top:3px;color:var(--tinta2);max-width:62ch}
+.lamina{margin-top:12px;border-radius:24px;overflow:hidden;background:#0b0e30;background-image:var(--noche);color:#fff}
+.hero{padding:30px 28px 26px;display:flex;flex-direction:column;justify-content:center;gap:14px;min-height:200px}
+.estado{font-size:15px;color:var(--gris)}
+.lado{padding:20px 24px 22px;display:grid;grid-template-columns:auto 1fr;gap:18px 26px;align-items:end;background:rgba(11,14,48,.55)}
+.sello{display:flex;align-items:center;gap:.22em;font-weight:900;letter-spacing:-.04em;line-height:1}
+.atras .sello{flex-direction:row-reverse}
+.hero .sello{align-self:flex-start}
+.sello svg{display:block;flex:none;overflow:visible}
+.tamanos{display:flex;align-items:flex-end;gap:16px}
+.tamanos figure{margin:0;text-align:center}
+.tamanos figcaption{font-size:12px;color:var(--gris);margin-top:5px}
+.icono{display:block;border-radius:22%}
+.barra-app{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.09);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);font-size:14px}
+.apps{display:flex;gap:12px;align-items:flex-end;justify-content:flex-end}
+.apps i{display:block;width:44px;height:44px;border-radius:22%}
+.apps span{display:block;text-align:center;font-size:11px;color:#fff;margin-top:3px}
+.apps div{width:48px}
+.lectura{display:grid;gap:5px;margin-top:10px;font-size:15px;color:var(--tinta2)}
+.lectura b{color:var(--tinta)}
+
+@media (prefers-reduced-motion:reduce){.chip{transition:none}}
+@media (max-width:980px){.columnas{grid-template-columns:1fr}.cabeza{position:static;box-shadow:none}.fila{grid-template-columns:repeat(4,1fr)}}
+@media (max-width:520px){.hero{min-height:160px;padding:24px 20px}.hero .sello{font-size:50px!important}.lado{grid-template-columns:1fr}.apps{justify-content:flex-start}.fila{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="ancho">
+  <div class="cabeza">
+    <h1>Logos, décima ronda: ocho brújulas</h1>
+    <p class="bajada">Todas comparten la misma aguja: un rombo partido a lo largo, mitad blanca y mitad lavanda, inclinado hacia el noroeste. Lo que cambia es dónde vive esa aguja. La 7 es la única que la reemplaza por una rosa de los vientos.</p>
+    <div class="controles">
+      <div class="modo" role="group" aria-label="Posición del símbolo"><span>Símbolo</span>
+        <button class="chip" type="button" data-pos="adelante" aria-pressed="true">Adelante del nombre</button>
+        <button class="chip" type="button" data-pos="atras" aria-pressed="false">Atrás del nombre</button>
+      </div>
+    </div>
+  </div>
+  <div class="resumen"><h2>Las ocho en ícono de 44 px y en pestaña de 16 px</h2><div class="fila" id="resumen"></div></div>
+  <div class="columnas" id="opciones"></div>
+</div>
+<script>
+const LAV = "#8d99ff", LAV2 = "#d3d7ff", B = "#fff";
+
+// La aguja de la familia: rombo de alto 2L y ancho 2W, partido a lo largo. r = agujero del eje (0 = sin agujero).
+const media = (L, W, lado, color, r) => {
+  const x = 32 + lado * W, giro = lado < 0 ? 0 : 1;
+  const eje = r ? `M32 ${32 - r}A${r} ${r} 0 0 ${giro} 32 ${32 + r}Z` : "";
+  return `<path fill-rule="evenodd" fill="${color}" d="M32 ${32 - L}L${x} 32L32 ${32 + L}Z${eje}"/>`;
+};
+const aguja = (L, W, r = 0, izq = B, der = LAV) => media(L, W, -1, izq, r) + media(L, W, 1, der, r);
+// Inclinación común: 30 grados hacia el noroeste (nunca hacia arriba a la derecha).
+const giro = (s) => `<g transform="rotate(-30 32 32)">${s}</g>`;
+const disco = (R) => `M32 ${32 - R}A${R} ${R} 0 1 0 32 ${32 + R}A${R} ${R} 0 1 0 32 ${32 - R}Z`;
+const rombo = (L, W) => `M32 ${32 - L}L${32 + W} 32L32 ${32 + L}L${32 - W} 32Z`;
+
+// 1. Aguja sola: sin aro. Lo mínimo que sigue siendo brújula.
+const agujaSola = (c) => giro(c ? aguja(31, 13, 4) : aguja(31, 10.5, 3.4));
+
+// 2. Aro y aguja: la brújula clásica, limpia.
+const aroAguja = (c) => (c
+  ? `<circle cx="32" cy="32" r="25.5" fill="none" stroke="${B}" stroke-width="9"/>` + giro(aguja(16.5, 8.5))
+  : `<circle cx="32" cy="32" r="26.5" fill="none" stroke="${B}" stroke-width="6.5"/>` + giro(aguja(18, 7.5, 2.4)));
+
+// 3. Disco calado: disco blanco macizo, la aguja recortada. Una mitad queda en noche, la otra en lavanda.
+const discoCalado = (c) => {
+  const [R, L, W] = c ? [31, 23, 11.5] : [30, 22, 9.5];
+  return giro(`<path fill-rule="evenodd" fill="${B}" d="${disco(R)}${rombo(L, W)}"/>` + media(L, W, 1, LAV, 0));
+};
+
+// 4. Disco lavanda: el color de marca como forma. Aguja blanca y su otra mitad recortada.
+const discoLavanda = (c) => {
+  const [R, L, W] = c ? [31, 23, 11.5] : [30, 22, 9.5];
+  return giro(`<path fill-rule="evenodd" fill="${LAV}" d="${disco(R)}M32 ${32 - L}L${32 + W} 32L32 ${32 + L}Z"/>` + media(L, W, -1, B, 0));
+};
+
+// 5. Dos mitades: el disco entero partido por el eje de la aguja, blanco y lavanda; la aguja es el hueco.
+const dosMitades = (c) => {
+  const [R, L, W] = c ? [31, 22, 11] : [30, 21, 8.5];
+  return giro(
+    `<path fill-rule="evenodd" fill="${B}" d="M32 ${32 - R}A${R} ${R} 0 0 0 32 ${32 + R}ZM32 ${32 - L}L${32 - W} 32L32 ${32 + L}Z"/>` +
+    `<path fill-rule="evenodd" fill="${LAV}" d="M32 ${32 - R}A${R} ${R} 0 0 1 32 ${32 + R}ZM32 ${32 - L}L${32 + W} 32L32 ${32 + L}Z"/>`);
+};
+
+// 6. Norte marcado: el aro se abre arriba y ahí va una cuenta lavanda. La aguja busca ese norte.
+const norteMarcado = (c) => c
+  ? `<path d="M44.25 10.78A24.5 24.5 0 1 1 19.75 10.78" fill="none" stroke="${B}" stroke-width="9"/><circle cx="32" cy="7.5" r="7" fill="${LAV}"/>` + giro(aguja(13.5, 7.5))
+  : `<path d="M42.17 9.16A25 25 0 1 1 21.83 9.16" fill="none" stroke="${B}" stroke-width="6.5" stroke-linecap="round"/><circle cx="32" cy="7" r="5.5" fill="${LAV}"/>` + giro(aguja(15.5, 6.5, 2.2));
+
+// 7. Rosa fina: cuatro puntas, las verticales más largas, y un aro en cuatro arcos que no las toca.
+const rosaFina = (c) => {
+  const [e, w, r, sw, arco] = c
+    ? [5, 7.5, 19.5, 7, "M40.5 14.45A19.5 19.5 0 0 1 49.55 23.5"]
+    : [9, 5.5, 19, 4.5, "M39.12 14.38A19 19 0 0 1 49.62 24.88"];
+  const p = 32 - w, q = 32 + w, E = 64 - e, t = c ? 1 : 2, T = 64 - t;
+  const cara = (pts, f) => `<polygon points="${pts}" fill="${f}"/>`;
+  return [0, 90, 180, 270].map((a) => `<path transform="rotate(${a} 32 32)" d="${arco}" fill="none" stroke="${LAV}" stroke-width="${sw}" stroke-linecap="round"/>`).join("") +
+    cara(`32,${t} ${p},${p} 32,32`, B) + cara(`32,${t} ${q},${p} 32,32`, LAV2) +
+    cara(`${E},32 ${q},${p} 32,32`, B) + cara(`${E},32 ${q},${q} 32,32`, LAV2) +
+    cara(`32,${T} ${q},${q} 32,32`, B) + cara(`32,${T} ${p},${q} 32,32`, LAV2) +
+    cara(`${e},32 ${p},${q} 32,32`, B) + cara(`${e},32 ${p},${p} 32,32`, LAV2);
+};
+
+// 8. Cuadrante: la misma aguja en un marco de esquinas redondas, no en un círculo.
+const cuadrante = (c) => (c
+  ? `<rect x="5.5" y="5.5" width="53" height="53" rx="17" fill="none" stroke="${B}" stroke-width="9"/>` + giro(aguja(17, 8.5))
+  : `<rect x="4.5" y="4.5" width="55" height="55" rx="18" fill="none" stroke="${B}" stroke-width="6.5"/>` + giro(aguja(19, 7.5, 2.4)));
+
+const OPCIONES = [
+  { nombre: "Aguja sola", dibujo: agujaSola,
+    idea: "Sin aro ni caja: solo la aguja, con el agujero del eje.",
+    dice: "Lo mínimo. Es la pieza que orienta, sin nada alrededor.",
+    riesgo: "Sin el aro, alguien puede no leer \"brújula\": puede verse como un rombo, una cometa o una gema alargada." },
+  { nombre: "Aro y aguja", dibujo: aroAguja,
+    idea: "La brújula de siempre, limpia: un aro y la aguja de la familia.",
+    dice: "Se entiende al instante. Es la referencia para comparar las demás.",
+    riesgo: "Es la más genérica y la más cercana a Safari, aunque la aguja mire al otro lado y esté partida a lo largo. El aro puede confundirse con los anillos de carga." },
+  { nombre: "Disco calado", dibujo: discoCalado,
+    idea: "Un disco blanco macizo con la aguja recortada: una mitad deja ver la noche y la otra va en lavanda.",
+    dice: "Firme y pesado, a la altura del nombre. La aguja está hecha de fondo: es propia de la identidad Noche.",
+    riesgo: "Un disco blanco grande compite con el botón principal, que también es blanco. Puede leerse como moneda o ficha." },
+  { nombre: "Disco lavanda", dibujo: discoLavanda,
+    idea: "El disco en lavanda, con media aguja blanca y la otra media recortada.",
+    dice: "El color de marca bien presente, como en las referencias (Nubank). El blanco queda solo para la aguja.",
+    riesgo: "El lavanda sobre el azul del ícono contrasta menos que el blanco. Un disco de color con una punta blanca roza los íconos de navegación de mapas." },
+  { nombre: "Dos mitades", dibujo: dosMitades,
+    idea: "El disco entero partido por el eje: mitad blanca, mitad lavanda. La aguja es el hueco entre las dos.",
+    dice: "Las dos caras de cada decisión, con el mismo tamaño: lo bueno y lo que puede salir mal. Es la que más dice de FinUp.",
+    riesgo: "Puede recordar al ícono de modo claro y oscuro, a un grano de café o a una pelota. Depende de que la aguja se note." },
+  { nombre: "Norte marcado", dibujo: norteMarcado,
+    idea: "El aro se abre arriba y en ese lugar va una cuenta lavanda: el norte. La aguja lo busca.",
+    dice: "Hay un norte fijo y una aguja que te dice dónde estás parado. El aro abierto conversa con los Anillos abiertos de la carga.",
+    riesgo: "Es la que más piezas tiene. Un aro abierto arriba recuerda al botón de encendido; la cuenta también puede leerse como notificación." },
+  { nombre: "Rosa fina", dibujo: rosaFina,
+    idea: "Una rosa de los vientos de cuatro puntas, con las verticales más largas, y un aro en cuatro arcos.",
+    dice: "La más elegante y la más \"de mapa\". No tiene aguja: no señala hacia ningún lado.",
+    riesgo: "La estrella de cuatro puntas se usa hoy como ícono de inteligencia artificial. En 16 px los arcos casi desaparecen. Es la más fina: acompaña menos al nombre." },
+  { nombre: "Cuadrante", dibujo: cuadrante,
+    idea: "La aguja dentro de un marco de esquinas redondas en vez de un círculo.",
+    dice: "Deja de parecerse a Safari y a los mapas. El marco tiene la forma de un ícono de app y de las tarjetas de la plataforma.",
+    riesgo: "Sin círculo se lee menos como brújula y más como un botón o un ícono genérico." },
+];
+
+const svg = (o, t) => `<svg width="${t}" height="${t}" viewBox="0 0 64 64" aria-hidden="true">${o.dibujo(t < 32)}</svg>`;
+const icono = (o, t) => {
+  const chico = t <= 20;
+  return `<svg class="icono" width="${t}" height="${t}" viewBox="0 0 64 64" role="img" aria-label="Ícono de ${o.nombre}"><rect width="64" height="64" fill="#171c5e"/><g transform="${chico ? "translate(4 4) scale(.875)" : "translate(8 8) scale(.75)"}">${o.dibujo(chico)}</g></svg>`;
+};
+const sello = (o, fs) => `<span class="sello" style="font-size:${fs}px" role="img" aria-label="finup">${svg(o, Math.round(fs * 1.12))}<span>finup</span></span>`;
+
+document.getElementById("resumen").innerHTML = OPCIONES.map((o, i) =>
+  `<div class="mini">${icono(o, 44)}<span class="pestana">${icono(o, 16)}FinUp</span><b>${i + 1}. ${o.nombre}</b></div>`).join("");
+
+document.getElementById("opciones").innerHTML = OPCIONES.map((o, i) => `
+  <section class="opcion">
+    <h2>${i + 1}. ${o.nombre}</h2>
+    <p>${o.idea}</p>
+    <div class="lamina">
+      <div class="hero">${sello(o, 64)}<p class="estado">Tu progreso financiero, paso a paso</p></div>
+      <div class="lado">
+        <div class="tamanos">
+          <figure>${icono(o, 64)}<figcaption>Ícono</figcaption></figure>
+          <figure>${icono(o, 32)}<figcaption>32 px</figcaption></figure>
+          <figure>${icono(o, 16)}<figcaption>Pestaña</figcaption></figure>
+        </div>
+        <div class="apps">
+          <div><i style="background:#e9e4d8"></i><span>Notas</span></div>
+          <div>${icono(o, 44)}<span>FinUp</span></div>
+          <div><i style="background:#2f6d4f"></i><span>Mapas</span></div>
+          <div><i style="background:#b8452f"></i><span>Música</span></div>
+        </div>
+        <div class="barra-app">${sello(o, 22)}<span>Ingresar</span></div>
+      </div>
+    </div>
+    <div class="lectura"><p><b>Qué dice:</b> ${o.dice}</p><p><b>Riesgo:</b> ${o.riesgo}</p></div>
+  </section>`).join("");
+
+const pos = [...document.querySelectorAll("[data-pos]")];
+pos.forEach((b) => b.addEventListener("click", () => {
+  pos.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  document.body.classList.toggle("atras", b.dataset.pos === "atras");
+}));
+</script>
+</body>
+</html>

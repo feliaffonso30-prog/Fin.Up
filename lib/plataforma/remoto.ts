@@ -11,6 +11,12 @@ import type { Plan } from "./tipos";
 
 export const MOTOR_VERSION = 1;
 
+/** Hay alguien con sesión en este navegador. Lee la sesión local: no depende de la tabla. */
+export async function haySesion(): Promise<boolean> {
+  const { data } = await crearClienteNavegador().auth.getSession();
+  return Boolean(data.session);
+}
+
 export async function leerPlanVigente(): Promise<Plan | null> {
   const sb = crearClienteNavegador();
   const { data, error } = await sb

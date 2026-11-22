@@ -8,3 +8,9 @@ node_modules
 
 # variables de ejemplo: se versiona .env.example, nunca .env.local
 !.env.example
+
+# Impeccable: cachés y capturas locales
+.impeccable/hook.cache.json
+.impeccable/review/
+.impeccable/questions/
+.impeccable/mocks/decision/

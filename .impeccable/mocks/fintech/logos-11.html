@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FinUp: logos, ronda once</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800;900&display=swap">
+<style>
+:root{--noche:radial-gradient(135% 88% at 94% -10%,#5361e0 0%,#3740ac 30%,#171c5e 62%,#0b0e30 100%);--gris:#d3d7f2;--tinta:#15172b;--tinta2:#3f4259;--papel:#e4e5ea;--curva:cubic-bezier(0.23,1,0.32,1)}
+*{box-sizing:border-box;margin:0}
+::selection{background:#5361e0;color:#fff}
+body{background:var(--papel);color:var(--tinta);font-family:"Schibsted Grotesk","Segoe UI",system-ui,Arial,sans-serif;font-size:16px;line-height:1.4;padding:0 16px 64px}
+.ancho{max-width:1320px;margin:0 auto}
+.cabeza{position:sticky;top:0;z-index:5;background:var(--papel);padding:20px 0 12px;box-shadow:0 10px 14px -14px rgba(21,23,43,.6)}
+h1{font-size:30px;line-height:1.08;font-weight:900;letter-spacing:-.03em;text-wrap:balance}
+.bajada{margin-top:6px;color:var(--tinta2);max-width:78ch}
+.controles{display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:12px}
+.modo{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.modo>span{font-size:14px;font-weight:700;color:var(--tinta2)}
+.chip{border:0;background:#fff;color:var(--tinta);font:inherit;font-weight:700;min-height:44px;padding:8px 16px;border-radius:12px;cursor:pointer;transition:transform .12s var(--curva)}
+.chip:active{transform:scale(.97)}
+.chip[aria-pressed=true]{background:var(--tinta);color:#fff}
+.chip:focus-visible{outline:3px solid #5361e0;outline-offset:2px}
+
+.resumen{margin-top:24px;border-radius:24px;background:#0b0e30;background-image:var(--noche);color:#fff;padding:22px 24px}
+.resumen h2{font-size:15px;font-weight:800;color:var(--gris);margin-bottom:12px}
+.fila{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.mini{display:flex;flex-direction:column;align-items:flex-start;gap:9px;min-width:0}
+.mini b{font-size:13px;font-weight:700}
+.pestana{display:inline-flex;align-items:center;gap:7px;max-width:100%;padding:7px 10px;border-radius:9px 9px 0 0;background:#23284f;font-size:12px;color:#e8eaff;white-space:nowrap}
+.pestana .icono{border-radius:3px}
+
+.columnas{display:grid;grid-template-columns:1fr 1fr;gap:0 28px;align-items:start}
+.opcion{margin-top:30px}
+.opcion h2{font-size:22px;font-weight:900;letter-spacing:-.02em}
+.opcion>p{margin-top:3px;color:var(--tinta2);max-width:62ch}
+.lamina{margin-top:12px;border-radius:24px;overflow:hidden;background:#0b0e30;background-image:var(--noche);color:#fff}
+.hero{padding:30px 28px 26px;display:flex;flex-direction:column;justify-content:center;gap:14px;min-height:200px}
+.estado{font-size:15px;color:var(--gris)}
+.lado{padding:20px 24px 22px;display:grid;grid-template-columns:auto 1fr;gap:18px 26px;align-items:end;background:rgba(11,14,48,.55)}
+.sello{display:flex;align-items:center;gap:.22em;font-weight:900;letter-spacing:-.04em;line-height:1}
+.atras .sello{flex-direction:row-reverse}
+.hero .sello{align-self:flex-start}
+.sello svg{display:block;flex:none;overflow:visible}
+.tamanos{display:flex;align-items:flex-end;gap:12px}
+.tamanos figure{margin:0;text-align:center}
+.tamanos figcaption{font-size:12px;color:var(--gris);margin-top:5px}
+.icono{display:block;border-radius:22%}
+.barra-app{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.09);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);font-size:14px}
+.apps{display:flex;gap:12px;align-items:flex-end;justify-content:flex-end}
+.apps i{display:block;width:44px;height:44px;border-radius:22%}
+.apps span{display:block;text-align:center;font-size:11px;color:#fff;margin-top:3px}
+.apps div{width:48px}
+/* Otras aplicaciones: sobre claro y a un solo color */
+.usos{display:grid;grid-template-columns:1fr 1fr}
+.uso{padding:18px 24px 16px;display:flex;flex-direction:column;gap:8px}
+.uso small{font-size:12px}
+.uso.claro{background:#f4f5fa;color:#171c5e}
+.uso.claro small{color:#3f4259}
+.uso.mono{background:#3740ac;color:#fff}
+.uso.mono small{color:#e8eaff}
+.lectura{display:grid;gap:5px;margin-top:10px;font-size:15px;color:var(--tinta2)}
+.lectura b{color:var(--tinta)}
+
+@media (prefers-reduced-motion:reduce){.chip{transition:none}}
+@media (max-width:980px){.columnas{grid-template-columns:1fr}.cabeza{position:static;box-shadow:none}.fila{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:520px){.hero{min-height:160px;padding:24px 20px}.hero .sello{font-size:50px!important}.lado{grid-template-columns:1fr}.apps{justify-content:flex-start}.fila{grid-template-columns:repeat(2,1fr)}.usos{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="ancho">
+  <div class="cabeza">
+    <h1>Logos, ronda once: la rosa de los vientos, en detalle</h1>
+    <p class="bajada">Seis desarrollos de la "Rosa fina" de la ronda anterior. Cada uno ataca sus tres puntos débiles: el parecido con el emblema de la OTAN (estrella de cuatro puntas con aro), el parecido con el destello de inteligencia artificial, y que en 16 px se perdía. Cada lámina suma la versión sobre fondo claro y a un solo color.</p>
+    <div class="controles">
+      <div class="modo" role="group" aria-label="Posición del símbolo"><span>Símbolo</span>
+        <button class="chip" type="button" data-pos="adelante" aria-pressed="true">Adelante del nombre</button>
+        <button class="chip" type="button" data-pos="atras" aria-pressed="false">Atrás del nombre</button>
+      </div>
+    </div>
+  </div>
+  <div class="resumen"><h2>Las seis en ícono de 44 px y en pestaña de 16 px</h2><div class="fila" id="resumen"></div></div>
+  <div class="columnas" id="opciones"></div>
+</div>
+<script>
+// Paletas: sobre Noche, sobre fondo claro y a un solo color.
+const NOCHE = { b: "#fff", l: "#8d99ff", l2: "#d3d7ff" };
+const CLARO = { b: "#171c5e", l: "#5361e0", l2: "#3740ac" };
+const MONO = { b: "#fff", l: "#fff", l2: "#fff" };
+
+const cara = (pts, f) => `<polygon points="${pts}" fill="${f}"/>`;
+// Rosa de cuatro puntas con facetas rectas. rv / rh = largo de las puntas verticales y horizontales; w = cintura.
+// cols: N izq, N der, E arriba, E abajo, S der, S izq, O abajo, O arriba.
+const caras = (rv, rh, w, cols) => {
+  const p = 32 - w, q = 32 + w, N = 32 - rv, S = 32 + rv, E = 32 + rh, O = 32 - rh;
+  return cara(`32,${N} ${p},${p} 32,32`, cols[0]) + cara(`32,${N} ${q},${p} 32,32`, cols[1]) +
+    cara(`${E},32 ${q},${p} 32,32`, cols[2]) + cara(`${E},32 ${q},${q} 32,32`, cols[3]) +
+    cara(`32,${S} ${q},${q} 32,32`, cols[4]) + cara(`32,${S} ${p},${q} 32,32`, cols[5]) +
+    cara(`${O},32 ${p},${q} 32,32`, cols[6]) + cara(`${O},32 ${p},${p} 32,32`, cols[7]);
+};
+const molinete = (a, b) => [a, b, a, b, a, b, a, b];
+// Puntas cortas en diagonal, detrás de las principales. d = alcance en diagonal; c = base sobre los ejes.
+const diagonales = (d, c, f) => cara(`${32 + d},${32 - d} ${32 + c},32 ${32 + d},${32 + d} 32,${32 + c} ${32 - d},${32 + d} ${32 - c},32 ${32 - d},${32 - d} 32,${32 - c}`, f);
+// Aro en cuatro arcos, entre el ángulo a1 y a2 de cada cuadrante.
+const arcos = (r, sw, a1, a2, f) => {
+  const pt = (a) => `${(32 + r * Math.sin(a * Math.PI / 180)).toFixed(2)} ${(32 - r * Math.cos(a * Math.PI / 180)).toFixed(2)}`;
+  return [0, 90, 180, 270].map((g) => `<path transform="rotate(${g} 32 32)" d="M${pt(a1)}A${r} ${r} 0 0 1 ${pt(a2)}" fill="none" stroke="${f}" stroke-width="${sw}" stroke-linecap="round"/>`).join("");
+};
+
+// 1. Rosa fina, ajustada: la de la ronda anterior, con los arcos más gruesos y más separados de las puntas.
+const rosaFina = (c, k) => c
+  ? arcos(20, 7.5, 27, 63, k.l) + caras(31, 28, 7.5, molinete(k.b, k.l2))
+  : arcos(19.5, 5, 24, 66, k.l) + caras(30, 24, 5.5, molinete(k.b, k.l2));
+
+// 2. Ocho puntas: sin aro. Cuatro puntas largas y cuatro cortas en lavanda.
+const ochoPuntas = (c, k) => c
+  ? diagonales(16, 12, k.l) + caras(31, 28, 7.5, molinete(k.b, k.l2))
+  : diagonales(14, 9.5, k.l) + caras(30, 25, 5.5, molinete(k.b, k.l2));
+
+// 3. Ocho puntas con aro: la rosa clásica de los mapas, con un aro entero por detrás.
+const ochoAro = (c, k) => c
+  ? `<circle cx="32" cy="32" r="22" fill="none" stroke="${k.l}" stroke-width="7"/>` + diagonales(13, 11, k.l) + caras(31, 31, 7.5, molinete(k.b, k.l2))
+  : `<circle cx="32" cy="32" r="21.5" fill="none" stroke="${k.l}" stroke-width="4.5"/>` + diagonales(12, 9, k.l) + caras(30, 30, 5.5, molinete(k.b, k.l2));
+
+// 4. Rosa en disco: un disco lavanda macizo por detrás, en vez de un aro.
+const rosaDisco = (c, k) => c
+  ? `<circle cx="32" cy="32" r="22" fill="${k.l}"/>` + caras(31, 31, 8.5, molinete(k.b, k.l2))
+  : `<circle cx="32" cy="32" r="20" fill="${k.l}"/>` + caras(30, 30, 6.5, molinete(k.b, k.l2));
+
+// 5. Rosa maciza: sin aro, más ancha, con facetas blancas y lavanda bien marcadas.
+const rosaMaciza = (c, k) => c ? caras(31, 31, 12.5, molinete(k.b, k.l)) : caras(30, 30, 10.5, molinete(k.b, k.l));
+
+// 6. Aguja en cruz: la punta vertical larga y la horizontal corta, partida a lo largo e inclinada al noroeste.
+const agujaCruz = (c, k) => {
+  const lados = [k.b, k.l, k.l, k.l, k.l, k.b, k.b, k.b];
+  return `<g transform="rotate(-30 32 32)">${c ? caras(31, 19, 8, lados) : caras(31, 16, 6, lados)}</g>`;
+};
+
+const OPCIONES = [
+  { nombre: "Rosa fina, ajustada", dibujo: rosaFina,
+    idea: "La de la ronda anterior, con los arcos más gruesos y más lejos de las puntas.",
+    dice: "Es la que elegiste, llevada a su mejor versión. En 16 px los arcos ahora sí se ven.",
+    riesgo: "Es la más parecida al emblema de la OTAN: estrella blanca de cuatro puntas con un aro, sobre azul oscuro. Ajustarla no cambia eso." },
+  { nombre: "Ocho puntas", dibujo: ochoPuntas,
+    idea: "Sin aro. Cuatro puntas largas y, entre ellas, cuatro puntas cortas en lavanda.",
+    dice: "Con ocho puntas ya no es la estrella de la OTAN ni el destello de inteligencia artificial: es una rosa de los vientos de mapa.",
+    riesgo: "En 16 px las puntas cortas se vuelven un rombo lavanda detrás. Sin aro puede leerse como estrella o como flor." },
+  { nombre: "Ocho puntas con aro", dibujo: ochoAro,
+    idea: "La rosa clásica de las cartas náuticas: ocho puntas y un aro entero por detrás.",
+    dice: "Es la más reconocible como brújula. El aro le da cuerpo y la acerca al peso del nombre.",
+    riesgo: "Es la que más piezas tiene. Con el aro vuelve a acercarse a la OTAN, aunque las ocho puntas la separan. Puede sentirse náutica o clásica." },
+  { nombre: "Rosa en disco", dibujo: rosaDisco,
+    idea: "Las cuatro puntas sobre un disco lavanda macizo.",
+    dice: "El color de marca gana presencia y el símbolo pesa más. En chico es la que mejor aguanta: un disco con cuatro puntas.",
+    riesgo: "Sigue siendo una estrella de cuatro puntas sobre un círculo. A un solo color se vuelve una mancha: necesita una versión aparte." },
+  { nombre: "Rosa maciza", dibujo: rosaMaciza,
+    idea: "Sin aro y más ancha, con cada punta partida en blanco y lavanda.",
+    dice: "La más firme y la más simple. Las facetas marcadas la hacen ver tallada, no dibujada.",
+    riesgo: "Es una estrella de cuatro puntas sola: la más cercana al destello de inteligencia artificial. El molinete de colores puede sugerir giro." },
+  { nombre: "Aguja en cruz", dibujo: agujaCruz,
+    idea: "La punta vertical larga y la horizontal corta, partida a lo largo e inclinada hacia el noroeste.",
+    dice: "Un punto medio entre la rosa y la aguja de la ronda anterior: señala, pero no hacia arriba. No se parece a la OTAN ni al destello.",
+    riesgo: "Inclinada puede leerse como una cruz, una espada o una estrella fugaz. Es la que menos dice \"rosa de los vientos\"." },
+];
+
+const svg = (o, t, k = NOCHE) => `<svg width="${t}" height="${t}" viewBox="0 0 64 64" aria-hidden="true">${o.dibujo(t < 32, k)}</svg>`;
+const icono = (o, t) => {
+  const chico = t <= 24;
+  return `<svg class="icono" width="${t}" height="${t}" viewBox="0 0 64 64" role="img" aria-label="Ícono de ${o.nombre}"><rect width="64" height="64" fill="#171c5e"/><g transform="${chico ? "translate(4 4) scale(.875)" : "translate(8 8) scale(.75)"}">${o.dibujo(chico, NOCHE)}</g></svg>`;
+};
+const sello = (o, fs, k) => `<span class="sello" style="font-size:${fs}px" role="img" aria-label="finup">${svg(o, Math.round(fs * 1.12), k)}<span>finup</span></span>`;
+
+document.getElementById("resumen").innerHTML = OPCIONES.map((o, i) =>
+  `<div class="mini">${icono(o, 44)}<span class="pestana">${icono(o, 16)}FinUp</span><b>${i + 1}. ${o.nombre}</b></div>`).join("");
+
+document.getElementById("opciones").innerHTML = OPCIONES.map((o, i) => `
+  <section class="opcion">
+    <h2>${i + 1}. ${o.nombre}</h2>
+    <p>${o.idea}</p>
+    <div class="lamina">
+      <div class="hero">${sello(o, 64)}<p class="estado">Tu progreso financiero, paso a paso</p></div>
+      <div class="lado">
+        <div class="tamanos">
+          <figure>${icono(o, 64)}<figcaption>64</figcaption></figure>
+          <figure>${icono(o, 48)}<figcaption>48</figcaption></figure>
+          <figure>${icono(o, 32)}<figcaption>32</figcaption></figure>
+          <figure>${icono(o, 24)}<figcaption>24</figcaption></figure>
+          <figure>${icono(o, 16)}<figcaption>16</figcaption></figure>
+        </div>
+        <div class="apps">
+          <div><i style="background:#e9e4d8"></i><span>Notas</span></div>
+          <div>${icono(o, 44)}<span>FinUp</span></div>
+          <div><i style="background:#2f6d4f"></i><span>Mapas</span></div>
+        </div>
+        <div class="barra-app">${sello(o, 22)}<span>Ingresar</span></div>
+      </div>
+      <div class="usos">
+        <div class="uso claro">${sello(o, 34, CLARO)}<small>Sobre fondo claro</small></div>
+        <div class="uso mono">${sello(o, 34, MONO)}<small>A un solo color</small></div>
+      </div>
+    </div>
+    <div class="lectura"><p><b>Qué dice:</b> ${o.dice}</p><p><b>Riesgo:</b> ${o.riesgo}</p></div>
+  </section>`).join("");
+
+const pos = [...document.querySelectorAll("[data-pos]")];
+pos.forEach((b) => b.addEventListener("click", () => {
+  pos.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  document.body.classList.toggle("atras", b.dataset.pos === "atras");
+}));
+</script>
+</body>
+</html>
